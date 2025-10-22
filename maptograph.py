@@ -75,9 +75,8 @@ def intercept_check(x_coord, y_coord, polygons):
 
 
 class graphDisplay:
-    def __init__(self, graph, gdt = None, style = "double", map_name_col = "SIG_KOR_NM",
+    def __init__(self, graph, gdt = None, map_name_col = "SIG_KOR_NM",
                  name_dict = ntc.code_dict()):
-        self.style = style
         self.map = gdt
         self.graph = graph
         self.fig, self.ax = plt.subplots()
@@ -85,27 +84,32 @@ class graphDisplay:
         self.name_dict = name_dict
         self.position = nx.get_node_attributes(self.graph, 'pos')
         self.code = nx.get_node_attributes(self.graph, 'code')
-
         self.map_name_col = map_name_col
-        if self.map is None:
-            self.sidx = None
-        else:
-            self.sidx = self.map.sindex
-        self._highlight_patch = None
+        
+        #For further speedup down the line it seems promising to add blitting if
+        #it will be needed to make this part of the code run faster. Depends
+        #on further implementation. This is left as an oportunity.
+        self._blit_enabled = False
         self._sel_marker = None
         self._line_cache = {}
         self._label_cache = {}
         self._legend = None
-        #Precomputing neighbours so that it does not need to happen every time with
-        #Line drawing
 
+    #Just a placeholder, not used now
+    def _blit_draw(self):
+        if not self._blit_enabled:
+            self.fig.canvas.draw_idle()
+            return
+        else:
+            return
+
+    #
     def _draw_or_get_line(self, u, v):
             key = (u, v)
             ln = self._line_cache.get(key)
             if ln is None:
                 x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
-                ln, = self.ax.plot([x1, x2], [y1, y2],
-                             lw=0.6, alpha=0.22, color="black", zorder=1)
+                ln, = self.ax.plot([x1, x2], [y1, y2], color="red", linestyle="dashed", zorder=1)
             self._line_cache[key] = ln
             return ln
 
@@ -121,14 +125,12 @@ class graphDisplay:
             self._label_cache[key] = lb
         return lb
 
-    def update_selection(self, node):
-        x, y = self.graph.nodes[node]["pos"]
-        self._sel_marker.set_data([x], [y])
+    def _update_selection(self, node):
+        self._sel_marker.center = self.graph.nodes[node]["pos"]
         edges = []
 
         for ln in self._line_cache.values():
-            ln.set_alpha(0.08)
-            ln.set_linewidth(0.6)
+            ln.set_alpha(0.00)
             ln.set_label(None)
         for lb in self._label_cache.values():
             lb.set_text("")
@@ -141,7 +143,7 @@ class graphDisplay:
 
             ln = self._draw_or_get_line(node, idxn)
             ln.set_linewidth((weight_in + weight_out)/700)
-            ln.set_alpha(0.85)
+            ln.set_alpha(1)
             ln.set_label(f"flow in: {weight_in}, flow out: {weight_out}")
 
 
@@ -158,7 +160,7 @@ class graphDisplay:
             if ang < -90: ang += 180
             lb.set_rotation(ang)
 
-    def on_click_graph(self, event):
+    def _on_click_graph(self, event):
         
         if event.inaxes is self.ax and event.xdata and event.ydata:
             nodes = list(self.graph)     
@@ -170,7 +172,7 @@ class graphDisplay:
                 distances = np.append(distances, distance)
 
             idx = nodes[np.argmin(distances)]
-            self.update_selection(idx)
+            self._update_selection(idx)
             
         self._legend = self.ax.legend(loc="upper left", frameon=False, 
                               fontsize=8, ncol=1)
@@ -178,14 +180,22 @@ class graphDisplay:
     
     def interactive_graph(self):
         self.draw_graph()
-        self.fig.canvas.mpl_connect('button_press_event', self.on_click_graph)
+        self.fig.canvas.mpl_connect('button_press_event', self._on_click_graph)
 
     def draw_graph(self):
-        self._sel_marker, = self.ax.plot([], [], marker='o', ms=30, mfc='none',
-                                       mec='crimson', mew=2, zorder=70)
-
+        self._sel_marker =Circle((float('nan'), float('nan')),
+                              radius=1000,   
+                              fill=False,
+                              edgecolor='crimson',
+                              linewidth=2.5,
+                              zorder=80)
+        self.ax.add_patch(self._sel_marker)
         for node in self.graph:
-            circ = Circle(self.position[node], 1000, zorder = 50) 
+            circ = Circle(
+                    self.position[node], 
+                    radius=1000,
+                    color = "lightgreen",
+                    zorder = 50) 
             self.ax.add_patch(circ)
 
             self.ax.text(self.position[node][0],self.position[node][1],
@@ -199,10 +209,12 @@ class graphDisplay:
             x2, y2 = self.position[v][0], self.position[v][1]
             self.ax.plot(
                     [x1, x2], [y1, y2], 
-                    linestyle="dashed", color="gray", linewidth="0.3"
+                    linestyle="dashed", color="gray", linewidth=0.15
                     )
         self.ax.autoscale_view() 
         self.ax.set_aspect('equal')
         self.ax.set_autoscale_on(False)
-
-            
+        self.ax.set_xticks([]) 
+        self.ax.set_yticks([])
+        for sp in self.ax.spines.values():
+            sp.set_visible(False)

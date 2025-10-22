@@ -50,7 +50,7 @@ edge_weights = {pair : 2*i
 
 G = mtg.maptograph(seoul_map, mode = "neighbours", pairs=edge_weights)
 
-seoul = mtg.graphDisplay(G, seoul_map, style = args.graph_style)
+seoul = mtg.graphDisplay(G, seoul_map)
 seoul.interactive_graph()
 plt.show()
 
