@@ -91,152 +91,75 @@ class graphDisplay:
             self.sidx = None
         else:
             self.sidx = self.map.sindex
-        self._last_collection = None
-        self._last_circle = None
-        self._lines = []
-        self._annotations = []
+        self._highlight_patch = None
+        self._sel_marker = None
+        self._line_cache = {}
+        self._label_cache = {}
         self._legend = None
-        self._legend_proxies = []
+        #Precomputing neighbours so that it does not need to happen every time with
+        #Line drawing
 
-    def _clear_lines(self):
-        for ln in self._lines:
-            ln.remove()
-        self._lines.clear()
+    def _draw_or_get_line(self, u, v):
+            key = (u, v)
+            ln = self._line_cache.get(key)
+            if ln is None:
+                x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
+                ln, = self.ax.plot([x1, x2], [y1, y2],
+                             lw=0.6, alpha=0.22, color="black", zorder=1)
+            self._line_cache[key] = ln
+            return ln
 
-    def _clear_annotations(self):
-        for annotation in self._annotations:
-            annotation.remove()
-        self._annotations.clear()
+    def _set_or_get_label(self, u, v):
+        key = (u, v)
+        lb = self._label_cache.get(key)
+        if lb is None:
+            x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
+            mid_x, mid_y = 0.5*(x1+x2), 0.5*(y1+y2)
+            lb = self.ax.text(mid_x, mid_y, "", ha="center", va="bottom",
+                          rotation=0, rotation_mode="anchor", fontsize=8,
+                          color="black", zorder=2)
+            self._label_cache[key] = lb
+        return lb
 
-    def _clear_legend(self):
-        if self._legend is not None:
-            self._legend.remove()
-            self._legend = None
+    def update_selection(self, node):
+        x, y = self.graph.nodes[node]["pos"]
+        self._sel_marker.set_data([x], [y])
+        edges = []
 
-    def _draw_lines(self, idx):
-        for i_n, idxn in enumerate(self.graph.neighbors(idx)):
-            weight_out = self.graph.get_edge_data(idx, idxn)["weight"]
-            weight_in = self.graph.get_edge_data(idxn, idx)["weight"]
+        for ln in self._line_cache.values():
+            ln.set_alpha(0.08)
+            ln.set_linewidth(0.6)
+            ln.set_label(None)
+        for lb in self._label_cache.values():
+            lb.set_text("")
+
             
-            if self.style == "double":
+        for idxn in self.graph.neighbors(node):
+            weight_out = self.graph.get_edge_data(node, idxn)["weight"]
+            weight_in = self.graph.get_edge_data(idxn, node)["weight"]
+            edges.append((node, idxn))
 
-                line_normal_angle = np.arctan2(
-                    self.position[idxn][1]-self.position[idx][1],
-                    self.position[idxn][0]-self.position[idx][0]) + np.pi/2
+            ln = self._draw_or_get_line(node, idxn)
+            ln.set_linewidth((weight_in + weight_out)/700)
+            ln.set_alpha(0.85)
+            ln.set_label(f"flow in: {weight_in}, flow out: {weight_out}")
 
-                normal_vec = (np.cos(line_normal_angle), np.sin(line_normal_angle))
 
-                ofst = 250
-            
-                ln1, = self.ax.plot([self.position[idx][0] + ofst*normal_vec[0], 
-                                    self.position[idxn][0] + ofst*normal_vec[0]],
-                                   [self.position[idx][1] + ofst*normal_vec[1], 
-                                    self.position[idxn][1] + ofst*normal_vec[1]],
-                                    linewidth = 0.5/300 * weight_out,
-                                    color = "red", zorder = 55)
-    
-                ln2, = self.ax.plot([self.position[idxn][0] - ofst*normal_vec[0], 
-                                    self.position[idx][0] - ofst*normal_vec[0]],
-                                   [self.position[idxn][1] - ofst*normal_vec[1], 
-                                    self.position[idx][1] - ofst*normal_vec[1]],
-                                    linewidth = 0.5/300 * weight_in,
-                                    color = "blue", zorder = 55,
-                                    linestyle = "dashed")
- 
-                self._lines.append(ln1)
-                self._lines.append(ln2)           
+        for lb in self._label_cache.values():
+            lb.set_text("")
 
-                #mid_x =  (self.position[idxn][0]+self.position[idx][0])/2
-                #mid_y = (self.position[idxn][1]+self.position[idx][1])/2 
-                #annot1 = self.ax.annotate(
-                #        "label", xy=(mid_x, mid_y), xycoords = 'data',  
-                #        ha='center', va='bottom',
-                #        rotation = line_angle)
+        for i, (u, v) in enumerate(edges, start=1):
+            lb = self._set_or_get_label(u, v)
+            lb.set_text(f"{i}")
 
-            else:
-                ln, = self.ax.plot([self.position[idxn][0], self.position[idx][0]],
-                                   [self.position[idxn][1], self.position[idx][1]],
-                                    linewidth =(0.5/500 * np.abs(weight_in+weight_out)),
-                                    color = "red" if weight_in > weight_out else
-                                    "blue", zorder = 55, 
-                                   label=f"{i_n+1}: flow in = {weight_in}, flow out = {weight_out}")
- 
-                self._lines.append(ln)
-
-                mid_x =  (self.position[idxn][0]+self.position[idx][0])/2
-                mid_y = (self.position[idxn][1]+self.position[idx][1])/2 
-
-                line_angle = np.degrees(np.arctan2(
-                    self.position[idxn][1]-self.position[idx][1],
-                    self.position[idxn][0]-self.position[idx][0]))
-                
-                if line_angle > 90:
-                    line_angle -= 180
-                elif line_angle < -90:
-                    line_angle += 180
-
-                annot1 = self.ax.annotate(
-                        f"{i_n+1}", xy=(mid_x, mid_y), xycoords = 'data',  
-                        ha='center', va='bottom',
-                        rotation = line_angle, rotation_mode="anchor")
-
-                self._annotations.append(annot1)
-        
-
-            print(
-            f"flow {idx} -> {idxn}: {weight_out}, flow {idxn} -> {idx}: {weight_in}"
-            )
-
-    def on_click_map(self, event): 
-        if self.map is None:
-            print("No map supplied")
-            return
-        if self._last_collection is not None:
-            self._last_collection.remove()
-            self._last_collection = None
-        
-        if self._last_circle is not None:
-            self._last_circle.remove()
-            self._last_circle = None
-
-        self._clear_lines()
-        self._clear_annotations()
-
-        if event.inaxes is self.ax and event.xdata and event.ydata:
-            
-            idx = intercept_check(event.xdata, event.ydata, self.map)
-            map_row_pd = self.map.iloc[idx]
-            map_row = self.map.iloc[[idx]]
-            dist_code = map_row_pd[self.map_name_col]
-            SIG_code = self.name_dict.lookup(dist_code)
-            map_row.plot(
-                    ax=self.ax, 
-                    facecolor="#f7f7f7", 
-                    edgecolor="red", 
-                    linewidth=0.8)
-            
-            self._last_collection = self.ax.collections[-1]
-
-            self._last_circle = Circle(
-                    self.position[SIG_code], 1000, 
-                    zorder = 60, color = "orange") 
-
-            self.ax.add_patch(self._last_circle)
-            self._draw_lines(SIG_code)
-
-        self._legend = self.ax.legend(loc="upper left", frameon=False, 
-                                      fontsize=8, ncol=1)
-        self.fig.canvas.draw_idle()  
+            x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
+            ang = np.degrees(np.atan2(y2 - y1, x2 - x1))
+            if ang > 90: ang -= 180
+            if ang < -90: ang += 180
+            lb.set_rotation(ang)
 
     def on_click_graph(self, event):
         
-        if self._last_circle is not None:
-            self._last_circle.remove()
-            self._last_circle = None
-
-        self._clear_lines()
-        self._clear_annotations()
-
         if event.inaxes is self.ax and event.xdata and event.ydata:
             nodes = list(self.graph)     
             point = (event.xdata, event.ydata)
@@ -247,49 +170,26 @@ class graphDisplay:
                 distances = np.append(distances, distance)
 
             idx = nodes[np.argmin(distances)]
+            self.update_selection(idx)
             
-            self._last_circle = Circle(
-                    self.position[idx], 1000, 
-                    zorder = 60, color = "orange") 
-           
-            annot_graph = self.ax.annotate(
-                        f"{self.code[idx]}", xy=self.position[idx], xycoords = 'data',  
-                        ha='center', va='center', zorder=100)
-
-            self._annotations.append(annot_graph)
-            
-            self.ax.add_patch(self._last_circle)
-            self._draw_lines(idx)
-        
         self._legend = self.ax.legend(loc="upper left", frameon=False, 
                               fontsize=8, ncol=1)
         self.fig.canvas.draw_idle()  
     
-    def interactive_graph(self, draw_map = True):
-        if draw_map == True:
-            if self.map is None:
-                print("No map supplied")
-                return
-            else:
-                self.map.plot(ax=self.ax, 
-                            facecolor="#f7f7f7", 
-                            edgecolor="black", 
-                            linewidth=0.8)
-                self.draw_graph()
-                self.fig.canvas.mpl_connect('button_press_event', self.on_click_map) 
-
-        else:
-            self.draw_graph()
-            self.fig.canvas.mpl_connect('button_press_event', self.on_click_graph)
+    def interactive_graph(self):
+        self.draw_graph()
+        self.fig.canvas.mpl_connect('button_press_event', self.on_click_graph)
 
     def draw_graph(self):
+        self._sel_marker, = self.ax.plot([], [], marker='o', ms=30, mfc='none',
+                                       mec='crimson', mew=2, zorder=70)
+
         for node in self.graph:
             circ = Circle(self.position[node], 1000, zorder = 50) 
-            #Pak třeba zakoponovat lidnatost
             self.ax.add_patch(circ)
 
-            self.ax.annotate(
-                    f"{self.code[node]}", xy=self.position[node], xycoords = 'data',  
+            self.ax.text(self.position[node][0],self.position[node][1],
+                    f"{self.code[node]}",
                     ha='center', va='center', zorder=100)
         
         for u, v in self.graph.edges():
@@ -303,5 +203,6 @@ class graphDisplay:
                     )
         self.ax.autoscale_view() 
         self.ax.set_aspect('equal')
+        self.ax.set_autoscale_on(False)
 
             

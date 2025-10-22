@@ -12,7 +12,7 @@ from itertools import product
 
 
 parser = argparse.ArgumentParser(description="My parser")
-parser.add_argument('--draw_map', action=argparse.BooleanOptionalAction)
+parser.add_argument('--map', action=argparse.BooleanOptionalAction)
 parser.add_argument('graph_style', type = str, nargs = "?", default="simple")
 args = parser.parse_args()
 
@@ -44,14 +44,6 @@ seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(
 name_code_df = pd.read_csv("code_lookup.csv")
 name_dict = ntc.code_dict(code_df = name_code_df)
 
-# Now I create a test weights for the weighted graph.
-# itercols.() would have sufficed but I decided to try and 
-# write code without iterators to make it faster. I am no programmer however
-# and I have no ideas if this really 
-# makes the code meaningfuly faster. its just
-# for fun and exercise. I use .iterrows() elsewhere where the alternative
-# solution would not be as straightforward.
-
 codes = name_code_df["sgg"].to_list()
 edge_weights = {pair : 2*i 
                      for i, pair in enumerate(product(codes, codes))}
@@ -59,6 +51,6 @@ edge_weights = {pair : 2*i
 G = mtg.maptograph(seoul_map, mode = "neighbours", pairs=edge_weights)
 
 seoul = mtg.graphDisplay(G, seoul_map, style = args.graph_style)
-seoul.interactive_graph(args.draw_map)
+seoul.interactive_graph()
 plt.show()
 
