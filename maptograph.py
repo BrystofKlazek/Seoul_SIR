@@ -87,8 +87,9 @@ class graphDisplay:
         self.map_name_col = map_name_col
         
         #For further speedup down the line it seems promising to add blitting if
-        #it will be needed to make this part of the code run faster. Depends
-        #on further implementation. This is left as an oportunity.
+        #it is needed to make this part of the code run faster. Depends
+        #on further implementation. This is left as an opportunity. But I hope
+        #it wont be needed 
         self._blit_enabled = False
         self._sel_marker = None
         self._line_cache = {}
@@ -103,7 +104,6 @@ class graphDisplay:
         else:
             return
 
-    #
     def _draw_or_get_line(self, u, v):
             key = (u, v)
             ln = self._line_cache.get(key)
@@ -132,25 +132,17 @@ class graphDisplay:
         for ln in self._line_cache.values():
             ln.set_alpha(0.00)
             ln.set_label(None)
-        for lb in self._label_cache.values():
-            lb.set_text("")
-
             
         for idxn in self.graph.neighbors(node):
             weight_out = self.graph.get_edge_data(node, idxn)["weight"]
             weight_in = self.graph.get_edge_data(idxn, node)["weight"]
-            edges.append((node, idxn))
+            edges.append((node, idxn, weight_in, weight_out))
 
-            ln = self._draw_or_get_line(node, idxn)
-            ln.set_linewidth((weight_in + weight_out)/700)
-            ln.set_alpha(1)
-            ln.set_label(f"flow in: {weight_in}, flow out: {weight_out}")
-
-
+            
         for lb in self._label_cache.values():
             lb.set_text("")
 
-        for i, (u, v) in enumerate(edges, start=1):
+        for i, (u, v, w_in, w_out) in enumerate(edges, start=1):
             lb = self._set_or_get_label(u, v)
             lb.set_text(f"{i}")
 
@@ -159,6 +151,11 @@ class graphDisplay:
             if ang > 90: ang -= 180
             if ang < -90: ang += 180
             lb.set_rotation(ang)
+            
+            ln = self._draw_or_get_line(u, v)
+            ln.set_linewidth((w_in + w_out)/700)
+            ln.set_alpha(1)
+            ln.set_label(f"{i}: flow in: {w_in}, flow out: {w_out}")
 
     def _on_click_graph(self, event):
         
