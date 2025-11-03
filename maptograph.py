@@ -1,9 +1,14 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 from matplotlib.patches import Circle
+
 import networkx as nx
+
 from shapely import set_precision
 from shapely.geometry import Point
+
 import nametocode as ntc
 
 import numpy as np
@@ -41,7 +46,8 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
     if mode=="all":
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
-            G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]))
+            G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]),
+                       code = i_code)
             for j, row_j in map.iterrows():
                 if j <= i:
                     continue
@@ -85,7 +91,15 @@ class graphDisplay:
         self.position = nx.get_node_attributes(self.graph, 'pos')
         self.code = nx.get_node_attributes(self.graph, 'code')
         self.map_name_col = map_name_col
-        
+
+        self.in_cmap  = mcolors.LinearSegmentedColormap.from_list(
+            "inmap", ["#a1dab4", "#00a6b2", "#3366cc", "#5e3c99"])
+        self.out_cmap = mcolors.LinearSegmentedColormap.from_list(
+            "outmap", ["#ffb74d", "#ff7043", "#c62828"])
+
+        self.in_norm  = mcolors.Normalize(vmin=None, vmax=None, clip=True)
+        self.out_norm = mcolors.Normalize(vmin=None, vmax=None, clip=True)
+
         #For further speedup down the line it seems promising to add blitting if
         #it is needed to make this part of the code run faster. Depends
         #on further implementation. This is left as an opportunity. But I hope
@@ -104,13 +118,20 @@ class graphDisplay:
         else:
             return
 
-    def _draw_or_get_line(self, u, v):
-            key = (u, v)
+    def _draw_or_get_line(self, u, v, in_out: bool):
+            key = (u, v, in_out)
             ln = self._line_cache.get(key)
             if ln is None:
                 x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
-                ln, = self.ax.plot([x1, x2], [y1, y2], color="red", linestyle="dashed", zorder=1)
-            self._line_cache[key] = ln
+                angle = np.atan2(y2-y1, x2-x1)
+                n_vec = (-np.sin(angle), np.cos(angle))
+                mult = 120
+                offset = mult if in_out == True else -mult
+                color = "blue" if in_out == True else "red"
+                ln, = self.ax.plot([x1+offset*n_vec[0], x2+offset*n_vec[0]], 
+                                    [y1+offset*n_vec[1], y2+offset*n_vec[1]], 
+                                    color=color, linestyle="dashed", zorder=1)
+                self._line_cache[key] = ln
             return ln
 
     def _set_or_get_label(self, u, v):
@@ -119,11 +140,38 @@ class graphDisplay:
         if lb is None:
             x1, y1 = self.graph.nodes[u]["pos"]; x2, y2 = self.graph.nodes[v]["pos"]
             mid_x, mid_y = 0.5*(x1+x2), 0.5*(y1+y2)
-            lb = self.ax.text(mid_x, mid_y, "", ha="center", va="bottom",
+            ang = np.atan2(y2-y1, x2-x1)
+            if ang > np.pi/2: ang -= np.pi
+            if ang < -np.pi/2: ang += np.pi
+            n_vec = (-np.sin(ang), np.cos(ang))
+            mult = 250
+            lb = self.ax.text(mid_x+mult*n_vec[0], mid_y+mult*n_vec[1], 
+                              "", ha="center", va="bottom",
                           rotation=0, rotation_mode="anchor", fontsize=8,
                           color="black", zorder=2)
             self._label_cache[key] = lb
         return lb
+
+    def _expand_norm(self, norm: mcolors.Normalize, w: float):
+        if norm.vmin is None or norm.vmax is None:
+            norm.vmin = w
+            norm.vmax = w + 1e-12
+        else:
+            changed = False
+            if w < norm.vmin:
+                norm.vmin = w; changed = True
+            if w > norm.vmax:
+                norm.vmax = w; changed = True
+            if changed and norm.vmax == norm.vmin:
+                norm.vmax = norm.vmin + 1e-12
+
+    def _set_weight_color(self, ln, w: float, in_out: bool):
+        if in_out == True:
+            self._expand_norm(self.in_norm, w)
+            ln.set_color(self.in_cmap(self.in_norm(w)))
+        else:
+            self._expand_norm(self.out_norm, w)
+            ln.set_color(self.out_cmap(self.out_norm(w)))
 
     def _update_selection(self, node):
         self._sel_marker.center = self.graph.nodes[node]["pos"]
@@ -152,10 +200,18 @@ class graphDisplay:
             if ang < -90: ang += 180
             lb.set_rotation(ang)
             
-            ln = self._draw_or_get_line(u, v)
-            ln.set_linewidth((w_in + w_out)/700)
-            ln.set_alpha(1)
-            ln.set_label(f"{i}: flow in: {w_in}, flow out: {w_out}")
+            ln1 = self._draw_or_get_line(u, v, True)
+            ln1.set_linewidth(1)
+            self._set_weight_color(ln1, w_in, True)
+            ln1.set_alpha(1)
+            ln1.set_label(f"{i}: flow in: {w_in}")
+
+            ln2 = self._draw_or_get_line(u, v, False)
+            ln2.set_linewidth(1)
+            self._set_weight_color(ln2, w_out, False)
+            ln2.set_alpha(1)
+            ln2.set_label(f"{i}: flow out: {w_out}")
+
 
     def _on_click_graph(self, event):
         
@@ -206,7 +262,7 @@ class graphDisplay:
             x2, y2 = self.position[v][0], self.position[v][1]
             self.ax.plot(
                     [x1, x2], [y1, y2], 
-                    linestyle="dashed", color="gray", linewidth=0.15
+                    linestyle="dashed", color="gray", linewidth=0.02
                     )
         self.ax.autoscale_view() 
         self.ax.set_aspect('equal')
