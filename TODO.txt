@@ -1,0 +1,2 @@
+Výpočetní test na Seoul Graphu - střed a kraj
+J data - projít jak fungují, promyslet repreznetaci a jak udělat tok
