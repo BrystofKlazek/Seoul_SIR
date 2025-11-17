@@ -7,50 +7,79 @@ from shapely import set_precision
 import maptograph as mtg
 import numpy as np
 import nametocode as ntc
-import argparse
 from itertools import product
 
+def graph_laplacian_sparse(graph):
+    indptr = [0]
+    indices = []
+    data = []
 
-parser = argparse.ArgumentParser(description="My parser")
-parser.add_argument('--map', action=argparse.BooleanOptionalAction)
-parser.add_argument('graph_style', type = str, nargs = "?", default="simple")
-args = parser.parse_args()
+    for node in graph:
+        deg = 0.0
+        def add_edge(neighbour, weight):
+            nonlocal deg
+            indices.append(neighbour)
+            data.append(-weight)
+            deg += weight
+        
+        for neighbour in graph.neighbors(node):
+            add_edge(neighbour, graph.get_edge_data(node, neighbour)["weight"])
 
+        indices.append(node)
+        data.append(deg)
 
-# Hangul font setting
-plt.rcParams["font.family"] = 'NanumGothic'
-plt.rcParams['axes.unicode_minus'] = False
+        indptr.append(len(indices))
 
-for name in ["Noto Sans CJK KR", "Noto Sans KR", "NanumGothic", "Malgun Gothic", "Apple SD Gothic Neo"]:
-    if any(ft.name == name for ft in fm.fontManager.ttflist):
-        plt.rcParams["font.family"] = name
-        break
+    return (np.asarray(indptr, dtype=np.int32),
+            np.asarray(indices, dtype=np.int32),
+            np.asarray(data, dtype=np.float64))
 
+def sir_rhs(state, out, beta=0.8, gamma=0.2):
+    S, I, R = state[0], state[1], state[2]
+    dS, dI, dR = out[0], out[1], out[2]
+    inf = beta * S * I
+    dS[...] = -inf
+    dI[...] =  inf - gamma * I
+    dR[...] =  gamma * I
 
+def main():
+    dt = 0.02
+    steps = 1000
+    snapshots = 50
+    beta, gamma = 0.8, 0.2
 
-# 0) Load + project
-shapefile_path = './shp/202101/SEOUL_SIG.shp'
-seoul_map = gpd.read_file(shapefile_path).to_crs(5179)
+    GRID = 0.2   
+    #-------------HELP FOR DISPLAYING KOREAN FONTS------------#
+    plt.rcParams["font.family"] = 'NanumGothic'
+    plt.rcParams['axes.unicode_minus'] = False
 
-# 1) One inside point for plotting
-anchors = seoul_map.representative_point()
-seoul_map["x"], seoul_map["y"] = anchors.x, anchors.y
+    for name in ["Noto Sans CJK KR", "Noto Sans KR", "NanumGothic", 
+                 "Malgun Gothic", "Apple SD Gothic Neo"]:
+        if any(ft.name == name for ft in fm.fontManager.ttflist):
+            plt.rcParams["font.family"] = name
+            break
+    #---------------------------------------------------------#
 
-GRID = 0.2   # 20 cm grid; adjust 0.1–0.5 if needed
-seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(
-        lambda geom: set_precision(geom, GRID)
-        )
+    shapefile_path = './shp/202101/SEOUL_SIG.shp'
+    seoul_map = gpd.read_file(shapefile_path).to_crs(5179)
 
-name_code_df = pd.read_csv("code_lookup.csv")
-name_dict = ntc.code_dict(code_df = name_code_df)
+    anchors = seoul_map.representative_point()
+    seoul_map["x"], seoul_map["y"] = anchors.x, anchors.y
 
-codes = name_code_df["sgg"].to_list()
-edge_weights = {pair : 2*i 
+    seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(
+            lambda geom: set_precision(geom, GRID)
+            )
+
+    name_code_df = pd.read_csv("code_lookup.csv")
+    name_dict = ntc.code_dict(code_df = name_code_df)
+
+    codes = name_code_df["sgg"].to_list()
+    edge_weights = {pair : 2*i 
                      for i, pair in enumerate(product(codes, codes))}
 
-G = mtg.maptograph(seoul_map, mode = "neighbours", pairs=edge_weights)
+    G = mtg.maptograph(seoul_map, mode = "neighbours", pairs=edge_weights)
 
-seoul = mtg.graphDisplay(G, seoul_map)
-seoul.interactive_graph()
-plt.show()
+    seoul = mtg.graphDisplay(G, seoul_map)
+    seoul.interactive_graph()
+    plt.show()
 
