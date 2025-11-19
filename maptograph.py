@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 from matplotlib.patches import Circle
+from matplotlib.animation import FuncAnimation
+import matplotlib.patheffects as pe
 
 import networkx as nx
 
@@ -29,7 +31,7 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
             G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]),
-                       code = i_code)
+                       code = i_code, index = i)
             for j in sindex.intersection(row_i.geometry.bounds):
                 if j <= i:
                     continue
@@ -47,7 +49,7 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
             G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]),
-                       code = i_code)
+                       code = i_code, index = i)
             for j, row_j in map.iterrows():
                 if j <= i:
                     continue
@@ -86,16 +88,30 @@ class graphDisplay:
         self.map = gdt
         self.graph = graph
         self.fig, self.ax = plt.subplots()
+        self.fig.subplots_adjust(right=0.80)
         self.cid = None
         self.name_dict = name_dict
         self.position = nx.get_node_attributes(self.graph, 'pos')
         self.code = nx.get_node_attributes(self.graph, 'code')
+        self.node_idxs = nx.get_node_attributes(self.graph, 'index')   
+        self.node_dict = dict(zip(list(self.node_idxs), list(self.code)))
         self.map_name_col = map_name_col
-
+        
         self.in_cmap  = mcolors.LinearSegmentedColormap.from_list(
-            "inmap", ["#a1dab4", "#00a6b2", "#3366cc", "#5e3c99"])
+            "inmap", [
+                "#005f73",  
+                "#0a9396",  
+                "#3b82f6", 
+                "#312e81",  
+            ])
+
         self.out_cmap = mcolors.LinearSegmentedColormap.from_list(
-            "outmap", ["#ffb74d", "#ff7043", "#c62828"])
+            "outmap", [
+                "#ffb703", 
+                "#fb8500",
+                "#e63946",
+                "#7f1d1d",
+            ])        
 
         self.in_norm  = mcolors.Normalize(vmin=None, vmax=None, clip=True)
         self.out_norm = mcolors.Normalize(vmin=None, vmax=None, clip=True)
@@ -109,6 +125,22 @@ class graphDisplay:
         self._line_cache = {}
         self._label_cache = {}
         self._legend = None
+
+        self.node_patches = {}       
+
+        self.values_ts = None         # shape (T, K, N)  (time, variables, nodes)
+        self.var_names = None         # list[str] of length K
+
+        self.selected_node = None   
+        self.ts_fig = None  
+        self.ax_ts = None          
+        self.lines_vars = []      
+        self.time_marker = None       # vertical line showing current frame
+
+        self.dt_snapshot = None       # physical time between snapshots
+        self.t_vec = None             # 1D array of length T
+
+        self._anim = None         
 
     #Just a placeholder, not used now
     def _blit_draw(self):
@@ -212,6 +244,9 @@ class graphDisplay:
             ln2.set_alpha(1)
             ln2.set_label(f"{i}: flow out: {w_out}")
 
+        self.selected_node = node
+        if self.values_ts is not None and self.ax_ts is not None:
+            self._update_timeseries_lines()
 
     def _on_click_graph(self, event):
         
@@ -227,8 +262,16 @@ class graphDisplay:
             idx = nodes[np.argmin(distances)]
             self._update_selection(idx)
             
-        self._legend = self.ax.legend(loc="upper left", frameon=False, 
-                              fontsize=8, ncol=1)
+        if self._legend is not None:
+            self._legend.remove()
+
+        self._legend = self.ax.legend(
+            loc="upper left",
+            bbox_to_anchor=(1.02, 1.0),   # just outside the axes, on the right
+            borderaxespad=0.0,
+            frameon=False,
+        )
+
         self.fig.canvas.draw_idle()  
     
     def interactive_graph(self):
@@ -247,14 +290,18 @@ class graphDisplay:
             circ = Circle(
                     self.position[node], 
                     radius=1000,
-                    color = "lightgreen",
+                    color = "white",
                     zorder = 50) 
             self.ax.add_patch(circ)
 
-            self.ax.text(self.position[node][0],self.position[node][1],
-                    f"{self.code[node]}",
-                    ha='center', va='center', zorder=100)
-        
+            self.node_patches[node] = circ
+
+            self.ax.text(self.position[node][0], self.position[node][1],
+                         f"{self.code[node]}",
+                         path_effects=[
+                            pe.withStroke(linewidth=2, foreground="white")],
+                         ha='center', va='center', zorder=100, fontsize=9)
+
         for u, v in self.graph.edges():
             if u < v:
                 continue
@@ -271,3 +318,192 @@ class graphDisplay:
         self.ax.set_yticks([])
         for sp in self.ax.spines.values():
             sp.set_visible(False)
+
+    def attach_timeseries(self, values_ts, dt_snapshot,
+                          var_names=None):
+        """
+        Attach generic time-dependent data for each node.
+
+        Parameters
+        ----------
+        values_ts : array-like, shape (T, K, N) or (T, N)
+            Time series for all variables and nodes.
+        dt_snapshot : float
+            Physical time between snapshots (can be approximate; if <= 0,
+            we fall back to frame indices 0..T-1).
+        var_names : list[str] or None
+            Names of the K variables. If None, use 'var0', 'var1', ...
+        """
+        vals = np.asarray(values_ts)
+        if vals.ndim == 2:
+            vals = vals[:, np.newaxis, :]   # (T, 1, N)
+        if vals.ndim != 3:
+            raise ValueError("values_ts must have shape (T, K, N) or (T, N)")
+
+        T, K, N = vals.shape
+        if len(list(self.graph.nodes())) != N:
+            raise ValueError("len(node_order) must equal N (third axis of values_ts)")
+
+        if var_names is None:
+            var_names = [f"var{k}" for k in range(K)]
+        if len(var_names) != K:
+            raise ValueError("len(var_names) must equal K (second axis of values_ts)")
+
+        self.values_ts = vals
+        self.var_names = list(var_names)
+
+        if dt_snapshot is None or dt_snapshot <= 0:
+            self.dt_snapshot = None
+            self.t_vec = np.arange(T, dtype=float)
+        else:
+            self.dt_snapshot = float(dt_snapshot)
+            self.t_vec = np.arange(T, dtype=float) * self.dt_snapshot
+
+        # --- create a completely separate figure for time series ---
+        if self.ax_ts is None or self.ts_fig is None:
+            self.ts_fig, self.ax_ts = plt.subplots()
+
+        self.ax_ts.clear()
+        self.ax_ts.set_xlabel("time")
+        self.ax_ts.set_ylabel("value")
+
+        # If nothing selected yet, pick first node in node_order
+        if self.selected_node is None:
+            self.selected_node = list(self.graph.nodes())[0]
+
+        idx = self.node_idxs[self.selected_node]
+        node_vals = vals[:, :, idx]   # (T, K)
+
+        self.lines_vars = []
+        for k in range(K):
+            line, = self.ax_ts.plot(self.t_vec, node_vals[:, k],
+                                    label=self.var_names[k])
+            self.lines_vars.append(line)
+
+        self.time_marker = self.ax_ts.axvline(self.t_vec[0],
+                                              color="k",
+                                              linestyle="--",
+                                              linewidth=1)
+
+        self.ax_ts.legend(loc="upper right")
+        self.ax_ts.set_title(f"values at node {self.selected_node}")
+        # explicitly show the full [0, T-1] (or 0..T*dt)
+        self.ax_ts.set_xlim(self.t_vec[0], self.t_vec[-1])
+        self.ax_ts.relim()
+        self.ax_ts.autoscale_view()
+        self.ts_fig.canvas.draw_idle()
+    
+    def _update_timeseries_lines(self):
+        if self.values_ts is None or not self.lines_vars:
+            return
+        if self.selected_node not in self.node_idxs:
+            return
+
+        idx = self.node_idxs[self.selected_node]
+        vals = self.values_ts[:, :, idx]  # (T, K)
+
+        for k, line in enumerate(self.lines_vars):
+            line.set_ydata(vals[:, k])
+
+        self.ax_ts.set_title(f"values at node {self.selected_node}")
+        # keep whole dynamic visible
+        if self.t_vec is not None:
+            self.ax_ts.set_xlim(self.t_vec[0], self.t_vec[-1])
+        self.ax_ts.relim()
+        self.ax_ts.autoscale_view()
+        self.ts_fig.canvas.draw_idle()
+    
+    def start_animation(self, var=0, interval=120,
+                        cmap_name="plasma", save=None, fps=10):
+        """
+        Animate one variable over the graph.
+
+        Parameters
+        ----------
+        var : int or str
+            Which variable to animate: index or name from var_names.
+        interval : int
+            Milliseconds between frames.
+        cmap_name : str
+            Matplotlib colormap name.
+        save : str or None
+            If given, path to save GIF.
+        fps : int
+            Frames per second for GIF.
+        """
+        if self.values_ts is None:
+            raise RuntimeError("attach_timeseries must be called before start_animation")
+
+        vals = self.values_ts   # (T, K, N)
+        T, K, N = vals.shape
+
+        # which variable?
+        if isinstance(var, str):
+            if self.var_names is None or var not in self.var_names:
+                raise ValueError(f"Unknown variable name {var!r}")
+            k = self.var_names.index(var)
+        else:
+            k = int(var)
+            if not (0 <= k < K):
+                raise ValueError(f"var index {k} out of range [0, {K})")
+
+        field_ts = vals[:, k, :]  # (T, N)
+
+        # ensure we have node circles
+        if not self.node_patches:
+            self.draw_graph()
+
+        # colour normalization
+        vmin = float(field_ts.min())
+        vmax = float(field_ts.max())
+        if vmax <= vmin:
+            vmax = vmin + 1e-12
+
+        norm = mcolors.Normalize(vmin=vmin, vmax=vmax, clip=True)
+        cmap = cm.get_cmap(cmap_name)
+
+        frame0 = field_ts[0]
+        for node in self.graph:
+            j = self.node_idxs[node]
+            col = cmap(norm(frame0[j]))
+            self.node_patches[node].set_facecolor(col)
+
+        def update(frame):
+            vals_frame = field_ts[frame]
+            for node in self.graph:
+                j = self.node_idxs[node]
+                self.node_patches[node].set_facecolor(cmap(norm(vals_frame[j])))
+
+            # move time marker in the time-series window, too
+            if self.time_marker is not None and self.t_vec is not None:
+                t = self.t_vec[frame]
+                self.time_marker.set_xdata([t, t])
+                # if time-series is in a separate figure, force its redraw
+                if self.ax_ts is not None:
+                    self.ax_ts.figure.canvas.draw_idle()
+            # t_vec holds the physical time of each snapshot if attach_timeseries
+            # was called with a valid dt_snapshot
+            if self.t_vec is not None:
+                t = self.t_vec[frame]
+                self.ax.set_title(f"{self.var_names[k]}(t = {t:.3f}), frame {frame}")
+            else:
+                # fall back to frame index as "time"
+                self.ax.set_title(f"{self.var_names[k]}(frame {frame})")
+
+            return list(self.node_patches.values()) + (
+                [self.time_marker] if self.time_marker is not None else []
+            )
+
+        self._anim = FuncAnimation(self.fig, update,
+                                   frames=T,
+                                   interval=interval,
+                                   blit=False)
+
+        if save is not None:
+            from matplotlib.animation import PillowWriter
+            writer = PillowWriter(fps=fps)
+            self._anim.save(save, writer=writer)
+
+        return self._anim
+
+
