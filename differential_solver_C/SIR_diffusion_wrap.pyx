@@ -4,6 +4,7 @@ cimport numpy as cnp
 import numpy as np
 from libc.string cimport memcpy
 from libc.stddef cimport size_t
+from libc.stdlib cimport malloc, free
 
 ctypedef cnp.float64_t DTYPE_t
 cnp.import_array()
@@ -27,8 +28,9 @@ cdef extern from "SIR_diffusion.h":
                               double dt, size_t steps, size_t snapshots,
                               rhs_graph_fn rhs, void* userdata)
 
-    # --- CSR variant (int indices) ---
-    double* euler_solve_graph_csr(const int *indptr, const int *indices, const double *data,
+    double* euler_solve_graph_csr(const int **indptr_arr,
+                                  const int **indices_arr,
+                                  const double **data_arr,
                                   const double *x0,
                                   size_t vec_size, size_t n_fields,
                                   double dt, size_t steps, size_t snapshots,
@@ -40,9 +42,15 @@ cdef struct PyRHSContext:
     void* fn_obj
     void* params_obj
 
-cdef void _rhs_grid_trampoline(double* out, const double* state,
-                               size_t n_fields, size_t rows, size_t cols,
-                               void* userdata):
+cdef struct PyRHSContext:
+    void* fn_obj
+    void* params_obj
+
+# --- grid trampoline ---
+
+cdef void _rhs_grid_trampoline_gil(double* out, const double* state,
+                                   size_t n_fields, size_t rows, size_t cols,
+                                   void* userdata) with gil:
     cdef PyRHSContext* ctx = <PyRHSContext*>userdata
     cdef cnp.npy_intp d3[3]
     d3[0] = <cnp.npy_intp>n_fields
@@ -59,9 +67,17 @@ cdef void _rhs_grid_trampoline(double* out, const double* state,
     else:
         py_fn(state_arr, out_arr, params=py_params)
 
-cdef void _rhs_graph_trampoline(double* out, const double* state,
-                                size_t n_fields, size_t vec_size,
-                                void* userdata):
+cdef void _rhs_grid_trampoline(double* out, const double* state,
+                               size_t n_fields, size_t rows, size_t cols,
+                               void* userdata) nogil:
+    with gil:
+        _rhs_grid_trampoline_gil(out, state, n_fields, rows, cols, userdata)
+
+# --- graph trampoline ---
+
+cdef void _rhs_graph_trampoline_gil(double* out, const double* state,
+                                    size_t n_fields, size_t vec_size,
+                                    void* userdata) with gil:
     cdef PyRHSContext* ctx = <PyRHSContext*>userdata
     cdef cnp.npy_intp d2_state[2]
     cdef cnp.npy_intp d2_out[2]
@@ -79,6 +95,13 @@ cdef void _rhs_graph_trampoline(double* out, const double* state,
         py_fn(state_arr, out_arr, **py_params)
     else:
         py_fn(state_arr, out_arr, params=py_params)
+
+cdef void _rhs_graph_trampoline(double* out, const double* state,
+                                size_t n_fields, size_t vec_size,
+                                void* userdata) nogil:
+    with gil:
+        _rhs_graph_trampoline_gil(out, state, n_fields, vec_size, userdata)
+
 
 def euler_solve_normal_rd(cnp.ndarray x0,
                           double dx, double dy, double dt,
@@ -132,10 +155,26 @@ def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,
     free_array(out_ptr)
     return out
 
-def euler_solve_graph_csr_rd(cnp.ndarray indptr, cnp.ndarray indices, cnp.ndarray data,
+def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,
                              cnp.ndarray x0,
                              double dt, size_t steps, size_t snapshots,
                              rhs_fn, params=None):
+    """
+    Run the CSR graph solver with time-dependent Laplacians.
+
+    Parameters
+    ----------
+    indptr_list, indices_list, data_list : sequence of length n_steps
+        Each element is a 1D NumPy array:
+            indptr_list[k].dtype  == int32, shape (n+1,)
+            indices_list[k].dtype == int32, shape (nnz_k,)
+            data_list[k].dtype    == float64, shape (nnz_k,)
+    x0 : ndarray, shape (n_fields, n)
+        Initial state [S, I, R, ...].
+    dt, steps, snapshots : as in the C solver.
+    rhs_fn : Python RHS callback.
+    params : optional parameters for rhs_fn.
+    """
     cdef size_t n_fields = <size_t>x0.shape[0]
     cdef size_t n        = <size_t>x0.shape[1]
     cdef size_t take     = snapshots if snapshots <= steps else steps
@@ -144,17 +183,63 @@ def euler_solve_graph_csr_rd(cnp.ndarray indptr, cnp.ndarray indices, cnp.ndarra
     ctx.fn_obj = <void*>rhs_fn
     ctx.params_obj = <void*>params
 
-    cdef const int* indptr_ptr  = <const int*> indptr.data
-    cdef const int* indices_ptr = <const int*> indices.data
-    cdef const double* data_ptr = <const double*> data.data
-    cdef const double* x0_ptr   = <const double*> x0.data
+    # how many Laplacians do we have?
+    cdef Py_ssize_t n_steps = len(indptr_list)
+    if len(indices_list) != n_steps or len(data_list) != n_steps:
+        raise ValueError("indptr_list, indices_list, data_list must have same length")
 
-    cdef double* out_ptr = euler_solve_graph_csr(indptr_ptr, indices_ptr, data_ptr,
-                                                 x0_ptr,
-                                                 n, n_fields,
-                                                 dt, steps, snapshots,
-                                                 <rhs_graph_fn>_rhs_graph_trampoline,
-                                                 <void*>&ctx)
+    # we must not ask the C solver for more steps than we have matrices for
+    if steps > <size_t>n_steps:
+        steps = <size_t>n_steps
+
+    # allocate C arrays of pointers
+    cdef const int   **indptr_ptrs  = <const int **>  malloc(n_steps * sizeof(const int *))
+    cdef const int   **indices_ptrs = <const int **>  malloc(n_steps * sizeof(const int *))
+    cdef const double**data_ptrs    = <const double**>malloc(n_steps * sizeof(const double *))
+
+    if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:
+        if indptr_ptrs  != NULL: free(<void*>indptr_ptrs)
+        if indices_ptrs != NULL: free(<void*>indices_ptrs)
+        if data_ptrs    != NULL: free(<void*>data_ptrs)
+        raise MemoryError()
+
+    cdef cnp.ndarray arr
+    cdef Py_ssize_t i
+
+    # fill pointer arrays from Python lists
+    for i in range(n_steps):
+        arr = <cnp.ndarray>indptr_list[i]
+        if arr.ndim != 1:
+            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
+            raise ValueError("each indptr must be 1D array")
+        indptr_ptrs[i] = <const int*>arr.data
+
+        arr = <cnp.ndarray>indices_list[i]
+        if arr.ndim != 1:
+            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
+            raise ValueError("each indices must be 1D array")
+        indices_ptrs[i] = <const int*>arr.data
+
+        arr = <cnp.ndarray>data_list[i]
+        if arr.ndim != 1:
+            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
+            raise ValueError("each data must be 1D array")
+        data_ptrs[i] = <const double*>arr.data
+
+    cdef const double* x0_ptr = <const double*> x0.data
+
+    cdef double* out_ptr = euler_solve_graph_csr(
+        indptr_ptrs, indices_ptrs, data_ptrs,
+        x0_ptr,
+        n, n_fields,
+        dt, steps, snapshots,
+        <rhs_graph_fn>_rhs_graph_trampoline,
+        <void*>&ctx
+    )
+
+    free(<void*>indptr_ptrs)
+    free(<void*>indices_ptrs)
+    free(<void*>data_ptrs)
 
     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)
     memcpy(<void*>out.data, <const void*>out_ptr,

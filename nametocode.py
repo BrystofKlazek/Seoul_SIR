@@ -1,5 +1,7 @@
 import pandas as pd
 
+#I wanted to add more functionality here but didnt, so will probably merge it
+#later with other files
 
 class code_dict:
     def __init__(self, code_df = pd.read_csv("code_lookup.csv"), 

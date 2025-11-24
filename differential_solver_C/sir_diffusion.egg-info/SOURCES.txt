@@ -1,0 +1,11 @@
+README.md
+SIR_diffusion.c
+SIR_diffusion.h
+SIR_diffusion_wrap.c
+pyproject.toml
+setup.py
+sir_diffusion.egg-info/PKG-INFO
+sir_diffusion.egg-info/SOURCES.txt
+sir_diffusion.egg-info/dependency_links.txt
+sir_diffusion.egg-info/requires.txt
+sir_diffusion.egg-info/top_level.txt

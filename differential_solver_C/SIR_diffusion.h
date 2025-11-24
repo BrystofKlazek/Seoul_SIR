@@ -26,8 +26,10 @@ double* euler_solve_graph(const double *L, const double *x0,
 			  rhs_graph_fn rhs, void* userdata);
 void free_array(double* p);
 
-double* euler_solve_graph_csr(const int *indptr, const int *indices, const double *data,
-                              const double *x_0, size_t vec_size, size_t n_fields,
+double* euler_solve_graph_csr(const int **indptr_arr,
+                              const int **indices_arr,
+                              const double **data_arr,
+                              const double *x0,
+                              size_t vec_size, size_t n_fields,
                               double dt, size_t steps, size_t snapshots,
-                              rhs_graph_fn rhs, void *userdata);
-
+                              rhs_graph_fn rhs, void* userdata);

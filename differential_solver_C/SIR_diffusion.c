@@ -28,22 +28,25 @@ int mirror(int k, size_t N) {
     return k;
 }
 
-void csr_matvec_buf(const int *indptr,
-                    const int *indices,
-                    const double *data,
-                    const double *x,
-                    size_t vec_size,
-                    double *y){
+void csr_matvec(const int *indptr,
+                const int *indices,
+                const double *data,   // weights for *one* time step
+                const double *x,
+                size_t vec_size,
+                double *y)
+{
     for (size_t i = 0; i < vec_size; ++i) {
         double s = 0.0;
         int row_start = indptr[i];
         int row_end   = indptr[i+1];
-        for (int p = row_start; p < row_end; ++p){
+
+        for (int p = row_start; p < row_end; ++p) {
             s += data[p] * x[(size_t)indices[p]];
         }
         y[i] = s;
     }
 }
+
 
 void matvec_buf(const double *A, 
 		const double *x,             
@@ -118,29 +121,41 @@ void euler_step_graph(const double* L,
 	}
 }
 
-void euler_step_graph_csr(const int *indptr,
-                          const int *indices,
-                          const double *data,
-                          double *x,               
-                          double *rhs_buf,         
-                          double *lap_buf,           
+void euler_step_graph_csr(const int * const *indptr_arr,
+                          const int * const *indices_arr,
+                          const double * const *data_arr,
+                          size_t step,              // which time slice to use
+                          double *x,                // [n_fields * vec_size]
+                          double *rhs_buf,          // [n_fields * vec_size]
+                          double *lap_buf,          // [vec_size]
                           size_t vec_size,
                           size_t n_fields,
                           double dt,
                           rhs_graph_fn rhs,
                           void *userdata)
 {
+    // pick CSR for this time step
+    const int    *indptr  = indptr_arr[step];
+    const int    *indices = indices_arr[step];
+    const double *data    = data_arr[step];
+
+    // compute RHS at current x (for all fields at once)
     rhs(rhs_buf, x, n_fields, vec_size, userdata);
 
+    // loop over fields S, I, R, etc.
     for (size_t f = 0; f < n_fields; ++f) {
-        const double *x_f = x + f*vec_size;
-        csr_matvec_buf(indptr, indices, data, x_f, vec_size, lap_buf);       
+        const double *x_f = x + f * vec_size;
+
+        // L_step * x_f -> lap_buf
+        csr_matvec(indptr, indices, data, x_f, vec_size, lap_buf);
+
+        // explicit Euler update
         for (size_t i = 0; i < vec_size; ++i) {
-            x[idx2D(f, i, vec_size)] += dt * ( -lap_buf[i] + rhs_buf[idx2D(f, i, vec_size)] );
+            size_t idx = idx2D(f, i, vec_size);
+            x[idx] += dt * ( -lap_buf[i] + rhs_buf[idx] );
         }
     }
 }
-
 
 
 void euler_step_normal(double* x,
@@ -167,48 +182,56 @@ void euler_step_normal(double* x,
 	}
 }
 
-double* euler_solve_graph_csr(const int *indptr, 
-		              const int *indices, 
-			      const double *data,
-                              const double *x_0, 
-			      size_t vec_size, 
-			      size_t n_fields,
-                              double dt, 
-			      size_t steps, 
-			      size_t snapshots,
-                              rhs_graph_fn rhs, 
-			      void *userdata){
-    	const size_t N = vec_size*n_fields;
-    	
-	if (snapshots > steps){ 
-		snapshots = steps;
-	}
+double* euler_solve_graph_csr(const int **indptr,
+                              const int **indices,
+                              const double **data,
+                              const double *x_0,
+                              size_t vec_size,
+                              size_t n_fields,
+                              double dt,
+                              size_t steps,
+                              size_t snapshots,
+                              rhs_graph_fn rhs,
+                              void *userdata)
+{
+    const size_t N = vec_size * n_fields;
 
-    	double *state = malloc(N*sizeof(double));
-    	memcpy(state, x_0, N*sizeof(double));
-    	
-	double *snaps = malloc(snapshots*N*sizeof(double));
-    	size_t *targets = malloc(snapshots*sizeof(size_t));
-    	fill_targets(steps, snapshots, targets);
+    if (snapshots > steps) {
+        snapshots = steps;
+    }
 
-   	double *rhs_buf = malloc(N*sizeof(double));
-	double *lap_buf = malloc(vec_size*sizeof(double));
+    double *state = malloc(N * sizeof(double));
+    memcpy(state, x_0, N * sizeof(double));
 
-    	size_t next_k = 0;
-    	for (size_t step = 1; step <= steps; ++step){
-        	euler_step_graph_csr(indptr, indices, data, state, rhs_buf,
-				     lap_buf, vec_size, n_fields, dt, rhs, userdata);
-        	if (next_k < snapshots && step == targets[next_k]){
-            		memcpy(snaps + next_k*N, state, N*sizeof(double));
-            		++next_k;
-        	}
-   	}
-    	free(rhs_buf); 
-	free(targets); 
-	free(state);
-    	return snaps;
+    double *snaps = malloc(snapshots * N * sizeof(double));
+    size_t *targets = malloc(snapshots * sizeof(size_t));
+    fill_targets(steps, snapshots, targets);
+
+    double *rhs_buf = malloc(N * sizeof(double));
+    double *lap_buf = malloc(vec_size * sizeof(double));
+
+    size_t next_k = 0;
+    for (size_t step_idx = 0; step_idx < steps; ++step_idx) {
+        size_t step_num = step_idx + 1;  // physical time step 1..steps
+
+        euler_step_graph_csr(indptr, indices, data,
+                             step_idx,       // index into CSR arrays
+                             state, rhs_buf, lap_buf,
+                             vec_size, n_fields,
+                             dt, rhs, userdata);
+
+        if (next_k < snapshots && step_num == targets[next_k]) {
+            memcpy(snaps + next_k * N, state, N * sizeof(double));
+            ++next_k;
+        }
+    }
+
+    free(rhs_buf);
+    free(lap_buf);
+    free(targets);
+    free(state);
+    return snaps;
 }
-
 
 
 double* euler_solve_normal(
@@ -283,9 +306,9 @@ double* euler_solve_graph(
 	double* rhs_buf = malloc(N * sizeof(double));
 
     	size_t next_k = 0;
-    	for (size_t step = 1; step <= steps; ++step) {
+    	for (size_t step = 0; step < steps; ++step) {
         	euler_step_graph(L, state, lap_buf, rhs_buf, vec_size, n_fields, dt, rhs, userdata);
-        	if (next_k < snapshots && step == targets[next_k]) {
+        	if (next_k < snapshots && step+1 == targets[next_k]) {
             		memcpy(snaps + next_k * N, state, N * sizeof(double));
             		++next_k;
         	}
