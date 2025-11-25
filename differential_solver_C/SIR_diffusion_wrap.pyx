@@ -23,7 +23,6 @@ cdef extern from "SIR_diffusion.h":
                                size_t steps, size_t snapshots,
                                rhs_grid_fn rhs, void* userdata)
 
-    # NEW: this is your renamed hourly+interp solver
     double* euler_solve_graph(const double *hourly_weights,
                               const double *x0,
                               size_t vec_size, size_t n_fields,
@@ -47,7 +46,6 @@ cdef struct PyRHSContext:
     void* fn_obj
     void* params_obj
 
-# --- grid trampoline ---
 
 cdef void _rhs_grid_trampoline_gil(double* out, const double* state,
                                    size_t n_fields, size_t rows, size_t cols,
@@ -74,7 +72,6 @@ cdef void _rhs_grid_trampoline(double* out, const double* state,
     with gil:
         _rhs_grid_trampoline_gil(out, state, n_fields, rows, cols, userdata)
 
-# --- graph trampoline ---
 
 cdef void _rhs_graph_trampoline_gil(double* out, const double* state,
                                     size_t n_fields, size_t vec_size,
@@ -130,41 +127,24 @@ def euler_solve_normal_rd(cnp.ndarray x0,
     free_array(out_ptr)
     return out
 
-# NOTE: old euler_solve_graph_rd with a static L matrix is removed,
-# because the C function euler_solve_graph now has the hourly+interp signature.
 
 def euler_solve_graph_rd(cnp.ndarray hourly_weights,
                          cnp.ndarray x0,
                          double t0_hours,
                          double dt, size_t steps, size_t snapshots,
                          rhs_fn, params=None):
-    """
-    hourly_weights: shape (n_hours, n, n), float64
-    x0           : shape (n_fields, n), float64
-    t0_hours     : starting time in hours (can be fractional)
-    dt           : time step in hours
-    """
-    # ensure dtypes / contiguity
+    # ensure dtypes / contiguity (turn to numpy, so it can be worked into the C code
     if hourly_weights.dtype != np.float64:
         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
     if x0.dtype != np.float64:
         x0 = np.ascontiguousarray(x0, dtype=np.float64)
 
-    if hourly_weights.ndim != 3:
-        raise ValueError("hourly_weights must have shape (n_hours, n, n)")
-    if x0.ndim != 2:
-        raise ValueError("x0 must have shape (n_fields, n)")
-
     cdef size_t n_hours  = <size_t>hourly_weights.shape[0]
     cdef size_t n        = <size_t>hourly_weights.shape[1]
     cdef size_t n2       = <size_t>hourly_weights.shape[2]
-    if n != n2:
-        raise ValueError("hourly_weights must have shape (n_hours, n, n)")
 
     cdef size_t n_fields = <size_t>x0.shape[0]
     cdef size_t n_x      = <size_t>x0.shape[1]
-    if n_x != n:
-        raise ValueError("x0 second dimension must match n (graph size)")
 
     cdef size_t take     = snapshots if snapshots <= steps else steps
 
@@ -198,22 +178,6 @@ def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,
                              cnp.ndarray x0,
                              double dt, size_t steps, size_t snapshots,
                              rhs_fn, params=None):
-    """
-    Run the CSR graph solver with time-dependent Laplacians.
-
-    Parameters
-    ----------
-    indptr_list, indices_list, data_list : sequence of length n_steps
-        Each element is a 1D NumPy array:
-            indptr_list[k].dtype  == int32, shape (n+1,)
-            indices_list[k].dtype == int32, shape (nnz_k,)
-            data_list[k].dtype    == float64, shape (nnz_k,)
-    x0 : ndarray, shape (n_fields, n)
-        Initial state [S, I, R, ...].
-    dt, steps, snapshots : as in the C solver.
-    rhs_fn : Python RHS callback.
-    params : optional parameters for rhs_fn.
-    """
     cdef size_t n_fields = <size_t>x0.shape[0]
     cdef size_t n        = <size_t>x0.shape[1]
     cdef size_t take     = snapshots if snapshots <= steps else steps
@@ -222,47 +186,27 @@ def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,
     ctx.fn_obj = <void*>rhs_fn
     ctx.params_obj = <void*>params
 
-    # how many Laplacians do we have?
     cdef Py_ssize_t n_steps = len(indptr_list)
-    if len(indices_list) != n_steps or len(data_list) != n_steps:
-        raise ValueError("indptr_list, indices_list, data_list must have same length")
 
-    # do not ask C for more steps than we have matrices
     if steps > <size_t>n_steps:
         steps = <size_t>n_steps
 
-    # allocate C arrays of pointers
     cdef const int   **indptr_ptrs  = <const int **>  malloc(n_steps * sizeof(const int *))
     cdef const int   **indices_ptrs = <const int **>  malloc(n_steps * sizeof(const int *))
     cdef const double**data_ptrs    = <const double**>malloc(n_steps * sizeof(const double *))
 
-    if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:
-        if indptr_ptrs  != NULL: free(<void*>indptr_ptrs)
-        if indices_ptrs != NULL: free(<void*>indices_ptrs)
-        if data_ptrs    != NULL: free(<void*>data_ptrs)
-        raise MemoryError()
 
     cdef cnp.ndarray arr
     cdef Py_ssize_t i
 
-    # fill pointer arrays from Python lists
     for i in range(n_steps):
         arr = <cnp.ndarray>indptr_list[i]
-        if arr.ndim != 1:
-            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
-            raise ValueError("each indptr must be 1D array")
         indptr_ptrs[i] = <const int*>arr.data
 
         arr = <cnp.ndarray>indices_list[i]
-        if arr.ndim != 1:
-            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
-            raise ValueError("each indices must be 1D array")
         indices_ptrs[i] = <const int*>arr.data
 
         arr = <cnp.ndarray>data_list[i]
-        if arr.ndim != 1:
-            free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
-            raise ValueError("each data must be 1D array")
         data_ptrs[i] = <const double*>arr.data
 
     cdef const double* x0_ptr = <const double*> x0.data

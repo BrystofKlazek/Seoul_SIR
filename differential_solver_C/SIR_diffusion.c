@@ -98,7 +98,7 @@ static double interp_hourly_weight(
 
 
 /*-----------------------------MATRIX BUILDING---------------------------*/
-/*
+
 static void build_laplacian_at_time(
     double *L,
     const double *hourly_weights,
@@ -107,68 +107,26 @@ static void build_laplacian_at_time(
     size_t n_fields,
     size_t n_hours
 ) {
-    for (size_t f = 0; f < n_fields; ++f) {
-        for (size_t i = 0; i < vec_size; ++i) {
-            double deg = 0.0;
+	for (size_t f = 0; f < n_fields; ++f) {
+    		for (size_t i = 0; i < vec_size; ++i) {
+        		double deg = 0.0;
+        		double self_w = 0.0;
 
-            for (size_t j = 0; j < vec_size; ++j) {
-                double w = interp_hourly_weight(
-                    hourly_weights,
-                    t_hours,
-                    i, j,
-                    vec_size,
-                    n_hours
-                );
+        		for (size_t j = 0; j < vec_size; ++j) {
+            			double w = interp_hourly_weight(hourly_weights, t_hours,
+                                            i, j, vec_size, n_hours);
+            			if (i == j) {
+                			self_w = w;
+            			} else {
+                			L[idx3D(f, i, j, vec_size, vec_size)] = -w;
+            			}
+            			deg += w;
+        		}
 
-                if (i != j) {
-                    L[idx3D(f, i, j, vec_size, vec_size)] = -w;
-                }
-
-                deg += w;
-            }
-
-            L[idx3D(f, i, i, vec_size, vec_size)] = deg;
-        }
-    }
+        		L[idx3D(f, i, i, vec_size, vec_size)] = deg - self_w;
+    		}
+	}
 }
-*/
-static void build_laplacian_at_time(
-    double *L,
-    const double *hourly_weights,
-    double t_hours,
-    size_t vec_size,
-    size_t n_fields,
-    size_t n_hours
-) {
-    for (size_t f = 0; f < n_fields; ++f) {
-        for (size_t i = 0; i < vec_size; ++i) {
-            double deg = 0.0;
-
-            for (size_t j = 0; j < vec_size; ++j) {
-                if (i == j) {
-                    // skip self-flows: they do not contribute to diffusion
-                    continue;
-                }
-
-                double w = interp_hourly_weight(
-                    hourly_weights,
-                    t_hours,
-                    i, j,
-                    vec_size,
-                    n_hours
-                );
-
-                // off-diagonal i -> j
-                L[idx3D(f, i, j, vec_size, vec_size)] = -w;
-                deg += w;
-            }
-
-            // diagonal: sum of outgoing *to other nodes only*
-            L[idx3D(f, i, i, vec_size, vec_size)] = deg;
-        }
-    }
-}
-
 
 /*---------------------------RHS PREDECLARATION---------------------------*/
 

@@ -30,7 +30,8 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
             lambda geom: set_precision(geom, GRID)
             )
 
-    #Search spatial index so that searching is faster (builds a tree for searching in the tree)
+    #Search spatial index so that searching is faster 
+    #(builds a tree for searching in the tree)
     sindex = map.sindex
     G = nx.DiGraph()
    
@@ -38,15 +39,20 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
     if mode=="neighbours":
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
-            #Adding nodes to the graph. Each node is indexed by the SIG code, then has also the
-            #District name, position and a numerical index i. The code is there two times, just
+            #Adding nodes to the graph. Each node is indexed by the SIG code, 
+            #then has also the
+            #District name, position and a numerical index i. 
+            #The code is there two times, just
             #for redundancy.
             G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]),
                        code = i_code, index = i)
             
-            #Searching in the sindex for intersections. Maybe the query method would be better
-            #but this is enough. Sindex creates nested bounding boxes around the given geometry
-            #the interestion is not 100% correct, but we then double check the results to find
+            #Searching in the sindex for intersections. 
+            #Maybe the query method would be better
+            #but this is enough. Sindex creates nested bounding boxes 
+            #around the given geometry
+            #the interestion is not 100% correct, but we then double 
+            #check the results to find
             #true neighbours
             for j in sindex.intersection(row_i.geometry.bounds):
                 if j <= i:
@@ -61,7 +67,8 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
                     G.add_edge(i_code, j_code, weight=pairs[pair_ij])
                     G.add_edge(j_code, i_code, weight=pairs[pair_ji])
    
-   #The same logic like the graph from neighbours but without needing to check intersections
+   #The same logic like the graph from neighbours but without 
+   #needing to check intersections
     if mode=="all":
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
@@ -115,6 +122,7 @@ def intercept_check(x_coord, y_coord, polygons):
             idx = 0
         return idx
 
+#I SHOULD WRITE COMMENTS FOR THIS - TODO
 class graphDisplay:
     def __init__(self, graph, gdt=None, map_name_col="SIG_KOR_NM",
                  gif_name=None):
@@ -138,8 +146,8 @@ class graphDisplay:
         self._line_cache = {}
         self._label_cache = {}
         self._legend = None
-        self._legend_neighs = []   # neighbour codes for current legend
-        self._legend_texts = []    # list of Text objects in legend
+        self._legend_neighs = []   
+        self._legend_texts = []   
 
         self.node_patches = {}
 
@@ -163,7 +171,6 @@ class graphDisplay:
     def _blit_draw(self):
         if not self._blit_enabled:
             self.fig.canvas.draw_idle()
-        # else: nothing (reserved for future blitting)
 
     # Dummy line used only as a legend handle (never drawn on axes)
     def _draw_or_get_line(self, u, v, in_out: bool):
@@ -211,9 +218,7 @@ class graphDisplay:
             if changed and norm.vmax == norm.vmin:
                 norm.vmax = norm.vmin + 1e-12
 
-    # ------------------------------------------------------------------
     # SELECTION + LEGEND (called on mouse click, NOT every frame)
-    # ------------------------------------------------------------------
     def _update_selection(self, node):
         # move the red selection ring
         self._sel_marker.center = self.graph.nodes[node]["pos"]
@@ -225,10 +230,13 @@ class graphDisplay:
             w_in  = self.graph.get_edge_data(nb, node)["weight"]
             edges.append((node, nb, w_in, w_out))
 
-        # sort neighbours by total flow (largest first)
+        #Sort neighbours by total flow (largest first)
+        # THIS IS COMPLETLY OPTIONAL SORTING, BUT MAKES IT A BIT EASIER
+        # TO ORIENT
         edges.sort(key=lambda e: e[2] + e[3], reverse=True)
 
-        # remember neighbour order for dynamic updates later
+        # remember neighbour order for the dynamic updates later
+        # (The legend displays neighbours and the weight values)
         self._legend_neighs = [v for (_, v, _, _) in edges]
 
         # build handles + initial labels
@@ -240,7 +248,6 @@ class graphDisplay:
             handles.append(ln)
             labels.append(label)
 
-        # create / replace legend ONCE
         if self._legend is not None:
             self._legend.remove()
 
@@ -251,23 +258,23 @@ class graphDisplay:
             bbox_to_anchor=(1.02, 1.0),
             borderaxespad=0.0,
             frameon=False,
-            fontsize=7,   # smaller text so it fits
+            fontsize=7,   
         )
 
         # store text objects so we can update them fast later
+        # (IN THE TIME EVOLUTION, WE JUST CHANGE THE TEXT AND DONT
+        # REDRAW THE WHOLE LEGEND ITSELF)
         self._legend_texts = self._legend.get_texts()
 
         self.selected_node = node
 
-        # update the SIR time–series only when node changes
+        # update the SIR time–series window shown only when node changes
         if self.values_ts is not None and self.ax_ts is not None:
             self._update_timeseries_lines()
 
         self.fig.canvas.draw_idle()
 
-    # ------------------------------------------------------------------
     # CLICK HANDLER
-    # ------------------------------------------------------------------
     def _on_click_graph(self, event):
         if event.inaxes is not self.ax or event.xdata is None or event.ydata is None:
             return
@@ -289,9 +296,7 @@ class graphDisplay:
         self.draw_graph()
         self.fig.canvas.mpl_connect('button_press_event', self._on_click_graph)
 
-    # ------------------------------------------------------------------
-    # STATIC GRAPH DRAWING (nodes only)
-    # ------------------------------------------------------------------
+    # STATIC GRAPH DRAWING 
     def draw_graph(self):
         self._sel_marker = Circle((float('nan'), float('nan')),
                                   radius=1000,
@@ -323,25 +328,14 @@ class graphDisplay:
         for sp in self.ax.spines.values():
             sp.set_visible(False)
 
-    # ------------------------------------------------------------------
-    # TIME–SERIES (unchanged)
-    # ------------------------------------------------------------------
+    # TIME–SERIES 
     def attach_timeseries(self, values_ts, dt_snapshot,
                           var_names=None):
         vals = np.asarray(values_ts)
-        if vals.ndim == 2:
-            vals = vals[:, np.newaxis, :]
-        if vals.ndim != 3:
-            raise ValueError("values_ts must have shape (T, K, N) or (T, N)")
 
         T, K, N = vals.shape
-        if len(list(self.graph.nodes())) != N:
-            raise ValueError("len(node_order) must equal N (third axis of values_ts)")
 
-        if var_names is None:
-            var_names = [f"var{k}" for k in range(K)]
-        if len(var_names) != K:
-            raise ValueError("len(var_names) must equal K (second axis of values_ts)")
+        var_names = [f"var{k}" for k in range(K)]
 
         self.values_ts = vals
         self.var_names = list(var_names)
@@ -403,9 +397,7 @@ class graphDisplay:
         self.ax_ts.autoscale_view()
         self.ts_fig.canvas.draw_idle()
 
-    # ------------------------------------------------------------------
-    # LEGEND UPDATE PER FRAME (uses edge_weight_fn)
-    # ------------------------------------------------------------------
+    # LEGEND UPDATE PER FRAME (uses edge_weight_fn that was built in main)
     def _update_legend_for_frame(self, frame):
         if (
             self.edge_weight_fn is None
@@ -421,9 +413,7 @@ class graphDisplay:
             w_in  = self.edge_weight_fn(frame, v, u)
             text.set_text(f"{self.code[v]}: in {w_in:.3g}, out {w_out:.3g}")
 
-    # ------------------------------------------------------------------
     # ANIMATION
-    # ------------------------------------------------------------------
     def start_animation(self, var_names, values_ts, dt_snapshot, var=0,
                         interval=60, cmap_name="plasma", fps=10,
                         edge_weight_fn=None):

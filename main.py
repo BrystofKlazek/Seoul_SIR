@@ -20,7 +20,6 @@ sys.path.append(str(this_dir.parent / "differential_solver_C"))
 
 import SIR_diffusion_wrap as sir  
 
-# scale for mobility -> diffusion
 NORM = 5000000
 TIME_STEP = 0.25
 NUM_DAYS = 31    
@@ -85,39 +84,29 @@ def sir_rhs(state, out, beta=0.4, gamma=0.1):
 
 
 def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=24):
-    """
-    Convert {(u,v): arr[24]} into a dense tensor hourly_weights[h, i, j]
-    where i,j follow the node ordering used for the C solver.
-
-    G: networkx graph with nodes and (optionally) an 'index' attribute.
-    """
-    # Figure out node ordering: prefer G.nodes' 'index' attribute if present,
-    # otherwise just sort the node labels.
+    #Here, I construct an 24 dim array of n by n (n is size of graph)
+    # arrays to pass into C, where it is weights between nodes by hour.
     node_index_attr = nx.get_node_attributes(G, "index")
-    if node_index_attr and len(node_index_attr) == G.number_of_nodes():
-        nodes = sorted(G.nodes(), key=lambda u: node_index_attr[u])
-    else:
-        nodes = sorted(G.nodes())
+    nodes = sorted(G.nodes(), key=lambda u: node_index_attr[u])
 
     n = len(nodes)
     node_to_idx = {node: i for i, node in enumerate(nodes)}
 
-    # Allocate dense tensor
+    # allocating the tensor
     hourly_arr = np.zeros((n_hours, n, n), dtype=np.float64)
 
-    # Fill with rates from the dict; keys are (u,v) codes / node labels
+    # Fill with rates from the dict - the keys are (u,v) codes
     for (u, v), arr in hourly_weights_dict.items():
         if u in node_to_idx and v in node_to_idx:
             i = node_to_idx[u]
             j = node_to_idx[v]
-            # arr is length n_hours (24), already scaled by NORM
             hourly_arr[:, i, j] = arr
 
     return hourly_arr, nodes, node_to_idx
 
 
 def main():
-    # time step etc.  dt is used both in RD solver and in Laplacian build
+    # time step etc
     dt = TIME_STEP
     steps = int(24*NUM_DAYS/dt)
     snapshots = NUM_SNAPSHOTS
@@ -154,17 +143,20 @@ def main():
     with open("weights_03.json", encoding="utf-8") as f:
         weights_by_hour_raw = json.load(f)
 
-    # compress per-hour json into arrays (dict (u,v) -> arr[24])
+    # compress per-hour json into arrays - the pipeline to the array we want
     hourly_weights = build_hourly_weight_table(weights_by_hour_raw, norm=NORM)
 
-    # for the graph itself just use hour 0 (topology / adjacency)
+    # for the graph itself just use hour 0
+    # We iterate over all arrs gotten with the key (u, v)
     edge_weights0 = {}
     for (u, v), arr in hourly_weights.items():
         w0 = arr[0]
         if w0 > 0.0:
             edge_weights0[(u, v)] = w0
 
-    # build graph with static weights = hour 0
+    # build graph with static weights = hour 0 
+    # It is prebuilt so that we know the size of it for the hourly tensors,
+    # and for the animation. 
     G = mtg.maptograph(seoul_map, mode="from_file", pairs=edge_weights0)
 
     # ---- NEW: build dense hourly tensor for C solver ----
@@ -179,12 +171,9 @@ def main():
     I0 = np.zeros(n, np.float64)
     R0 = np.zeros(n, np.float64)
 
-    # seed: district with code SEED_IDX (e.g. 11010)
+    # seed - district with code SEED_IDX (e.g. 11010)
     seed_code = SEED_IDX
-    try:
-        seed_idx = node_to_idx[seed_code]
-    except KeyError:
-        raise KeyError(f"Seed code {seed_code} not found in graph nodes")
+    seed_idx = node_to_idx[seed_code]
 
     I0[seed_idx] = 0.1
     S0[seed_idx] -= I0[seed_idx]
@@ -197,7 +186,7 @@ def main():
     out_graph = sir.euler_solve_graph_rd(
         hourly_tensor,
         x0_graph,
-        0.0,          # t0_hours
+        0.0,          # t0_hours, I start at time 0
         dt,
         steps,
         snapshots,
@@ -216,12 +205,12 @@ def main():
     values_ts = out_graph
     var_names = ["S", "I", "R"]
 
-    # time spacing between snapshots (0..total_time)
+    # time spacing between snapshots (0 to total_time) for the animation
     T = values_ts.shape[0]
     total_time = dt * steps
     dt_snapshot = total_time / max(T - 1, 1)
 
-    # function for time-dependent edge weights (legend / visualization)
+    # function for time-dependent edge weights - passed to animation
     edge_weight_fn = make_edge_weight_fn(hourly_weights, dt_snapshot)
 
     seoul = mtg.graphDisplay(G, seoul_map)
