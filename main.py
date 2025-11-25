@@ -11,203 +11,203 @@ from shapely import set_precision
 import maptograph as mtg
 import numpy as np
 import nametocode as ntc
-from itertools import product
 import networkx as nx
+import matrix_builders as mb
 
+# add C solver
 this_dir = Path(__file__).resolve().parent
 sys.path.append(str(this_dir.parent / "differential_solver_C"))
 
 import SIR_diffusion_wrap as sir  
 
+# scale for mobility -> diffusion
+NORM = 5000000
+TIME_STEP = 0.25
+NUM_DAYS = 31    
+NUM_SNAPSHOTS = 150    
+BETA, GAMMA = 0.03, 0.01
+SEED_IDX = 11020
 
-NORM = 100000
+def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
+    #The raw json is in the structure of
+    #weights_by_hour_raw[hour_str][u_str][v_str] = weight
+    #I turn that to 
+    #hourly[(u, v)] = np.array with each hour, already divided by norm
+    hourly = {} 
 
-def interpolated_weight(weights_by_hour, u, v, when):
-    """
-    Linearly interpolate weight u->v at time `when` (in hours),
-    using the hourly JSON data. Works whether u, v are str or int.
-    Missing entries are treated as 0.
-    """
-    h_float = float(when) % 24.0
-    h0 = int(h_float)
-    h1 = (h0 + 1) % 24
-    frac = h_float - h0
+    for h_str, by_u in weights_by_hour_raw.items():
+        h = int(h_str)
+        for u_str, neighs in by_u.items():
+            u = int(u_str)
+            for v_str, w in neighs.items():
+                v = int(v_str)
+                key = (u, v)
+                arr = hourly.get(key)
+                if arr is None:
+                    arr = np.zeros(24, dtype=np.float64)
+                    hourly[key] = arr
+                arr[h] = float(w) / norm
 
-    h0_str = str(h0)
-    h1_str = str(h1)
+    return hourly
 
-    u_key = str(u)
-    v_key = str(v)
 
-    # hour 0 weight
-    hour0 = weights_by_hour.get(h0_str, {})
-    u_dict0 = hour0.get(u_key, {})
-    w0 = float(u_dict0.get(v_key, 0.0))
+def make_edge_weight_fn(hourly_weights, dt_snapshot):
+    # Here I build a small helper function to be returned- 
+    #edge_weight_fn(time, u, v)  -> weight from u to v at that frame,
+    #built using the precomputed 24-hour arrays.
+    # I prebuild these functions for speed.
 
-    # hour 1 weight
-    hour1 = weights_by_hour.get(h1_str, {})
-    u_dict1 = hour1.get(u_key, {})
-    w1 = float(u_dict1.get(v_key, 0.0))
+    def edge_weight_fn(frame, u, v):
+        t = frame * dt_snapshot
+        h = t % 24.0
+        h0 = int(h)
+        h1 = (h0 + 1) % 24
+        frac = h - h0
 
-    w = (1.0 - frac) * w0 + frac * w1
-    return w/NORM
+        arr = hourly_weights.get((int(u), int(v)))
+        if arr is None:
+            return 0.0
 
-def build_laplacian_timeseries_for_C(G, weights_by_hour,
-                                     n_steps, dt, t0=0.0):
-    """
-    Build per-step CSR Laplacians for the graph G, using time-dependent
-    weights from weights_by_hour and linear interpolation in time.
+        w0 = arr[h0]
+        w1 = arr[h1]
+        return (1.0 - frac) * w0 + frac * w1
 
-    Returns
-    -------
-    indptr_list  : list of length n_steps, each is np.int32, shape (n+1,)
-    indices_list : list of length n_steps, each is np.int32, shape (nnz,)
-    data_list    : list of length n_steps, each is np.float64, shape (nnz,)
-    nodes        : list of node IDs, order used in the CSR
-    """
-    node_index = nx.get_node_attributes(G, "index")
-    nodes = sorted(G.nodes(), key=lambda n: node_index[n])
-    n = len(nodes)
+    return edge_weight_fn
 
-    # --- neighbour pattern: use both successors and predecessors ---
-    neighbours_idx = []
-    for node in nodes:
-        outs = set(G.successors(node))
-        ins  = set(G.predecessors(node))
-        neighs = sorted(node_index[nb] for nb in outs | ins)
-        neighbours_idx.append(neighs)
-
-    # if there are really no edges, nnz will be exactly n (diagonal only)
-    indptr = [0]
-    indices = []
-    for i, neighs in enumerate(neighbours_idx):
-        indices.extend(neighs)  # off-diagonals
-        indices.append(i)       # diagonal
-        indptr.append(len(indices))
-
-    indptr_arr = np.asarray(indptr, dtype=np.int32)
-    indices_arr = np.asarray(indices, dtype=np.int32)
-    nnz = indices_arr.size
-
-    print(f"Graph has {n} nodes, CSR nnz per step = {nnz}")
-
-    # pattern is the same for every step → reuse same arrays
-    indptr_list  = [indptr_arr]  * n_steps
-    indices_list = [indices_arr] * n_steps
-
-    data_list = []
-
-    time = float(t0)
-    for step in range(n_steps):
-        data_step = np.empty(nnz, dtype=float)
-        pos = 0
-        for i, node in enumerate(nodes):
-            deg = 0.0
-            for j in neighbours_idx[i]:
-                nb = nodes[j]
-
-                # symmetric weight between node and nb, from OD file
-                w = 0.0
-                if G.has_edge(node, nb):
-                    w += interpolated_weight(weights_by_hour, node, nb, time)
-                if G.has_edge(nb, node):
-                    w += interpolated_weight(weights_by_hour, nb, node, time)
-
-                data_step[pos] = -w
-                pos += 1
-                deg += w
-
-            data_step[pos] = deg
-            pos += 1
-
-        data_list.append(data_step.astype(np.float64, copy=False))
-        time = (time + dt) % 24.0
-
-    return indptr_list, indices_list, data_list, nodes
 
 def sir_rhs(state, out, beta=0.4, gamma=0.1):
     S, I, R = state[0], state[1], state[2]
     dS, dI, dR = out[0], out[1], out[2]
     inf = beta * S * I
     dS[...] = -inf
-    dI[...] =  inf - gamma * I
-    dR[...] =  gamma * I
+    dI[...] = inf - gamma * I
+    dR[...] = gamma * I
+
+
+def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=24):
+    """
+    Convert {(u,v): arr[24]} into a dense tensor hourly_weights[h, i, j]
+    where i,j follow the node ordering used for the C solver.
+
+    G: networkx graph with nodes and (optionally) an 'index' attribute.
+    """
+    # Figure out node ordering: prefer G.nodes' 'index' attribute if present,
+    # otherwise just sort the node labels.
+    node_index_attr = nx.get_node_attributes(G, "index")
+    if node_index_attr and len(node_index_attr) == G.number_of_nodes():
+        nodes = sorted(G.nodes(), key=lambda u: node_index_attr[u])
+    else:
+        nodes = sorted(G.nodes())
+
+    n = len(nodes)
+    node_to_idx = {node: i for i, node in enumerate(nodes)}
+
+    # Allocate dense tensor
+    hourly_arr = np.zeros((n_hours, n, n), dtype=np.float64)
+
+    # Fill with rates from the dict; keys are (u,v) codes / node labels
+    for (u, v), arr in hourly_weights_dict.items():
+        if u in node_to_idx and v in node_to_idx:
+            i = node_to_idx[u]
+            j = node_to_idx[v]
+            # arr is length n_hours (24), already scaled by NORM
+            hourly_arr[:, i, j] = arr
+
+    return hourly_arr, nodes, node_to_idx
 
 
 def main():
-    dt = 0.01
-    steps = 3000
-    snapshots = 500
-    beta, gamma = 0.8, 0.2
+    # time step etc.  dt is used both in RD solver and in Laplacian build
+    dt = TIME_STEP
+    steps = int(24*NUM_DAYS/dt)
+    snapshots = NUM_SNAPSHOTS
+    beta, gamma = BETA, GAMMA
 
-    DEFAULT_W = 0.02
     GRID = 0.2
 
-    plt.rcParams["font.family"] = 'NanumGothic'
-    plt.rcParams['axes.unicode_minus'] = False
+    # korean fonts (pick first one that exists)
+    plt.rcParams["font.family"] = "NanumGothic"
+    plt.rcParams["axes.unicode_minus"] = False
     for name in ["Noto Sans CJK KR", "Noto Sans KR", "NanumGothic",
                  "Malgun Gothic", "Apple SD Gothic Neo"]:
         if any(ft.name == name for ft in fm.fontManager.ttflist):
             plt.rcParams["font.family"] = name
             break
 
-    shapefile_path = './shp/202101/SEOUL_SIG.shp'
+    # map + centroids
+    shapefile_path = "./shp/202101/SEOUL_SIG.shp"
     seoul_map = gpd.read_file(shapefile_path).to_crs(5179)
 
     anchors = seoul_map.representative_point()
     seoul_map["x"], seoul_map["y"] = anchors.x, anchors.y
 
+    GRID = 0.2
     seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(
         lambda geom: set_precision(geom, GRID)
     )
 
+    # code table and OD data
     name_code_df = pd.read_csv("code_lookup.csv")
     name_dict = ntc.code_dict(code_df=name_code_df)
 
     codes = name_code_df["sgg"].to_list()
     with open("weights_03.json", encoding="utf-8") as f:
-        weights_by_hour = json.load(f)
+        weights_by_hour_raw = json.load(f)
 
+    # compress per-hour json into arrays (dict (u,v) -> arr[24])
+    hourly_weights = build_hourly_weight_table(weights_by_hour_raw, norm=NORM)
+
+    # for the graph itself just use hour 0 (topology / adjacency)
     edge_weights0 = {}
-    for u, neighs in weights_by_hour["0"].items():
-        u_code = int(u)                 # convert to int
-        for v, w in neighs.items():
-            v_code = int(v)             # convert to int
-            edge_weights0[(u_code, v_code)] = w / NORM
+    for (u, v), arr in hourly_weights.items():
+        w0 = arr[0]
+        if w0 > 0.0:
+            edge_weights0[(u, v)] = w0
 
+    # build graph with static weights = hour 0
     G = mtg.maptograph(seoul_map, mode="from_file", pairs=edge_weights0)
 
-    # build per-step CSR Laplacians
-    indptr_list, indices_list, data_list, nodes = build_laplacian_timeseries_for_C(
-        G, weights_by_hour, steps, dt
+    # ---- NEW: build dense hourly tensor for C solver ----
+    hourly_tensor, nodes_order, node_to_idx = build_hourly_tensor_for_C(
+        hourly_weights, G, n_hours=24
     )
-    n = len(nodes)
-    print(f"Graph has {n} nodes, CSR nnz at step 0 = {data_list[0].size}")
 
-    # initial SIR state
+    n = len(nodes_order)
+
+    # initial S, I, R in the SAME node ordering as hourly_tensor
     S0 = np.ones(n, np.float64)
     I0 = np.zeros(n, np.float64)
     R0 = np.zeros(n, np.float64)
 
-    # seed: highest-degree district
-    seed_idx = max(range(n), key=lambda k: G.degree[nodes[k]])
+    # seed: district with code SEED_IDX (e.g. 11010)
+    seed_code = SEED_IDX
+    try:
+        seed_idx = node_to_idx[seed_code]
+    except KeyError:
+        raise KeyError(f"Seed code {seed_code} not found in graph nodes")
+
     I0[seed_idx] = 0.1
     S0[seed_idx] -= I0[seed_idx]
 
     x0_graph = np.stack([S0, I0, R0], axis=0)
 
-    print("Solving SIR on Seoul graph (CSR, Euler, reaction–diffusion SIR)…")
+    # run Euler on the graph with hourly dense Laplacian + interpolation
+    print("Solving SIR on Seoul graph (dense hourly, Euler, reaction-diffusion SIR)...")
     t0 = time.time()
-    out_graph = sir.euler_solve_graph_csr_rd(
-        indptr_list, indices_list, data_list, x0_graph,
-        dt, steps, snapshots,
-        rhs_fn=sir_rhs, params={"beta": beta, "gamma": gamma}
+    out_graph = sir.euler_solve_graph_rd(
+        hourly_tensor,
+        x0_graph,
+        0.0,          # t0_hours
+        dt,
+        steps,
+        snapshots,
+        rhs_fn=sir_rhs,
+        params={"beta": beta, "gamma": gamma}
     )
     print(f"Graph solve done in {time.time() - t0:.2f}s, "
           f"snaps = {out_graph.shape[0]}")
 
     out = out_graph
-
     print("first snapshot:", out[0, :, 0])
     print("middle snapshot:", out[out.shape[0] // 2, :, 0])
     print("last snapshot:", out[-1, :, 0])
@@ -216,17 +216,13 @@ def main():
     values_ts = out_graph
     var_names = ["S", "I", "R"]
 
-    # build an array (T, E) of weights for each frame, in the same edge order:
-    edges = list(G.edges())
-    E = len(edges)
-    T = out_graph.shape[0]  # number of snapshots / frames
-
+    # time spacing between snapshots (0..total_time)
+    T = values_ts.shape[0]
     total_time = dt * steps
-    dt_snapshot = total_time / max(T - 1, 1)   # full 0..total_time range
-    def edge_weight_fn(frame, u, v):
-        # physical time of this frame, same as your timeseries plots
-        t = frame * dt_snapshot
-        return interpolated_weight(weights_by_hour, u, v, t)
+    dt_snapshot = total_time / max(T - 1, 1)
+
+    # function for time-dependent edge weights (legend / visualization)
+    edge_weight_fn = make_edge_weight_fn(hourly_weights, dt_snapshot)
 
     seoul = mtg.graphDisplay(G, seoul_map)
     seoul.interactive_graph()
@@ -236,7 +232,7 @@ def main():
         dt_snapshot=dt_snapshot,
         var_names=var_names,
         var="I",
-        edge_weight_fn=edge_weight_fn,   # <-- this is the only new thing
+        edge_weight_fn=edge_weight_fn,
     )
     plt.show()
 

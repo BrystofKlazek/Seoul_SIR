@@ -1780,7 +1780,7 @@ static CYTHON_INLINE __pyx_t_long_double_complex __pyx_t_long_double_complex_fro
 /*--- Type declarations ---*/
 struct __pyx_t_18SIR_diffusion_wrap_PyRHSContext;
 
-/* "SIR_diffusion_wrap.pyx":41
+/* "SIR_diffusion_wrap.pyx":46
  *     void free_array(double* p)
  * 
  * cdef struct PyRHSContext:             # <<<<<<<<<<<<<<
@@ -2727,16 +2727,17 @@ static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ImportError;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_[] = "?";
-static const char __pyx_k_L[] = "L";
 static const char __pyx_k_i[] = "i";
 static const char __pyx_k_n[] = "n";
 static const char __pyx_k_dt[] = "dt";
 static const char __pyx_k_dx[] = "dx";
 static const char __pyx_k_dy[] = "dy";
+static const char __pyx_k_n2[] = "n2";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_x0[] = "x0";
 static const char __pyx_k_arr[] = "arr";
 static const char __pyx_k_ctx[] = "ctx";
+static const char __pyx_k_n_x[] = "n_x";
 static const char __pyx_k_out[] = "out";
 static const char __pyx_k_pop[] = "pop";
 static const char __pyx_k_Nfld[] = "Nfld";
@@ -2748,7 +2749,7 @@ static const char __pyx_k_rows[] = "rows";
 static const char __pyx_k_spec[] = "__spec__";
 static const char __pyx_k_take[] = "take";
 static const char __pyx_k_test[] = "__test__";
-static const char __pyx_k_L_ptr[] = "L_ptr";
+static const char __pyx_k_H_ptr[] = "H_ptr";
 static const char __pyx_k_dtype[] = "dtype";
 static const char __pyx_k_empty[] = "empty";
 static const char __pyx_k_numpy[] = "numpy";
@@ -2759,12 +2760,14 @@ static const char __pyx_k_params[] = "params";
 static const char __pyx_k_rhs_fn[] = "rhs_fn";
 static const char __pyx_k_x0_ptr[] = "x0_ptr";
 static const char __pyx_k_float64[] = "float64";
+static const char __pyx_k_n_hours[] = "n_hours";
 static const char __pyx_k_n_steps[] = "n_steps";
 static const char __pyx_k_out_ptr[] = "out_ptr";
 static const char __pyx_k_add_note[] = "add_note";
 static const char __pyx_k_n_fields[] = "n_fields";
 static const char __pyx_k_qualname[] = "__qualname__";
 static const char __pyx_k_set_name[] = "__set_name__";
+static const char __pyx_k_t0_hours[] = "t0_hours";
 static const char __pyx_k_data_list[] = "data_list";
 static const char __pyx_k_data_ptrs[] = "data_ptrs";
 static const char __pyx_k_snapshots[] = "snapshots";
@@ -2777,6 +2780,8 @@ static const char __pyx_k_indices_list[] = "indices_list";
 static const char __pyx_k_indices_ptrs[] = "indices_ptrs";
 static const char __pyx_k_initializing[] = "_initializing";
 static const char __pyx_k_is_coroutine[] = "_is_coroutine";
+static const char __pyx_k_hourly_weights[] = "hourly_weights";
+static const char __pyx_k_ascontiguousarray[] = "ascontiguousarray";
 static const char __pyx_k_SIR_diffusion_wrap[] = "SIR_diffusion_wrap";
 static const char __pyx_k_asyncio_coroutines[] = "asyncio.coroutines";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
@@ -2787,16 +2792,19 @@ static const char __pyx_k_euler_solve_graph_csr_rd[] = "euler_solve_graph_csr_rd
 static const char __pyx_k_each_data_must_be_1D_array[] = "each data must be 1D array";
 static const char __pyx_k_each_indptr_must_be_1D_array[] = "each indptr must be 1D array";
 static const char __pyx_k_each_indices_must_be_1D_array[] = "each indices must be 1D array";
-static const char __pyx_k_81F_1_81F_1_z_WA_0_0_AWA_0_1_1[] = "\200\001\340!\"\330\004\033\2308\2401\240F\250!\2501\330\004\033\2308\2401\240F\250!\2501\330\004\033\230=\250\n\260#\260[\300\001\360\006\000\005\010\200z\220\027\230\001\330\004\007\200~\220W\230A\340\004 \320 0\260\001\260\021\330\004 \320 0\260\002\260!\340\004\033\320\033,\250A\250W\260A\330-0\260\001\330-1\260\027\270\001\330-;\2701\330-4\260A\260Q\340\004\033\2302\230V\2402\240V\250:\260T\270\026\270r\300\021\330\004\n\210!\2107\220#\220W\230M\250\021\330\013\023\2205\230\002\230)\2402\240R\240r\250\021\330\004\016\210a\210q\330\004\013\2101";
+static const char __pyx_k_x0_must_have_shape_n_fields_n[] = "x0 must have shape (n_fields, n)";
+static const char __pyx_k_WCr_Q_fBa_r_2Q_R_fBa_V3a_j_r_s[] = "\200\001\360\010\000\"#\360\020\000\005\010\200~\220W\230C\230r\240\021\330\010\031\230\022\320\033-\250Q\320.>\270f\300B\300a\330\004\007\200r\210\027\220\003\2202\220Q\330\010\r\210R\320\017!\240\021\240$\240f\250B\250a\340\004\007\200~\220V\2303\230a\330\010\016\210j\230\001\230\021\330\004\007\200r\210\026\210s\220!\330\010\016\210j\230\001\230\021\340\004\033\2308\240>\260\026\260q\270\001\330\004\033\2308\240>\260\026\260q\270\001\330\004\033\2308\240>\260\026\260q\270\001\330\004\007\200r\210\023\210A\330\010\016\210j\230\001\230\021\340\004\033\2308\2402\240V\2501\250A\330\004\033\2308\2402\240V\2501\250A\330\004\007\200t\2103\210a\330\010\016\210j\230\001\230\021\340\004\033\230=\250\n\260#\260[\300\001\360\006\000\005\010\200z\220\027\230\001\330\004\007\200~\220W\230A\340\004 \240\017\250~\270Q\330\004 \240\017\250r\260\021\340\004\033\320\033,\250A\330\010\t\330\010\t\330\010\013\2101\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\026\220a\330\010\017\210q\220\001\360\006\000\005\034\2302\230V\2402\240V\250:\260T\270\026\270r\300\021\330\004\n\210!\2107\220#\220W\230M\250\021\330\013\023\2205\230\002\230)\2402\240R\240r\250\021\330\004\016\210a\210q\330\004\013\2101";
 static const char __pyx_k_82V1A_82V1A_82V1A_4q_z_WA_0_Qhf[] = "\200\001\360\006\000#$\330\004\033\2308\2402\240V\2501\250A\330\004\033\2308\2402\240V\2501\250A\330\004\033\2308\2402\240V\2501\250A\330\004\033\230=\250\n\260#\260[\300\001\330\004\033\2304\230q\240\001\360\006\000\005\010\200z\220\027\230\001\330\004\007\200~\220W\230A\340\004 \320 0\260\002\260!\330\004\033\320\033-\250Q\250h\260f\270F\300!\330.2\260$\260d\270'\300\021\330.;\2701\330.5\260Q\260a\340\004\033\2302\230V\2402\240V\250:\260V\2707\300&\310\002\310!\330\004\n\210!\2107\220#\220W\230M\250\021\330\013\023\2205\230\002\230)\2402\240U\250\"\250A\330\004\016\210a\210q\330\004\013\2101";
 static const char __pyx_k_82V1A_82V1A_z_WA_c_s_HCs_c_j_vR[] = "\200\001\360\006\000&'\360\"\000\005\034\2308\2402\240V\2501\250A\330\004\033\2308\2402\240V\2501\250A\330\004\033\230=\250\n\260#\260[\300\001\360\006\000\005\010\200z\220\027\230\001\330\004\007\200~\220W\230A\360\006\000\005\037\230c\240\021\240!\330\004\007\200s\210!\210>\230\023\230H\240C\240s\250!\250;\260c\270\021\330\010\016\210j\230\001\230\021\360\006\000\005\010\200v\210R\210x\220q\330\010\020\220\010\230\001\360\006\000\005'\320&6\260f\270A\270X\300R\300q\330\004&\320&6\260f\270A\270X\300R\300q\330\004&\320&6\260f\270A\270X\300R\300q\340\004\007\200|\2203\220e\2303\230m\2503\250e\2603\260j\300\003\3001\330\010\013\210=\230\003\2306\240\024\240Q\240g\250Q\330\010\013\210=\230\003\2306\240\024\240Q\240g\250Q\330\010\013\210=\230\003\2306\240\024\240Q\240g\250Q\330\010\t\360\014\000\005\t\210\005\210U\220!\2201\330\010\016\210m\230;\240a\240q\330\010\013\2103\210f\220C\220q\330\014\020\220\001\220\027\230\016\240d\250!\2507\260/\300\024\300Q\300g\310Q\330\014\022\220*\230A\230Q\330\010\023\2201\220E\230\034\240S\250\001\340\010\016\210m\230<\240q\250\001\330\010\013\2103\210f\220C\220q\330\014\020\220\001\220\027\230\016\240d\250!\2507\260/\300\024\300Q\300g\310Q\330\014\022\220*\230A\230Q\330\010\024\220A\220U\230,\240c\250\021\340\010\016\210m\2309\240A\240Q\330\010\013\2103\210f\220C\220q\330\014\020\220\001\220\027\230\016\240d\250!\2507\260/\300\024\300Q\300g\310Q\330\014\022\220*\230A\230Q\330\010\021\220\021\220%\220\177\240c\250\021\340\004 \320 0\260\002\260!\340\004\033\320\0330\260\001\330\010\025\220^\2401\330\010\t\330\010\013\2101\330\010\014\210G\2201\330\010\026\220a\330\010\017\210q\220\001\360\006\000\005\t\210\001\210\027\220\001\330\004\010\210\001\210\027\220\001\330\004\010\210\001\210\027\220\001\340\004\033\2302\230V\2402\240V\250:\260T\270\026\270r\300\021\330\004\n\210!\2107\220#\220W\230M\250\021\330\013\023\2205\230\002\230)\2402\240R\240r\250\021\330\004\016\210a\210q\330\004\013\2101";
 static const char __pyx_k_Note_that_Cython_is_deliberately[] = "Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.";
+static const char __pyx_k_hourly_weights_must_have_shape_n[] = "hourly_weights must have shape (n_hours, n, n)";
 static const char __pyx_k_indptr_list_indices_list_data_li[] = "indptr_list, indices_list, data_list must have same length";
 static const char __pyx_k_numpy__core_multiarray_failed_to[] = "numpy._core.multiarray failed to import";
 static const char __pyx_k_numpy__core_umath_failed_to_impo[] = "numpy._core.umath failed to import";
+static const char __pyx_k_x0_second_dimension_must_match_n[] = "x0 second dimension must match n (graph size)";
 /* #### Code section: decls ### */
 static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x0, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params); /* proto */
-static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_L, PyArrayObject *__pyx_v_x0, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params); /* proto */
+static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_hourly_weights, PyArrayObject *__pyx_v_x0, double __pyx_v_t0_hours, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params); /* proto */
 static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_indptr_list, PyObject *__pyx_v_indices_list, PyObject *__pyx_v_data_list, PyArrayObject *__pyx_v_x0, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
@@ -2855,7 +2863,7 @@ typedef struct {
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   PyObject *__pyx_tuple[1];
   PyObject *__pyx_codeobj_tab[3];
-  PyObject *__pyx_string_tab[65];
+  PyObject *__pyx_string_tab[73];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
 PyTypeObject *__pyx_CommonTypesMetaclassType;
@@ -2894,17 +2902,17 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #endif
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
-#define __pyx_n_u_ImportError __pyx_string_tab[1]
-#define __pyx_n_u_L __pyx_string_tab[2]
-#define __pyx_n_u_L_ptr __pyx_string_tab[3]
-#define __pyx_n_u_MemoryError __pyx_string_tab[4]
-#define __pyx_n_u_Nfld __pyx_string_tab[5]
-#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[6]
-#define __pyx_n_u_SIR_diffusion_wrap __pyx_string_tab[7]
-#define __pyx_kp_u_SIR_diffusion_wrap_pyx __pyx_string_tab[8]
-#define __pyx_n_u_ValueError __pyx_string_tab[9]
-#define __pyx_kp_u_add_note __pyx_string_tab[10]
-#define __pyx_n_u_arr __pyx_string_tab[11]
+#define __pyx_n_u_H_ptr __pyx_string_tab[1]
+#define __pyx_n_u_ImportError __pyx_string_tab[2]
+#define __pyx_n_u_MemoryError __pyx_string_tab[3]
+#define __pyx_n_u_Nfld __pyx_string_tab[4]
+#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[5]
+#define __pyx_n_u_SIR_diffusion_wrap __pyx_string_tab[6]
+#define __pyx_kp_u_SIR_diffusion_wrap_pyx __pyx_string_tab[7]
+#define __pyx_n_u_ValueError __pyx_string_tab[8]
+#define __pyx_kp_u_add_note __pyx_string_tab[9]
+#define __pyx_n_u_arr __pyx_string_tab[10]
+#define __pyx_n_u_ascontiguousarray __pyx_string_tab[11]
 #define __pyx_n_u_asyncio_coroutines __pyx_string_tab[12]
 #define __pyx_n_u_cline_in_traceback __pyx_string_tab[13]
 #define __pyx_n_u_cols __pyx_string_tab[14]
@@ -2924,40 +2932,48 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_euler_solve_normal_rd __pyx_string_tab[28]
 #define __pyx_n_u_float64 __pyx_string_tab[29]
 #define __pyx_n_u_func __pyx_string_tab[30]
-#define __pyx_n_u_i __pyx_string_tab[31]
-#define __pyx_n_u_indices_list __pyx_string_tab[32]
-#define __pyx_n_u_indices_ptrs __pyx_string_tab[33]
-#define __pyx_n_u_indptr_list __pyx_string_tab[34]
-#define __pyx_kp_u_indptr_list_indices_list_data_li __pyx_string_tab[35]
-#define __pyx_n_u_indptr_ptrs __pyx_string_tab[36]
-#define __pyx_n_u_initializing __pyx_string_tab[37]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[38]
-#define __pyx_n_u_main __pyx_string_tab[39]
-#define __pyx_n_u_module __pyx_string_tab[40]
-#define __pyx_n_u_n __pyx_string_tab[41]
-#define __pyx_n_u_n_fields __pyx_string_tab[42]
-#define __pyx_n_u_n_steps __pyx_string_tab[43]
-#define __pyx_n_u_name __pyx_string_tab[44]
-#define __pyx_n_u_np __pyx_string_tab[45]
-#define __pyx_n_u_numpy __pyx_string_tab[46]
-#define __pyx_kp_u_numpy__core_multiarray_failed_to __pyx_string_tab[47]
-#define __pyx_kp_u_numpy__core_umath_failed_to_impo __pyx_string_tab[48]
-#define __pyx_n_u_out __pyx_string_tab[49]
-#define __pyx_n_u_out_ptr __pyx_string_tab[50]
-#define __pyx_n_u_params __pyx_string_tab[51]
-#define __pyx_n_u_pop __pyx_string_tab[52]
-#define __pyx_n_u_qualname __pyx_string_tab[53]
-#define __pyx_n_u_range __pyx_string_tab[54]
-#define __pyx_n_u_rhs_fn __pyx_string_tab[55]
-#define __pyx_n_u_rows __pyx_string_tab[56]
-#define __pyx_n_u_set_name __pyx_string_tab[57]
-#define __pyx_n_u_snapshots __pyx_string_tab[58]
-#define __pyx_n_u_spec __pyx_string_tab[59]
-#define __pyx_n_u_steps __pyx_string_tab[60]
-#define __pyx_n_u_take __pyx_string_tab[61]
-#define __pyx_n_u_test __pyx_string_tab[62]
-#define __pyx_n_u_x0 __pyx_string_tab[63]
-#define __pyx_n_u_x0_ptr __pyx_string_tab[64]
+#define __pyx_n_u_hourly_weights __pyx_string_tab[31]
+#define __pyx_kp_u_hourly_weights_must_have_shape_n __pyx_string_tab[32]
+#define __pyx_n_u_i __pyx_string_tab[33]
+#define __pyx_n_u_indices_list __pyx_string_tab[34]
+#define __pyx_n_u_indices_ptrs __pyx_string_tab[35]
+#define __pyx_n_u_indptr_list __pyx_string_tab[36]
+#define __pyx_kp_u_indptr_list_indices_list_data_li __pyx_string_tab[37]
+#define __pyx_n_u_indptr_ptrs __pyx_string_tab[38]
+#define __pyx_n_u_initializing __pyx_string_tab[39]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[40]
+#define __pyx_n_u_main __pyx_string_tab[41]
+#define __pyx_n_u_module __pyx_string_tab[42]
+#define __pyx_n_u_n __pyx_string_tab[43]
+#define __pyx_n_u_n2 __pyx_string_tab[44]
+#define __pyx_n_u_n_fields __pyx_string_tab[45]
+#define __pyx_n_u_n_hours __pyx_string_tab[46]
+#define __pyx_n_u_n_steps __pyx_string_tab[47]
+#define __pyx_n_u_n_x __pyx_string_tab[48]
+#define __pyx_n_u_name __pyx_string_tab[49]
+#define __pyx_n_u_np __pyx_string_tab[50]
+#define __pyx_n_u_numpy __pyx_string_tab[51]
+#define __pyx_kp_u_numpy__core_multiarray_failed_to __pyx_string_tab[52]
+#define __pyx_kp_u_numpy__core_umath_failed_to_impo __pyx_string_tab[53]
+#define __pyx_n_u_out __pyx_string_tab[54]
+#define __pyx_n_u_out_ptr __pyx_string_tab[55]
+#define __pyx_n_u_params __pyx_string_tab[56]
+#define __pyx_n_u_pop __pyx_string_tab[57]
+#define __pyx_n_u_qualname __pyx_string_tab[58]
+#define __pyx_n_u_range __pyx_string_tab[59]
+#define __pyx_n_u_rhs_fn __pyx_string_tab[60]
+#define __pyx_n_u_rows __pyx_string_tab[61]
+#define __pyx_n_u_set_name __pyx_string_tab[62]
+#define __pyx_n_u_snapshots __pyx_string_tab[63]
+#define __pyx_n_u_spec __pyx_string_tab[64]
+#define __pyx_n_u_steps __pyx_string_tab[65]
+#define __pyx_n_u_t0_hours __pyx_string_tab[66]
+#define __pyx_n_u_take __pyx_string_tab[67]
+#define __pyx_n_u_test __pyx_string_tab[68]
+#define __pyx_n_u_x0 __pyx_string_tab[69]
+#define __pyx_kp_u_x0_must_have_shape_n_fields_n __pyx_string_tab[70]
+#define __pyx_n_u_x0_ptr __pyx_string_tab[71]
+#define __pyx_kp_u_x0_second_dimension_must_match_n __pyx_string_tab[72]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -2996,7 +3012,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_5numpy_ufunc);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<3; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<65; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<73; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
@@ -3035,7 +3051,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_5numpy_ufunc);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<3; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<65; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<73; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
@@ -4776,7 +4792,7 @@ static CYTHON_INLINE NPY_DATETIMEUNIT __pyx_f_5numpy_get_datetime64_unit(PyObjec
   return __pyx_r;
 }
 
-/* "SIR_diffusion_wrap.pyx":51
+/* "SIR_diffusion_wrap.pyx":52
  * # --- grid trampoline ---
  * 
  * cdef void _rhs_grid_trampoline_gil(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -4804,7 +4820,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   __Pyx_RefNannySetupContext("_rhs_grid_trampoline_gil", 0);
 
-  /* "SIR_diffusion_wrap.pyx":54
+  /* "SIR_diffusion_wrap.pyx":55
  *                                    size_t n_fields, size_t rows, size_t cols,
  *                                    void* userdata) with gil:
  *     cdef PyRHSContext* ctx = <PyRHSContext*>userdata             # <<<<<<<<<<<<<<
@@ -4813,7 +4829,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
 */
   __pyx_v_ctx = ((struct __pyx_t_18SIR_diffusion_wrap_PyRHSContext *)__pyx_v_userdata);
 
-  /* "SIR_diffusion_wrap.pyx":56
+  /* "SIR_diffusion_wrap.pyx":57
  *     cdef PyRHSContext* ctx = <PyRHSContext*>userdata
  *     cdef cnp.npy_intp d3[3]
  *     d3[0] = <cnp.npy_intp>n_fields             # <<<<<<<<<<<<<<
@@ -4822,7 +4838,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
 */
   (__pyx_v_d3[0]) = ((npy_intp)__pyx_v_n_fields);
 
-  /* "SIR_diffusion_wrap.pyx":57
+  /* "SIR_diffusion_wrap.pyx":58
  *     cdef cnp.npy_intp d3[3]
  *     d3[0] = <cnp.npy_intp>n_fields
  *     d3[1] = <cnp.npy_intp>rows             # <<<<<<<<<<<<<<
@@ -4831,7 +4847,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
 */
   (__pyx_v_d3[1]) = ((npy_intp)__pyx_v_rows);
 
-  /* "SIR_diffusion_wrap.pyx":58
+  /* "SIR_diffusion_wrap.pyx":59
  *     d3[0] = <cnp.npy_intp>n_fields
  *     d3[1] = <cnp.npy_intp>rows
  *     d3[2] = <cnp.npy_intp>cols             # <<<<<<<<<<<<<<
@@ -4840,7 +4856,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
 */
   (__pyx_v_d3[2]) = ((npy_intp)__pyx_v_cols);
 
-  /* "SIR_diffusion_wrap.pyx":59
+  /* "SIR_diffusion_wrap.pyx":60
  *     d3[1] = <cnp.npy_intp>rows
  *     d3[2] = <cnp.npy_intp>cols
  *     py_fn = <object>ctx.fn_obj             # <<<<<<<<<<<<<<
@@ -4852,7 +4868,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   __pyx_v_py_fn = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":60
+  /* "SIR_diffusion_wrap.pyx":61
  *     d3[2] = <cnp.npy_intp>cols
  *     py_fn = <object>ctx.fn_obj
  *     py_params = <object>ctx.params_obj             # <<<<<<<<<<<<<<
@@ -4864,31 +4880,31 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   __pyx_v_py_params = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":61
+  /* "SIR_diffusion_wrap.pyx":62
  *     py_fn = <object>ctx.fn_obj
  *     py_params = <object>ctx.params_obj
  *     state_arr = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>state)             # <<<<<<<<<<<<<<
  *     out_arr   = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:
 */
-  __pyx_t_1 = PyArray_SimpleNewFromData(3, (&(__pyx_v_d3[0])), NPY_FLOAT64, ((void *)__pyx_v_state)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_1 = PyArray_SimpleNewFromData(3, (&(__pyx_v_d3[0])), NPY_FLOAT64, ((void *)__pyx_v_state)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_state_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":62
+  /* "SIR_diffusion_wrap.pyx":63
  *     py_params = <object>ctx.params_obj
  *     state_arr = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>out)             # <<<<<<<<<<<<<<
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
 */
-  __pyx_t_1 = PyArray_SimpleNewFromData(3, (&(__pyx_v_d3[0])), NPY_FLOAT64, ((void *)__pyx_v_out)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_1 = PyArray_SimpleNewFromData(3, (&(__pyx_v_d3[0])), NPY_FLOAT64, ((void *)__pyx_v_out)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_out_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":63
+  /* "SIR_diffusion_wrap.pyx":64
  *     state_arr = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:             # <<<<<<<<<<<<<<
@@ -4898,7 +4914,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   __pyx_t_2 = (__pyx_v_py_params == Py_None);
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":64
+    /* "SIR_diffusion_wrap.pyx":65
  *     out_arr   = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)             # <<<<<<<<<<<<<<
@@ -4925,12 +4941,12 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":63
+    /* "SIR_diffusion_wrap.pyx":64
  *     state_arr = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(3, &d3[0], cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:             # <<<<<<<<<<<<<<
@@ -4940,7 +4956,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
     goto __pyx_L3;
   }
 
-  /* "SIR_diffusion_wrap.pyx":65
+  /* "SIR_diffusion_wrap.pyx":66
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):             # <<<<<<<<<<<<<<
@@ -4950,7 +4966,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   __pyx_t_2 = PyDict_Check(__pyx_v_py_params); 
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":66
+    /* "SIR_diffusion_wrap.pyx":67
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):
  *         py_fn(state_arr, out_arr, **py_params)             # <<<<<<<<<<<<<<
@@ -4962,13 +4978,13 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
     __pyx_t_3 = __pyx_v_py_fn; 
     if (unlikely(__pyx_v_py_params == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      __PYX_ERR(0, 66, __pyx_L1_error)
+      __PYX_ERR(0, 67, __pyx_L1_error)
     }
     if (likely(PyDict_CheckExact(__pyx_v_py_params))) {
-      __pyx_t_6 = PyDict_Copy(__pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 66, __pyx_L1_error)
+      __pyx_t_6 = PyDict_Copy(__pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 67, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
     } else {
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg((PyObject*)&PyDict_Type, __pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 66, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_CallOneArg((PyObject*)&PyDict_Type, __pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 67, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
     }
     __pyx_t_5 = 1;
@@ -4989,12 +5005,12 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":65
+    /* "SIR_diffusion_wrap.pyx":66
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):             # <<<<<<<<<<<<<<
@@ -5004,7 +5020,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
     goto __pyx_L3;
   }
 
-  /* "SIR_diffusion_wrap.pyx":68
+  /* "SIR_diffusion_wrap.pyx":69
  *         py_fn(state_arr, out_arr, **py_params)
  *     else:
  *         py_fn(state_arr, out_arr, params=py_params)             # <<<<<<<<<<<<<<
@@ -5029,21 +5045,21 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
     #endif
     {
       PyObject *__pyx_callargs[3 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_3, __pyx_v_state_arr, __pyx_v_out_arr};
-      __pyx_t_4 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 69, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_params, __pyx_v_py_params, __pyx_t_4, __pyx_callargs+3, 0) < (0)) __PYX_ERR(0, 68, __pyx_L1_error)
+      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_params, __pyx_v_py_params, __pyx_t_4, __pyx_callargs+3, 0) < (0)) __PYX_ERR(0, 69, __pyx_L1_error)
       __pyx_t_1 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_6, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_4);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_L3:;
 
-  /* "SIR_diffusion_wrap.pyx":51
+  /* "SIR_diffusion_wrap.pyx":52
  * # --- grid trampoline ---
  * 
  * cdef void _rhs_grid_trampoline_gil(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5068,7 +5084,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(double *__pyx_
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
 }
 
-/* "SIR_diffusion_wrap.pyx":70
+/* "SIR_diffusion_wrap.pyx":71
  *         py_fn(state_arr, out_arr, params=py_params)
  * 
  * cdef void _rhs_grid_trampoline(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5082,7 +5098,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline(double *__pyx_v_ou
   int __pyx_clineno = 0;
   PyGILState_STATE __pyx_gilstate_save;
 
-  /* "SIR_diffusion_wrap.pyx":73
+  /* "SIR_diffusion_wrap.pyx":74
  *                                size_t n_fields, size_t rows, size_t cols,
  *                                void* userdata) nogil:
  *     with gil:             # <<<<<<<<<<<<<<
@@ -5093,17 +5109,17 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline(double *__pyx_v_ou
       PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
       /*try:*/ {
 
-        /* "SIR_diffusion_wrap.pyx":74
+        /* "SIR_diffusion_wrap.pyx":75
  *                                void* userdata) nogil:
  *     with gil:
  *         _rhs_grid_trampoline_gil(out, state, n_fields, rows, cols, userdata)             # <<<<<<<<<<<<<<
  * 
  * # --- graph trampoline ---
 */
-        __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(__pyx_v_out, __pyx_v_state, __pyx_v_n_fields, __pyx_v_rows, __pyx_v_cols, __pyx_v_userdata); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 74, __pyx_L4_error)
+        __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline_gil(__pyx_v_out, __pyx_v_state, __pyx_v_n_fields, __pyx_v_rows, __pyx_v_cols, __pyx_v_userdata); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 75, __pyx_L4_error)
       }
 
-      /* "SIR_diffusion_wrap.pyx":73
+      /* "SIR_diffusion_wrap.pyx":74
  *                                size_t n_fields, size_t rows, size_t cols,
  *                                void* userdata) nogil:
  *     with gil:             # <<<<<<<<<<<<<<
@@ -5123,7 +5139,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline(double *__pyx_v_ou
       }
   }
 
-  /* "SIR_diffusion_wrap.pyx":70
+  /* "SIR_diffusion_wrap.pyx":71
  *         py_fn(state_arr, out_arr, params=py_params)
  * 
  * cdef void _rhs_grid_trampoline(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5140,7 +5156,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline(double *__pyx_v_ou
   __pyx_L0:;
 }
 
-/* "SIR_diffusion_wrap.pyx":78
+/* "SIR_diffusion_wrap.pyx":79
  * # --- graph trampoline ---
  * 
  * cdef void _rhs_graph_trampoline_gil(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5169,7 +5185,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
   __Pyx_RefNannySetupContext("_rhs_graph_trampoline_gil", 0);
 
-  /* "SIR_diffusion_wrap.pyx":81
+  /* "SIR_diffusion_wrap.pyx":82
  *                                     size_t n_fields, size_t vec_size,
  *                                     void* userdata) with gil:
  *     cdef PyRHSContext* ctx = <PyRHSContext*>userdata             # <<<<<<<<<<<<<<
@@ -5178,7 +5194,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
 */
   __pyx_v_ctx = ((struct __pyx_t_18SIR_diffusion_wrap_PyRHSContext *)__pyx_v_userdata);
 
-  /* "SIR_diffusion_wrap.pyx":84
+  /* "SIR_diffusion_wrap.pyx":85
  *     cdef cnp.npy_intp d2_state[2]
  *     cdef cnp.npy_intp d2_out[2]
  *     d2_state[0] = <cnp.npy_intp>n_fields             # <<<<<<<<<<<<<<
@@ -5187,7 +5203,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
 */
   (__pyx_v_d2_state[0]) = ((npy_intp)__pyx_v_n_fields);
 
-  /* "SIR_diffusion_wrap.pyx":85
+  /* "SIR_diffusion_wrap.pyx":86
  *     cdef cnp.npy_intp d2_out[2]
  *     d2_state[0] = <cnp.npy_intp>n_fields
  *     d2_state[1] = <cnp.npy_intp>vec_size             # <<<<<<<<<<<<<<
@@ -5196,7 +5212,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
 */
   (__pyx_v_d2_state[1]) = ((npy_intp)__pyx_v_vec_size);
 
-  /* "SIR_diffusion_wrap.pyx":86
+  /* "SIR_diffusion_wrap.pyx":87
  *     d2_state[0] = <cnp.npy_intp>n_fields
  *     d2_state[1] = <cnp.npy_intp>vec_size
  *     d2_out[0]   = <cnp.npy_intp>n_fields             # <<<<<<<<<<<<<<
@@ -5205,7 +5221,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
 */
   (__pyx_v_d2_out[0]) = ((npy_intp)__pyx_v_n_fields);
 
-  /* "SIR_diffusion_wrap.pyx":87
+  /* "SIR_diffusion_wrap.pyx":88
  *     d2_state[1] = <cnp.npy_intp>vec_size
  *     d2_out[0]   = <cnp.npy_intp>n_fields
  *     d2_out[1]   = <cnp.npy_intp>vec_size             # <<<<<<<<<<<<<<
@@ -5214,7 +5230,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
 */
   (__pyx_v_d2_out[1]) = ((npy_intp)__pyx_v_vec_size);
 
-  /* "SIR_diffusion_wrap.pyx":88
+  /* "SIR_diffusion_wrap.pyx":89
  *     d2_out[0]   = <cnp.npy_intp>n_fields
  *     d2_out[1]   = <cnp.npy_intp>vec_size
  *     py_fn = <object>ctx.fn_obj             # <<<<<<<<<<<<<<
@@ -5226,7 +5242,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   __pyx_v_py_fn = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":89
+  /* "SIR_diffusion_wrap.pyx":90
  *     d2_out[1]   = <cnp.npy_intp>vec_size
  *     py_fn = <object>ctx.fn_obj
  *     py_params = <object>ctx.params_obj             # <<<<<<<<<<<<<<
@@ -5238,31 +5254,31 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   __pyx_v_py_params = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":90
+  /* "SIR_diffusion_wrap.pyx":91
  *     py_fn = <object>ctx.fn_obj
  *     py_params = <object>ctx.params_obj
  *     state_arr = cnp.PyArray_SimpleNewFromData(2, &d2_state[0], cnp.NPY_FLOAT64, <void*>state)             # <<<<<<<<<<<<<<
  *     out_arr   = cnp.PyArray_SimpleNewFromData(2, &d2_out[0],   cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:
 */
-  __pyx_t_1 = PyArray_SimpleNewFromData(2, (&(__pyx_v_d2_state[0])), NPY_FLOAT64, ((void *)__pyx_v_state)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_1 = PyArray_SimpleNewFromData(2, (&(__pyx_v_d2_state[0])), NPY_FLOAT64, ((void *)__pyx_v_state)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_state_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":91
+  /* "SIR_diffusion_wrap.pyx":92
  *     py_params = <object>ctx.params_obj
  *     state_arr = cnp.PyArray_SimpleNewFromData(2, &d2_state[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(2, &d2_out[0],   cnp.NPY_FLOAT64, <void*>out)             # <<<<<<<<<<<<<<
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
 */
-  __pyx_t_1 = PyArray_SimpleNewFromData(2, (&(__pyx_v_d2_out[0])), NPY_FLOAT64, ((void *)__pyx_v_out)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_1 = PyArray_SimpleNewFromData(2, (&(__pyx_v_d2_out[0])), NPY_FLOAT64, ((void *)__pyx_v_out)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_out_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":92
+  /* "SIR_diffusion_wrap.pyx":93
  *     state_arr = cnp.PyArray_SimpleNewFromData(2, &d2_state[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(2, &d2_out[0],   cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:             # <<<<<<<<<<<<<<
@@ -5272,7 +5288,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   __pyx_t_2 = (__pyx_v_py_params == Py_None);
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":93
+    /* "SIR_diffusion_wrap.pyx":94
  *     out_arr   = cnp.PyArray_SimpleNewFromData(2, &d2_out[0],   cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)             # <<<<<<<<<<<<<<
@@ -5299,12 +5315,12 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":92
+    /* "SIR_diffusion_wrap.pyx":93
  *     state_arr = cnp.PyArray_SimpleNewFromData(2, &d2_state[0], cnp.NPY_FLOAT64, <void*>state)
  *     out_arr   = cnp.PyArray_SimpleNewFromData(2, &d2_out[0],   cnp.NPY_FLOAT64, <void*>out)
  *     if py_params is None:             # <<<<<<<<<<<<<<
@@ -5314,7 +5330,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
     goto __pyx_L3;
   }
 
-  /* "SIR_diffusion_wrap.pyx":94
+  /* "SIR_diffusion_wrap.pyx":95
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):             # <<<<<<<<<<<<<<
@@ -5324,7 +5340,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   __pyx_t_2 = PyDict_Check(__pyx_v_py_params); 
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":95
+    /* "SIR_diffusion_wrap.pyx":96
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):
  *         py_fn(state_arr, out_arr, **py_params)             # <<<<<<<<<<<<<<
@@ -5336,13 +5352,13 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
     __pyx_t_3 = __pyx_v_py_fn; 
     if (unlikely(__pyx_v_py_params == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "argument after ** must be a mapping, not NoneType");
-      __PYX_ERR(0, 95, __pyx_L1_error)
+      __PYX_ERR(0, 96, __pyx_L1_error)
     }
     if (likely(PyDict_CheckExact(__pyx_v_py_params))) {
-      __pyx_t_6 = PyDict_Copy(__pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_6 = PyDict_Copy(__pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
     } else {
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg((PyObject*)&PyDict_Type, __pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_CallOneArg((PyObject*)&PyDict_Type, __pyx_v_py_params); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
     }
     __pyx_t_5 = 1;
@@ -5363,12 +5379,12 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 95, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":94
+    /* "SIR_diffusion_wrap.pyx":95
  *     if py_params is None:
  *         py_fn(state_arr, out_arr)
  *     elif isinstance(py_params, dict):             # <<<<<<<<<<<<<<
@@ -5378,7 +5394,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
     goto __pyx_L3;
   }
 
-  /* "SIR_diffusion_wrap.pyx":97
+  /* "SIR_diffusion_wrap.pyx":98
  *         py_fn(state_arr, out_arr, **py_params)
  *     else:
  *         py_fn(state_arr, out_arr, params=py_params)             # <<<<<<<<<<<<<<
@@ -5403,21 +5419,21 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
     #endif
     {
       PyObject *__pyx_callargs[3 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_3, __pyx_v_state_arr, __pyx_v_out_arr};
-      __pyx_t_4 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 97, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_params, __pyx_v_py_params, __pyx_t_4, __pyx_callargs+3, 0) < (0)) __PYX_ERR(0, 97, __pyx_L1_error)
+      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_params, __pyx_v_py_params, __pyx_t_4, __pyx_callargs+3, 0) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
       __pyx_t_1 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_6, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_4);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_L3:;
 
-  /* "SIR_diffusion_wrap.pyx":78
+  /* "SIR_diffusion_wrap.pyx":79
  * # --- graph trampoline ---
  * 
  * cdef void _rhs_graph_trampoline_gil(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5442,7 +5458,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(double *__pyx
   __Pyx_PyGILState_Release(__pyx_gilstate_save);
 }
 
-/* "SIR_diffusion_wrap.pyx":99
+/* "SIR_diffusion_wrap.pyx":100
  *         py_fn(state_arr, out_arr, params=py_params)
  * 
  * cdef void _rhs_graph_trampoline(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5456,7 +5472,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline(double *__pyx_v_o
   int __pyx_clineno = 0;
   PyGILState_STATE __pyx_gilstate_save;
 
-  /* "SIR_diffusion_wrap.pyx":102
+  /* "SIR_diffusion_wrap.pyx":103
  *                                 size_t n_fields, size_t vec_size,
  *                                 void* userdata) nogil:
  *     with gil:             # <<<<<<<<<<<<<<
@@ -5467,17 +5483,17 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline(double *__pyx_v_o
       PyGILState_STATE __pyx_gilstate_save = __Pyx_PyGILState_Ensure();
       /*try:*/ {
 
-        /* "SIR_diffusion_wrap.pyx":103
+        /* "SIR_diffusion_wrap.pyx":104
  *                                 void* userdata) nogil:
  *     with gil:
  *         _rhs_graph_trampoline_gil(out, state, n_fields, vec_size, userdata)             # <<<<<<<<<<<<<<
  * 
  * 
 */
-        __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(__pyx_v_out, __pyx_v_state, __pyx_v_n_fields, __pyx_v_vec_size, __pyx_v_userdata); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 103, __pyx_L4_error)
+        __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline_gil(__pyx_v_out, __pyx_v_state, __pyx_v_n_fields, __pyx_v_vec_size, __pyx_v_userdata); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 104, __pyx_L4_error)
       }
 
-      /* "SIR_diffusion_wrap.pyx":102
+      /* "SIR_diffusion_wrap.pyx":103
  *                                 size_t n_fields, size_t vec_size,
  *                                 void* userdata) nogil:
  *     with gil:             # <<<<<<<<<<<<<<
@@ -5497,7 +5513,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline(double *__pyx_v_o
       }
   }
 
-  /* "SIR_diffusion_wrap.pyx":99
+  /* "SIR_diffusion_wrap.pyx":100
  *         py_fn(state_arr, out_arr, params=py_params)
  * 
  * cdef void _rhs_graph_trampoline(double* out, const double* state,             # <<<<<<<<<<<<<<
@@ -5514,7 +5530,7 @@ static void __pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline(double *__pyx_v_o
   __pyx_L0:;
 }
 
-/* "SIR_diffusion_wrap.pyx":106
+/* "SIR_diffusion_wrap.pyx":107
  * 
  * 
  * def euler_solve_normal_rd(cnp.ndarray x0,             # <<<<<<<<<<<<<<
@@ -5568,48 +5584,48 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_x0,&__pyx_mstate_global->__pyx_n_u_dx,&__pyx_mstate_global->__pyx_n_u_dy,&__pyx_mstate_global->__pyx_n_u_dt,&__pyx_mstate_global->__pyx_n_u_steps,&__pyx_mstate_global->__pyx_n_u_snapshots,&__pyx_mstate_global->__pyx_n_u_rhs_fn,&__pyx_mstate_global->__pyx_n_u_params,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 106, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 107, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  8:
         values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  7:
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  6:
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  5:
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  4:
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_normal_rd", 0) < (0)) __PYX_ERR(0, 106, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_normal_rd", 0) < (0)) __PYX_ERR(0, 107, __pyx_L3_error)
 
-      /* "SIR_diffusion_wrap.pyx":109
+      /* "SIR_diffusion_wrap.pyx":110
  *                           double dx, double dy, double dt,
  *                           size_t steps, size_t snapshots,
  *                           rhs_fn, params=None):             # <<<<<<<<<<<<<<
@@ -5618,46 +5634,46 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
       for (Py_ssize_t i = __pyx_nargs; i < 7; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_normal_rd", 0, 7, 8, i); __PYX_ERR(0, 106, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_normal_rd", 0, 7, 8, i); __PYX_ERR(0, 107, __pyx_L3_error) }
       }
     } else {
       switch (__pyx_nargs) {
         case  8:
         values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 107, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  7:
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 107, __pyx_L3_error)
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 106, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 107, __pyx_L3_error)
         break;
         default: goto __pyx_L5_argtuple_error;
       }
       if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
     }
     __pyx_v_x0 = ((PyArrayObject *)values[0]);
-    __pyx_v_dx = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_dx == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 107, __pyx_L3_error)
-    __pyx_v_dy = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_dy == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 107, __pyx_L3_error)
-    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 107, __pyx_L3_error)
-    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[4]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L3_error)
-    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[5]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L3_error)
+    __pyx_v_dx = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_dx == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L3_error)
+    __pyx_v_dy = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_dy == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L3_error)
+    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L3_error)
+    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[4]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 109, __pyx_L3_error)
+    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[5]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 109, __pyx_L3_error)
     __pyx_v_rhs_fn = values[6];
     __pyx_v_params = values[7];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("euler_solve_normal_rd", 0, 7, 8, __pyx_nargs); __PYX_ERR(0, 106, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("euler_solve_normal_rd", 0, 7, 8, __pyx_nargs); __PYX_ERR(0, 107, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -5668,10 +5684,10 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 106, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 107, __pyx_L1_error)
   __pyx_r = __pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(__pyx_self, __pyx_v_x0, __pyx_v_dx, __pyx_v_dy, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, __pyx_v_rhs_fn, __pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":106
+  /* "SIR_diffusion_wrap.pyx":107
  * 
  * 
  * def euler_solve_normal_rd(cnp.ndarray x0,             # <<<<<<<<<<<<<<
@@ -5723,7 +5739,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("euler_solve_normal_rd", 0);
 
-  /* "SIR_diffusion_wrap.pyx":110
+  /* "SIR_diffusion_wrap.pyx":111
  *                           size_t steps, size_t snapshots,
  *                           rhs_fn, params=None):
  *     cdef size_t n_fields = <size_t>x0.shape[0]             # <<<<<<<<<<<<<<
@@ -5732,7 +5748,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_n_fields = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[0]));
 
-  /* "SIR_diffusion_wrap.pyx":111
+  /* "SIR_diffusion_wrap.pyx":112
  *                           rhs_fn, params=None):
  *     cdef size_t n_fields = <size_t>x0.shape[0]
  *     cdef size_t rows     = <size_t>x0.shape[1]             # <<<<<<<<<<<<<<
@@ -5741,7 +5757,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_rows = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[1]));
 
-  /* "SIR_diffusion_wrap.pyx":112
+  /* "SIR_diffusion_wrap.pyx":113
  *     cdef size_t n_fields = <size_t>x0.shape[0]
  *     cdef size_t rows     = <size_t>x0.shape[1]
  *     cdef size_t cols     = <size_t>x0.shape[2]             # <<<<<<<<<<<<<<
@@ -5750,7 +5766,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_cols = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[2]));
 
-  /* "SIR_diffusion_wrap.pyx":113
+  /* "SIR_diffusion_wrap.pyx":114
  *     cdef size_t rows     = <size_t>x0.shape[1]
  *     cdef size_t cols     = <size_t>x0.shape[2]
  *     cdef size_t take     = snapshots if snapshots <= steps else steps             # <<<<<<<<<<<<<<
@@ -5765,7 +5781,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
   }
   __pyx_v_take = __pyx_t_1;
 
-  /* "SIR_diffusion_wrap.pyx":114
+  /* "SIR_diffusion_wrap.pyx":115
  *     cdef size_t cols     = <size_t>x0.shape[2]
  *     cdef size_t take     = snapshots if snapshots <= steps else steps
  *     cdef size_t Nfld     = rows*cols             # <<<<<<<<<<<<<<
@@ -5774,7 +5790,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_Nfld = (__pyx_v_rows * __pyx_v_cols);
 
-  /* "SIR_diffusion_wrap.pyx":117
+  /* "SIR_diffusion_wrap.pyx":118
  * 
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn             # <<<<<<<<<<<<<<
@@ -5783,7 +5799,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_ctx.fn_obj = ((void *)__pyx_v_rhs_fn);
 
-  /* "SIR_diffusion_wrap.pyx":118
+  /* "SIR_diffusion_wrap.pyx":119
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn
  *     ctx.params_obj = <void*>params             # <<<<<<<<<<<<<<
@@ -5792,7 +5808,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_ctx.params_obj = ((void *)__pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":120
+  /* "SIR_diffusion_wrap.pyx":121
  *     ctx.params_obj = <void*>params
  * 
  *     cdef const double* x0_ptr = <const double*> x0.data             # <<<<<<<<<<<<<<
@@ -5801,7 +5817,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_x0_ptr = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_x0));
 
-  /* "SIR_diffusion_wrap.pyx":121
+  /* "SIR_diffusion_wrap.pyx":122
  * 
  *     cdef const double* x0_ptr = <const double*> x0.data
  *     cdef double* out_ptr = euler_solve_normal(x0_ptr, rows, cols, n_fields,             # <<<<<<<<<<<<<<
@@ -5810,7 +5826,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   __pyx_v_out_ptr = euler_solve_normal(__pyx_v_x0_ptr, __pyx_v_rows, __pyx_v_cols, __pyx_v_n_fields, __pyx_v_dx, __pyx_v_dy, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, ((rhs_grid_fn)__pyx_f_18SIR_diffusion_wrap__rhs_grid_trampoline), ((void *)(&__pyx_v_ctx)));
 
-  /* "SIR_diffusion_wrap.pyx":126
+  /* "SIR_diffusion_wrap.pyx":127
  *                                               <void*>&ctx)
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, rows, cols), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -5818,36 +5834,36 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
  *            <size_t>take * n_fields * Nfld * sizeof(DTYPE_t))
 */
   __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_7 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyLong_FromSize_t(__pyx_v_rows); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyLong_FromSize_t(__pyx_v_rows); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = __Pyx_PyLong_FromSize_t(__pyx_v_cols); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyLong_FromSize_t(__pyx_v_cols); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_10 = PyTuple_New(4); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_10 = PyTuple_New(4); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_GIVEREF(__pyx_t_5);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 126, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 127, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_7);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_7) != (0)) __PYX_ERR(0, 126, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_7) != (0)) __PYX_ERR(0, 127, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_8);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_t_8) != (0)) __PYX_ERR(0, 126, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_t_8) != (0)) __PYX_ERR(0, 127, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_9);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 3, __pyx_t_9) != (0)) __PYX_ERR(0, 126, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_10, 3, __pyx_t_9) != (0)) __PYX_ERR(0, 127, __pyx_L1_error);
   __pyx_t_5 = 0;
   __pyx_t_7 = 0;
   __pyx_t_8 = 0;
   __pyx_t_9 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_t_1 = 1;
@@ -5864,23 +5880,23 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
   #endif
   {
     PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_4, __pyx_t_10};
-    __pyx_t_9 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 126, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_8, __pyx_t_9, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 126, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_8, __pyx_t_9, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 127, __pyx_L1_error)
     __pyx_t_3 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_6, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_9);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
   }
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 126, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 127, __pyx_L1_error)
   __pyx_v_out = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":127
+  /* "SIR_diffusion_wrap.pyx":128
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, rows, cols), dtype=np.float64)
  *     memcpy(<void*>out.data, <const void*>out_ptr,             # <<<<<<<<<<<<<<
@@ -5889,7 +5905,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   (void)(memcpy(((void *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_out)), ((void const *)__pyx_v_out_ptr), (((((size_t)__pyx_v_take) * __pyx_v_n_fields) * __pyx_v_Nfld) * (sizeof(__pyx_t_18SIR_diffusion_wrap_DTYPE_t)))));
 
-  /* "SIR_diffusion_wrap.pyx":129
+  /* "SIR_diffusion_wrap.pyx":130
  *     memcpy(<void*>out.data, <const void*>out_ptr,
  *            <size_t>take * n_fields * Nfld * sizeof(DTYPE_t))
  *     free_array(out_ptr)             # <<<<<<<<<<<<<<
@@ -5898,19 +5914,19 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
 */
   free_array(__pyx_v_out_ptr);
 
-  /* "SIR_diffusion_wrap.pyx":130
+  /* "SIR_diffusion_wrap.pyx":131
  *            <size_t>take * n_fields * Nfld * sizeof(DTYPE_t))
  *     free_array(out_ptr)
  *     return out             # <<<<<<<<<<<<<<
  * 
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,
+ * # NOTE: old euler_solve_graph_rd with a static L matrix is removed,
 */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF((PyObject *)__pyx_v_out);
   __pyx_r = ((PyObject *)__pyx_v_out);
   goto __pyx_L0;
 
-  /* "SIR_diffusion_wrap.pyx":106
+  /* "SIR_diffusion_wrap.pyx":107
  * 
  * 
  * def euler_solve_normal_rd(cnp.ndarray x0,             # <<<<<<<<<<<<<<
@@ -5937,12 +5953,12 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_euler_solve_normal_rd(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "SIR_diffusion_wrap.pyx":132
- *     return out
+/* "SIR_diffusion_wrap.pyx":136
+ * # because the C function euler_solve_graph now has the hourly+interp signature.
  * 
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,             # <<<<<<<<<<<<<<
- *                          double dt, size_t steps, size_t snapshots,
- *                          rhs_fn, params=None):
+ * def euler_solve_graph_rd(cnp.ndarray hourly_weights,             # <<<<<<<<<<<<<<
+ *                          cnp.ndarray x0,
+ *                          double t0_hours,
 */
 
 /* Python wrapper */
@@ -5953,7 +5969,8 @@ PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_18SIR_diffusion_wrap_3euler_solve_graph_rd = {"euler_solve_graph_rd", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_18SIR_diffusion_wrap_3euler_solve_graph_rd, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+PyDoc_STRVAR(__pyx_doc_18SIR_diffusion_wrap_2euler_solve_graph_rd, "\n    hourly_weights: shape (n_hours, n, n), float64\n    x0           : shape (n_fields, n), float64\n    t0_hours     : starting time in hours (can be fractional)\n    dt           : time step in hours\n    ");
+static PyMethodDef __pyx_mdef_18SIR_diffusion_wrap_3euler_solve_graph_rd = {"euler_solve_graph_rd", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_18SIR_diffusion_wrap_3euler_solve_graph_rd, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_18SIR_diffusion_wrap_2euler_solve_graph_rd};
 static PyObject *__pyx_pw_18SIR_diffusion_wrap_3euler_solve_graph_rd(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
@@ -5961,8 +5978,9 @@ PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ) {
-  PyArrayObject *__pyx_v_L = 0;
+  PyArrayObject *__pyx_v_hourly_weights = 0;
   PyArrayObject *__pyx_v_x0 = 0;
+  double __pyx_v_t0_hours;
   double __pyx_v_dt;
   size_t __pyx_v_steps;
   size_t __pyx_v_snapshots;
@@ -5972,7 +5990,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   CYTHON_UNUSED Py_ssize_t __pyx_nargs;
   #endif
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
-  PyObject* values[7] = {0,0,0,0,0,0,0};
+  PyObject* values[8] = {0,0,0,0,0,0,0,0};
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -5988,91 +6006,98 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   #endif
   __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
   {
-    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_L,&__pyx_mstate_global->__pyx_n_u_x0,&__pyx_mstate_global->__pyx_n_u_dt,&__pyx_mstate_global->__pyx_n_u_steps,&__pyx_mstate_global->__pyx_n_u_snapshots,&__pyx_mstate_global->__pyx_n_u_rhs_fn,&__pyx_mstate_global->__pyx_n_u_params,0};
+    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_hourly_weights,&__pyx_mstate_global->__pyx_n_u_x0,&__pyx_mstate_global->__pyx_n_u_t0_hours,&__pyx_mstate_global->__pyx_n_u_dt,&__pyx_mstate_global->__pyx_n_u_steps,&__pyx_mstate_global->__pyx_n_u_snapshots,&__pyx_mstate_global->__pyx_n_u_rhs_fn,&__pyx_mstate_global->__pyx_n_u_params,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 132, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 136, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
+        case  8:
+        values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 136, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
         case  7:
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  6:
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  5:
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  4:
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 136, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_graph_rd", 0) < (0)) __PYX_ERR(0, 132, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_graph_rd", 0) < (0)) __PYX_ERR(0, 136, __pyx_L3_error)
 
-      /* "SIR_diffusion_wrap.pyx":134
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,
+      /* "SIR_diffusion_wrap.pyx":140
+ *                          double t0_hours,
  *                          double dt, size_t steps, size_t snapshots,
  *                          rhs_fn, params=None):             # <<<<<<<<<<<<<<
- *     cdef size_t n_fields = <size_t>L.shape[0]
- *     cdef size_t n        = <size_t>L.shape[1]
+ *     """
+ *     hourly_weights: shape (n_hours, n, n), float64
 */
-      if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)Py_None));
-      for (Py_ssize_t i = __pyx_nargs; i < 6; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_graph_rd", 0, 6, 7, i); __PYX_ERR(0, 132, __pyx_L3_error) }
+      if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
+      for (Py_ssize_t i = __pyx_nargs; i < 7; i++) {
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_graph_rd", 0, 7, 8, i); __PYX_ERR(0, 136, __pyx_L3_error) }
       }
     } else {
       switch (__pyx_nargs) {
+        case  8:
+        values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 136, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
         case  7:
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 132, __pyx_L3_error)
-        CYTHON_FALLTHROUGH;
-        case  6:
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 136, __pyx_L3_error)
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 132, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 136, __pyx_L3_error)
         break;
         default: goto __pyx_L5_argtuple_error;
       }
-      if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)Py_None));
+      if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
     }
-    __pyx_v_L = ((PyArrayObject *)values[0]);
+    __pyx_v_hourly_weights = ((PyArrayObject *)values[0]);
     __pyx_v_x0 = ((PyArrayObject *)values[1]);
-    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L3_error)
-    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[3]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L3_error)
-    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[4]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 133, __pyx_L3_error)
-    __pyx_v_rhs_fn = values[5];
-    __pyx_v_params = values[6];
+    __pyx_v_t0_hours = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_t0_hours == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 138, __pyx_L3_error)
+    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L3_error)
+    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[4]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L3_error)
+    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[5]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L3_error)
+    __pyx_v_rhs_fn = values[6];
+    __pyx_v_params = values[7];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("euler_solve_graph_rd", 0, 6, 7, __pyx_nargs); __PYX_ERR(0, 132, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("euler_solve_graph_rd", 0, 7, 8, __pyx_nargs); __PYX_ERR(0, 136, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -6083,16 +6108,16 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_L), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "L", 0))) __PYX_ERR(0, 132, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 132, __pyx_L1_error)
-  __pyx_r = __pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(__pyx_self, __pyx_v_L, __pyx_v_x0, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, __pyx_v_rhs_fn, __pyx_v_params);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_hourly_weights), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "hourly_weights", 0))) __PYX_ERR(0, 136, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_r = __pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(__pyx_self, __pyx_v_hourly_weights, __pyx_v_x0, __pyx_v_t0_hours, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, __pyx_v_rhs_fn, __pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":132
- *     return out
+  /* "SIR_diffusion_wrap.pyx":136
+ * # because the C function euler_solve_graph now has the hourly+interp signature.
  * 
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,             # <<<<<<<<<<<<<<
- *                          double dt, size_t steps, size_t snapshots,
- *                          rhs_fn, params=None):
+ * def euler_solve_graph_rd(cnp.ndarray hourly_weights,             # <<<<<<<<<<<<<<
+ *                          cnp.ndarray x0,
+ *                          double t0_hours,
 */
 
   /* function exit code */
@@ -6112,65 +6137,419 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_L, PyArrayObject *__pyx_v_x0, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params) {
-  size_t __pyx_v_n_fields;
+static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_hourly_weights, PyArrayObject *__pyx_v_x0, double __pyx_v_t0_hours, double __pyx_v_dt, size_t __pyx_v_steps, size_t __pyx_v_snapshots, PyObject *__pyx_v_rhs_fn, PyObject *__pyx_v_params) {
+  size_t __pyx_v_n_hours;
   size_t __pyx_v_n;
+  size_t __pyx_v_n2;
+  size_t __pyx_v_n_fields;
+  size_t __pyx_v_n_x;
   size_t __pyx_v_take;
   struct __pyx_t_18SIR_diffusion_wrap_PyRHSContext __pyx_v_ctx;
-  double const *__pyx_v_L_ptr;
+  double const *__pyx_v_H_ptr;
   double const *__pyx_v_x0_ptr;
   double *__pyx_v_out_ptr;
   PyArrayObject *__pyx_v_out = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  size_t __pyx_t_1;
-  int __pyx_t_2;
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
+  size_t __pyx_t_7;
   PyObject *__pyx_t_8 = NULL;
   PyObject *__pyx_t_9 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("euler_solve_graph_rd", 0);
+  __Pyx_INCREF((PyObject *)__pyx_v_hourly_weights);
+  __Pyx_INCREF((PyObject *)__pyx_v_x0);
 
-  /* "SIR_diffusion_wrap.pyx":135
- *                          double dt, size_t steps, size_t snapshots,
- *                          rhs_fn, params=None):
- *     cdef size_t n_fields = <size_t>L.shape[0]             # <<<<<<<<<<<<<<
- *     cdef size_t n        = <size_t>L.shape[1]
- *     cdef size_t take     = snapshots if snapshots <= steps else steps
+  /* "SIR_diffusion_wrap.pyx":148
+ *     """
+ *     # ensure dtypes / contiguity
+ *     if hourly_weights.dtype != np.float64:             # <<<<<<<<<<<<<<
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+ *     if x0.dtype != np.float64:
 */
-  __pyx_v_n_fields = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_L)[0]));
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_hourly_weights), __pyx_mstate_global->__pyx_n_u_dtype); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_t_3, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 148, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_4) {
 
-  /* "SIR_diffusion_wrap.pyx":136
- *                          rhs_fn, params=None):
- *     cdef size_t n_fields = <size_t>L.shape[0]
- *     cdef size_t n        = <size_t>L.shape[1]             # <<<<<<<<<<<<<<
- *     cdef size_t take     = snapshots if snapshots <= steps else steps
+    /* "SIR_diffusion_wrap.pyx":149
+ *     # ensure dtypes / contiguity
+ *     if hourly_weights.dtype != np.float64:
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)             # <<<<<<<<<<<<<<
+ *     if x0.dtype != np.float64:
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)
+*/
+    __pyx_t_3 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_ascontiguousarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_7 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_5))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_5);
+      assert(__pyx_t_3);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_5, __pyx__function);
+      __pyx_t_7 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_3, ((PyObject *)__pyx_v_hourly_weights)};
+      __pyx_t_1 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_6, __pyx_t_1, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 149, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_5, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_1);
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 149, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+    }
+    if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 149, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_hourly_weights, ((PyArrayObject *)__pyx_t_2));
+    __pyx_t_2 = 0;
+
+    /* "SIR_diffusion_wrap.pyx":148
+ *     """
+ *     # ensure dtypes / contiguity
+ *     if hourly_weights.dtype != np.float64:             # <<<<<<<<<<<<<<
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+ *     if x0.dtype != np.float64:
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":150
+ *     if hourly_weights.dtype != np.float64:
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+ *     if x0.dtype != np.float64:             # <<<<<<<<<<<<<<
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)
  * 
 */
-  __pyx_v_n = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_L)[1]));
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_n_u_dtype); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 150, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 150, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_t_1, Py_NE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 150, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 150, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__pyx_t_4) {
 
-  /* "SIR_diffusion_wrap.pyx":137
- *     cdef size_t n_fields = <size_t>L.shape[0]
- *     cdef size_t n        = <size_t>L.shape[1]
+    /* "SIR_diffusion_wrap.pyx":151
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+ *     if x0.dtype != np.float64:
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)             # <<<<<<<<<<<<<<
+ * 
+ *     if hourly_weights.ndim != 3:
+*/
+    __pyx_t_1 = NULL;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_ascontiguousarray); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_7 = 1;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_6);
+      assert(__pyx_t_1);
+      PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
+      __Pyx_INCREF(__pyx_t_1);
+      __Pyx_INCREF(__pyx__function);
+      __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
+      __pyx_t_7 = 0;
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_1, ((PyObject *)__pyx_v_x0)};
+      __pyx_t_2 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_3, __pyx_t_2, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 151, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_6, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_2);
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 151, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+    }
+    if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 151, __pyx_L1_error)
+    __Pyx_DECREF_SET(__pyx_v_x0, ((PyArrayObject *)__pyx_t_5));
+    __pyx_t_5 = 0;
+
+    /* "SIR_diffusion_wrap.pyx":150
+ *     if hourly_weights.dtype != np.float64:
+ *         hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+ *     if x0.dtype != np.float64:             # <<<<<<<<<<<<<<
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)
+ * 
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":153
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)
+ * 
+ *     if hourly_weights.ndim != 3:             # <<<<<<<<<<<<<<
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ *     if x0.ndim != 2:
+*/
+  __pyx_t_4 = (__pyx_f_5numpy_7ndarray_4ndim_ndim(__pyx_v_hourly_weights) != 3);
+  if (unlikely(__pyx_t_4)) {
+
+    /* "SIR_diffusion_wrap.pyx":154
+ * 
+ *     if hourly_weights.ndim != 3:
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")             # <<<<<<<<<<<<<<
+ *     if x0.ndim != 2:
+ *         raise ValueError("x0 must have shape (n_fields, n)")
+*/
+    __pyx_t_6 = NULL;
+    __Pyx_INCREF(__pyx_builtin_ValueError);
+    __pyx_t_2 = __pyx_builtin_ValueError; 
+    __pyx_t_7 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_mstate_global->__pyx_kp_u_hourly_weights_must_have_shape_n};
+      __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 154, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+    }
+    __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __PYX_ERR(0, 154, __pyx_L1_error)
+
+    /* "SIR_diffusion_wrap.pyx":153
+ *         x0 = np.ascontiguousarray(x0, dtype=np.float64)
+ * 
+ *     if hourly_weights.ndim != 3:             # <<<<<<<<<<<<<<
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ *     if x0.ndim != 2:
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":155
+ *     if hourly_weights.ndim != 3:
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ *     if x0.ndim != 2:             # <<<<<<<<<<<<<<
+ *         raise ValueError("x0 must have shape (n_fields, n)")
+ * 
+*/
+  __pyx_t_4 = (__pyx_f_5numpy_7ndarray_4ndim_ndim(__pyx_v_x0) != 2);
+  if (unlikely(__pyx_t_4)) {
+
+    /* "SIR_diffusion_wrap.pyx":156
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ *     if x0.ndim != 2:
+ *         raise ValueError("x0 must have shape (n_fields, n)")             # <<<<<<<<<<<<<<
+ * 
+ *     cdef size_t n_hours  = <size_t>hourly_weights.shape[0]
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_INCREF(__pyx_builtin_ValueError);
+    __pyx_t_6 = __pyx_builtin_ValueError; 
+    __pyx_t_7 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_mstate_global->__pyx_kp_u_x0_must_have_shape_n_fields_n};
+      __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_6, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 156, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+    }
+    __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __PYX_ERR(0, 156, __pyx_L1_error)
+
+    /* "SIR_diffusion_wrap.pyx":155
+ *     if hourly_weights.ndim != 3:
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ *     if x0.ndim != 2:             # <<<<<<<<<<<<<<
+ *         raise ValueError("x0 must have shape (n_fields, n)")
+ * 
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":158
+ *         raise ValueError("x0 must have shape (n_fields, n)")
+ * 
+ *     cdef size_t n_hours  = <size_t>hourly_weights.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef size_t n        = <size_t>hourly_weights.shape[1]
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]
+*/
+  __pyx_v_n_hours = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_hourly_weights)[0]));
+
+  /* "SIR_diffusion_wrap.pyx":159
+ * 
+ *     cdef size_t n_hours  = <size_t>hourly_weights.shape[0]
+ *     cdef size_t n        = <size_t>hourly_weights.shape[1]             # <<<<<<<<<<<<<<
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]
+ *     if n != n2:
+*/
+  __pyx_v_n = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_hourly_weights)[1]));
+
+  /* "SIR_diffusion_wrap.pyx":160
+ *     cdef size_t n_hours  = <size_t>hourly_weights.shape[0]
+ *     cdef size_t n        = <size_t>hourly_weights.shape[1]
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]             # <<<<<<<<<<<<<<
+ *     if n != n2:
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+*/
+  __pyx_v_n2 = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_hourly_weights)[2]));
+
+  /* "SIR_diffusion_wrap.pyx":161
+ *     cdef size_t n        = <size_t>hourly_weights.shape[1]
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]
+ *     if n != n2:             # <<<<<<<<<<<<<<
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ * 
+*/
+  __pyx_t_4 = (__pyx_v_n != __pyx_v_n2);
+  if (unlikely(__pyx_t_4)) {
+
+    /* "SIR_diffusion_wrap.pyx":162
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]
+ *     if n != n2:
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")             # <<<<<<<<<<<<<<
+ * 
+ *     cdef size_t n_fields = <size_t>x0.shape[0]
+*/
+    __pyx_t_6 = NULL;
+    __Pyx_INCREF(__pyx_builtin_ValueError);
+    __pyx_t_2 = __pyx_builtin_ValueError; 
+    __pyx_t_7 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_mstate_global->__pyx_kp_u_hourly_weights_must_have_shape_n};
+      __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 162, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+    }
+    __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __PYX_ERR(0, 162, __pyx_L1_error)
+
+    /* "SIR_diffusion_wrap.pyx":161
+ *     cdef size_t n        = <size_t>hourly_weights.shape[1]
+ *     cdef size_t n2       = <size_t>hourly_weights.shape[2]
+ *     if n != n2:             # <<<<<<<<<<<<<<
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ * 
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":164
+ *         raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+ * 
+ *     cdef size_t n_fields = <size_t>x0.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef size_t n_x      = <size_t>x0.shape[1]
+ *     if n_x != n:
+*/
+  __pyx_v_n_fields = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[0]));
+
+  /* "SIR_diffusion_wrap.pyx":165
+ * 
+ *     cdef size_t n_fields = <size_t>x0.shape[0]
+ *     cdef size_t n_x      = <size_t>x0.shape[1]             # <<<<<<<<<<<<<<
+ *     if n_x != n:
+ *         raise ValueError("x0 second dimension must match n (graph size)")
+*/
+  __pyx_v_n_x = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[1]));
+
+  /* "SIR_diffusion_wrap.pyx":166
+ *     cdef size_t n_fields = <size_t>x0.shape[0]
+ *     cdef size_t n_x      = <size_t>x0.shape[1]
+ *     if n_x != n:             # <<<<<<<<<<<<<<
+ *         raise ValueError("x0 second dimension must match n (graph size)")
+ * 
+*/
+  __pyx_t_4 = (__pyx_v_n_x != __pyx_v_n);
+  if (unlikely(__pyx_t_4)) {
+
+    /* "SIR_diffusion_wrap.pyx":167
+ *     cdef size_t n_x      = <size_t>x0.shape[1]
+ *     if n_x != n:
+ *         raise ValueError("x0 second dimension must match n (graph size)")             # <<<<<<<<<<<<<<
+ * 
+ *     cdef size_t take     = snapshots if snapshots <= steps else steps
+*/
+    __pyx_t_2 = NULL;
+    __Pyx_INCREF(__pyx_builtin_ValueError);
+    __pyx_t_6 = __pyx_builtin_ValueError; 
+    __pyx_t_7 = 1;
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_mstate_global->__pyx_kp_u_x0_second_dimension_must_match_n};
+      __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_6, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+    }
+    __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __PYX_ERR(0, 167, __pyx_L1_error)
+
+    /* "SIR_diffusion_wrap.pyx":166
+ *     cdef size_t n_fields = <size_t>x0.shape[0]
+ *     cdef size_t n_x      = <size_t>x0.shape[1]
+ *     if n_x != n:             # <<<<<<<<<<<<<<
+ *         raise ValueError("x0 second dimension must match n (graph size)")
+ * 
+*/
+  }
+
+  /* "SIR_diffusion_wrap.pyx":169
+ *         raise ValueError("x0 second dimension must match n (graph size)")
+ * 
  *     cdef size_t take     = snapshots if snapshots <= steps else steps             # <<<<<<<<<<<<<<
  * 
  *     cdef PyRHSContext ctx
 */
-  __pyx_t_2 = (__pyx_v_snapshots <= __pyx_v_steps);
-  if (__pyx_t_2) {
-    __pyx_t_1 = __pyx_v_snapshots;
+  __pyx_t_4 = (__pyx_v_snapshots <= __pyx_v_steps);
+  if (__pyx_t_4) {
+    __pyx_t_7 = __pyx_v_snapshots;
   } else {
-    __pyx_t_1 = __pyx_v_steps;
+    __pyx_t_7 = __pyx_v_steps;
   }
-  __pyx_v_take = __pyx_t_1;
+  __pyx_v_take = __pyx_t_7;
 
-  /* "SIR_diffusion_wrap.pyx":140
+  /* "SIR_diffusion_wrap.pyx":172
  * 
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn             # <<<<<<<<<<<<<<
@@ -6179,108 +6558,108 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUS
 */
   __pyx_v_ctx.fn_obj = ((void *)__pyx_v_rhs_fn);
 
-  /* "SIR_diffusion_wrap.pyx":141
+  /* "SIR_diffusion_wrap.pyx":173
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn
  *     ctx.params_obj = <void*>params             # <<<<<<<<<<<<<<
  * 
- *     cdef const double* L_ptr  = <const double*> L.data
+ *     cdef const double* H_ptr  = <const double*>hourly_weights.data
 */
   __pyx_v_ctx.params_obj = ((void *)__pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":143
+  /* "SIR_diffusion_wrap.pyx":175
  *     ctx.params_obj = <void*>params
  * 
- *     cdef const double* L_ptr  = <const double*> L.data             # <<<<<<<<<<<<<<
- *     cdef const double* x0_ptr = <const double*> x0.data
+ *     cdef const double* H_ptr  = <const double*>hourly_weights.data             # <<<<<<<<<<<<<<
+ *     cdef const double* x0_ptr = <const double*>x0.data
  * 
 */
-  __pyx_v_L_ptr = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_L));
+  __pyx_v_H_ptr = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_hourly_weights));
 
-  /* "SIR_diffusion_wrap.pyx":144
+  /* "SIR_diffusion_wrap.pyx":176
  * 
- *     cdef const double* L_ptr  = <const double*> L.data
- *     cdef const double* x0_ptr = <const double*> x0.data             # <<<<<<<<<<<<<<
+ *     cdef const double* H_ptr  = <const double*>hourly_weights.data
+ *     cdef const double* x0_ptr = <const double*>x0.data             # <<<<<<<<<<<<<<
  * 
- *     cdef double* out_ptr = euler_solve_graph(L_ptr, x0_ptr,
+ *     cdef double* out_ptr = euler_solve_graph(
 */
   __pyx_v_x0_ptr = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_x0));
 
-  /* "SIR_diffusion_wrap.pyx":146
- *     cdef const double* x0_ptr = <const double*> x0.data
+  /* "SIR_diffusion_wrap.pyx":178
+ *     cdef const double* x0_ptr = <const double*>x0.data
  * 
- *     cdef double* out_ptr = euler_solve_graph(L_ptr, x0_ptr,             # <<<<<<<<<<<<<<
- *                                              n, n_fields,
- *                                              dt, steps, snapshots,
+ *     cdef double* out_ptr = euler_solve_graph(             # <<<<<<<<<<<<<<
+ *         H_ptr,
+ *         x0_ptr,
 */
-  __pyx_v_out_ptr = euler_solve_graph(__pyx_v_L_ptr, __pyx_v_x0_ptr, __pyx_v_n, __pyx_v_n_fields, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, ((rhs_graph_fn)__pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline), ((void *)(&__pyx_v_ctx)));
+  __pyx_v_out_ptr = euler_solve_graph(__pyx_v_H_ptr, __pyx_v_x0_ptr, __pyx_v_n, __pyx_v_n_fields, __pyx_v_n_hours, __pyx_v_t0_hours, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, ((rhs_graph_fn)__pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline), ((void *)(&__pyx_v_ctx)));
 
-  /* "SIR_diffusion_wrap.pyx":152
- *                                              <void*>&ctx)
+  /* "SIR_diffusion_wrap.pyx":191
+ *     )
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)             # <<<<<<<<<<<<<<
  *     memcpy(<void*>out.data, <const void*>out_ptr,
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
 */
-  __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 152, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 152, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 152, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_7 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 152, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyLong_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 152, __pyx_L1_error)
+  __pyx_t_6 = NULL;
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_8 = __Pyx_PyLong_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = PyTuple_New(3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 152, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __Pyx_GIVEREF(__pyx_t_5);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 152, __pyx_L1_error);
-  __Pyx_GIVEREF(__pyx_t_7);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_7) != (0)) __PYX_ERR(0, 152, __pyx_L1_error);
+  __Pyx_GIVEREF(__pyx_t_2);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_2) != (0)) __PYX_ERR(0, 191, __pyx_L1_error);
+  __Pyx_GIVEREF(__pyx_t_1);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_1) != (0)) __PYX_ERR(0, 191, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_8);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 2, __pyx_t_8) != (0)) __PYX_ERR(0, 152, __pyx_L1_error);
-  __pyx_t_5 = 0;
-  __pyx_t_7 = 0;
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 2, __pyx_t_8) != (0)) __PYX_ERR(0, 191, __pyx_L1_error);
+  __pyx_t_2 = 0;
+  __pyx_t_1 = 0;
   __pyx_t_8 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 152, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 152, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_1 = 1;
+  __pyx_t_7 = 1;
   #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_6))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
-    assert(__pyx_t_4);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
-    __Pyx_INCREF(__pyx_t_4);
+  if (unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+    assert(__pyx_t_6);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+    __Pyx_INCREF(__pyx_t_6);
     __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
-    __pyx_t_1 = 0;
+    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+    __pyx_t_7 = 0;
   }
   #endif
   {
-    PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_4, __pyx_t_9};
-    __pyx_t_8 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 152, __pyx_L1_error)
+    PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_6, __pyx_t_9};
+    __pyx_t_8 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_7, __pyx_t_8, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 152, __pyx_L1_error)
-    __pyx_t_3 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_6, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_8);
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_1, __pyx_t_8, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 191, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_3, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_8);
+    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 152, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 191, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
   }
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 152, __pyx_L1_error)
-  __pyx_v_out = ((PyArrayObject *)__pyx_t_3);
-  __pyx_t_3 = 0;
+  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_v_out = ((PyArrayObject *)__pyx_t_5);
+  __pyx_t_5 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":153
+  /* "SIR_diffusion_wrap.pyx":192
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)
  *     memcpy(<void*>out.data, <const void*>out_ptr,             # <<<<<<<<<<<<<<
@@ -6289,7 +6668,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUS
 */
   (void)(memcpy(((void *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_out)), ((void const *)__pyx_v_out_ptr), (((((size_t)__pyx_v_take) * __pyx_v_n_fields) * __pyx_v_n) * (sizeof(__pyx_t_18SIR_diffusion_wrap_DTYPE_t)))));
 
-  /* "SIR_diffusion_wrap.pyx":155
+  /* "SIR_diffusion_wrap.pyx":194
  *     memcpy(<void*>out.data, <const void*>out_ptr,
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
  *     free_array(out_ptr)             # <<<<<<<<<<<<<<
@@ -6298,7 +6677,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUS
 */
   free_array(__pyx_v_out_ptr);
 
-  /* "SIR_diffusion_wrap.pyx":156
+  /* "SIR_diffusion_wrap.pyx":195
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
  *     free_array(out_ptr)
  *     return out             # <<<<<<<<<<<<<<
@@ -6310,33 +6689,35 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_2euler_solve_graph_rd(CYTHON_UNUS
   __pyx_r = ((PyObject *)__pyx_v_out);
   goto __pyx_L0;
 
-  /* "SIR_diffusion_wrap.pyx":132
- *     return out
+  /* "SIR_diffusion_wrap.pyx":136
+ * # because the C function euler_solve_graph now has the hourly+interp signature.
  * 
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,             # <<<<<<<<<<<<<<
- *                          double dt, size_t steps, size_t snapshots,
- *                          rhs_fn, params=None):
+ * def euler_solve_graph_rd(cnp.ndarray hourly_weights,             # <<<<<<<<<<<<<<
+ *                          cnp.ndarray x0,
+ *                          double t0_hours,
 */
 
   /* function exit code */
   __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("SIR_diffusion_wrap.euler_solve_graph_rd", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_out);
+  __Pyx_XDECREF((PyObject *)__pyx_v_hourly_weights);
+  __Pyx_XDECREF((PyObject *)__pyx_v_x0);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "SIR_diffusion_wrap.pyx":158
+/* "SIR_diffusion_wrap.pyx":197
  *     return out
  * 
  * def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,             # <<<<<<<<<<<<<<
@@ -6392,52 +6773,52 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_indptr_list,&__pyx_mstate_global->__pyx_n_u_indices_list,&__pyx_mstate_global->__pyx_n_u_data_list,&__pyx_mstate_global->__pyx_n_u_x0,&__pyx_mstate_global->__pyx_n_u_dt,&__pyx_mstate_global->__pyx_n_u_steps,&__pyx_mstate_global->__pyx_n_u_snapshots,&__pyx_mstate_global->__pyx_n_u_rhs_fn,&__pyx_mstate_global->__pyx_n_u_params,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 158, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 197, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  9:
         values[8] = __Pyx_ArgRef_FASTCALL(__pyx_args, 8);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[8])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[8])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  8:
         values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  7:
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  6:
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  5:
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  4:
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_graph_csr_rd", 0) < (0)) __PYX_ERR(0, 158, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "euler_solve_graph_csr_rd", 0) < (0)) __PYX_ERR(0, 197, __pyx_L3_error)
 
-      /* "SIR_diffusion_wrap.pyx":161
+      /* "SIR_diffusion_wrap.pyx":200
  *                              cnp.ndarray x0,
  *                              double dt, size_t steps, size_t snapshots,
  *                              rhs_fn, params=None):             # <<<<<<<<<<<<<<
@@ -6446,31 +6827,31 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[8]) values[8] = __Pyx_NewRef(((PyObject *)Py_None));
       for (Py_ssize_t i = __pyx_nargs; i < 8; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_graph_csr_rd", 0, 8, 9, i); __PYX_ERR(0, 158, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("euler_solve_graph_csr_rd", 0, 8, 9, i); __PYX_ERR(0, 197, __pyx_L3_error) }
       }
     } else {
       switch (__pyx_nargs) {
         case  9:
         values[8] = __Pyx_ArgRef_FASTCALL(__pyx_args, 8);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[8])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[8])) __PYX_ERR(0, 197, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  8:
         values[7] = __Pyx_ArgRef_FASTCALL(__pyx_args, 7);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[7])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[6] = __Pyx_ArgRef_FASTCALL(__pyx_args, 6);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[6])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[5] = __Pyx_ArgRef_FASTCALL(__pyx_args, 5);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[5])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[4] = __Pyx_ArgRef_FASTCALL(__pyx_args, 4);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[4])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 197, __pyx_L3_error)
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 158, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 197, __pyx_L3_error)
         break;
         default: goto __pyx_L5_argtuple_error;
       }
@@ -6480,15 +6861,15 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     __pyx_v_indices_list = values[1];
     __pyx_v_data_list = values[2];
     __pyx_v_x0 = ((PyArrayObject *)values[3]);
-    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 160, __pyx_L3_error)
-    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[5]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 160, __pyx_L3_error)
-    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[6]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 160, __pyx_L3_error)
+    __pyx_v_dt = __Pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_dt == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 199, __pyx_L3_error)
+    __pyx_v_steps = __Pyx_PyLong_As_size_t(values[5]); if (unlikely((__pyx_v_steps == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 199, __pyx_L3_error)
+    __pyx_v_snapshots = __Pyx_PyLong_As_size_t(values[6]); if (unlikely((__pyx_v_snapshots == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 199, __pyx_L3_error)
     __pyx_v_rhs_fn = values[7];
     __pyx_v_params = values[8];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("euler_solve_graph_csr_rd", 0, 8, 9, __pyx_nargs); __PYX_ERR(0, 158, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("euler_solve_graph_csr_rd", 0, 8, 9, __pyx_nargs); __PYX_ERR(0, 197, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -6499,10 +6880,10 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 159, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 198, __pyx_L1_error)
   __pyx_r = __pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(__pyx_self, __pyx_v_indptr_list, __pyx_v_indices_list, __pyx_v_data_list, __pyx_v_x0, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, __pyx_v_rhs_fn, __pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":158
+  /* "SIR_diffusion_wrap.pyx":197
  *     return out
  * 
  * def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,             # <<<<<<<<<<<<<<
@@ -6561,7 +6942,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("euler_solve_graph_csr_rd", 0);
 
-  /* "SIR_diffusion_wrap.pyx":178
+  /* "SIR_diffusion_wrap.pyx":217
  *     params : optional parameters for rhs_fn.
  *     """
  *     cdef size_t n_fields = <size_t>x0.shape[0]             # <<<<<<<<<<<<<<
@@ -6570,7 +6951,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_n_fields = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[0]));
 
-  /* "SIR_diffusion_wrap.pyx":179
+  /* "SIR_diffusion_wrap.pyx":218
  *     """
  *     cdef size_t n_fields = <size_t>x0.shape[0]
  *     cdef size_t n        = <size_t>x0.shape[1]             # <<<<<<<<<<<<<<
@@ -6579,7 +6960,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_n = ((size_t)(__pyx_f_5numpy_7ndarray_5shape_shape(__pyx_v_x0)[1]));
 
-  /* "SIR_diffusion_wrap.pyx":180
+  /* "SIR_diffusion_wrap.pyx":219
  *     cdef size_t n_fields = <size_t>x0.shape[0]
  *     cdef size_t n        = <size_t>x0.shape[1]
  *     cdef size_t take     = snapshots if snapshots <= steps else steps             # <<<<<<<<<<<<<<
@@ -6594,7 +6975,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   }
   __pyx_v_take = __pyx_t_1;
 
-  /* "SIR_diffusion_wrap.pyx":183
+  /* "SIR_diffusion_wrap.pyx":222
  * 
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn             # <<<<<<<<<<<<<<
@@ -6603,7 +6984,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_ctx.fn_obj = ((void *)__pyx_v_rhs_fn);
 
-  /* "SIR_diffusion_wrap.pyx":184
+  /* "SIR_diffusion_wrap.pyx":223
  *     cdef PyRHSContext ctx
  *     ctx.fn_obj = <void*>rhs_fn
  *     ctx.params_obj = <void*>params             # <<<<<<<<<<<<<<
@@ -6612,42 +6993,42 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_ctx.params_obj = ((void *)__pyx_v_params);
 
-  /* "SIR_diffusion_wrap.pyx":187
+  /* "SIR_diffusion_wrap.pyx":226
  * 
  *     # how many Laplacians do we have?
  *     cdef Py_ssize_t n_steps = len(indptr_list)             # <<<<<<<<<<<<<<
  *     if len(indices_list) != n_steps or len(data_list) != n_steps:
  *         raise ValueError("indptr_list, indices_list, data_list must have same length")
 */
-  __pyx_t_3 = PyObject_Length(__pyx_v_indptr_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_indptr_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 226, __pyx_L1_error)
   __pyx_v_n_steps = __pyx_t_3;
 
-  /* "SIR_diffusion_wrap.pyx":188
+  /* "SIR_diffusion_wrap.pyx":227
  *     # how many Laplacians do we have?
  *     cdef Py_ssize_t n_steps = len(indptr_list)
  *     if len(indices_list) != n_steps or len(data_list) != n_steps:             # <<<<<<<<<<<<<<
  *         raise ValueError("indptr_list, indices_list, data_list must have same length")
  * 
 */
-  __pyx_t_3 = PyObject_Length(__pyx_v_indices_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_indices_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 227, __pyx_L1_error)
   __pyx_t_4 = (__pyx_t_3 != __pyx_v_n_steps);
   if (!__pyx_t_4) {
   } else {
     __pyx_t_2 = __pyx_t_4;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_3 = PyObject_Length(__pyx_v_data_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_data_list); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 227, __pyx_L1_error)
   __pyx_t_4 = (__pyx_t_3 != __pyx_v_n_steps);
   __pyx_t_2 = __pyx_t_4;
   __pyx_L4_bool_binop_done:;
   if (unlikely(__pyx_t_2)) {
 
-    /* "SIR_diffusion_wrap.pyx":189
+    /* "SIR_diffusion_wrap.pyx":228
  *     cdef Py_ssize_t n_steps = len(indptr_list)
  *     if len(indices_list) != n_steps or len(data_list) != n_steps:
  *         raise ValueError("indptr_list, indices_list, data_list must have same length")             # <<<<<<<<<<<<<<
  * 
- *     # we must not ask the C solver for more steps than we have matrices for
+ *     # do not ask C for more steps than we have matrices
 */
     __pyx_t_6 = NULL;
     __Pyx_INCREF(__pyx_builtin_ValueError);
@@ -6658,14 +7039,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_7, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 228, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
     }
     __Pyx_Raise(__pyx_t_5, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __PYX_ERR(0, 189, __pyx_L1_error)
+    __PYX_ERR(0, 228, __pyx_L1_error)
 
-    /* "SIR_diffusion_wrap.pyx":188
+    /* "SIR_diffusion_wrap.pyx":227
  *     # how many Laplacians do we have?
  *     cdef Py_ssize_t n_steps = len(indptr_list)
  *     if len(indices_list) != n_steps or len(data_list) != n_steps:             # <<<<<<<<<<<<<<
@@ -6674,9 +7055,9 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   }
 
-  /* "SIR_diffusion_wrap.pyx":192
+  /* "SIR_diffusion_wrap.pyx":231
  * 
- *     # we must not ask the C solver for more steps than we have matrices for
+ *     # do not ask C for more steps than we have matrices
  *     if steps > <size_t>n_steps:             # <<<<<<<<<<<<<<
  *         steps = <size_t>n_steps
  * 
@@ -6684,8 +7065,8 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   __pyx_t_2 = (__pyx_v_steps > ((size_t)__pyx_v_n_steps));
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":193
- *     # we must not ask the C solver for more steps than we have matrices for
+    /* "SIR_diffusion_wrap.pyx":232
+ *     # do not ask C for more steps than we have matrices
  *     if steps > <size_t>n_steps:
  *         steps = <size_t>n_steps             # <<<<<<<<<<<<<<
  * 
@@ -6693,16 +7074,16 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     __pyx_v_steps = ((size_t)__pyx_v_n_steps);
 
-    /* "SIR_diffusion_wrap.pyx":192
+    /* "SIR_diffusion_wrap.pyx":231
  * 
- *     # we must not ask the C solver for more steps than we have matrices for
+ *     # do not ask C for more steps than we have matrices
  *     if steps > <size_t>n_steps:             # <<<<<<<<<<<<<<
  *         steps = <size_t>n_steps
  * 
 */
   }
 
-  /* "SIR_diffusion_wrap.pyx":196
+  /* "SIR_diffusion_wrap.pyx":235
  * 
  *     # allocate C arrays of pointers
  *     cdef const int   **indptr_ptrs  = <const int **>  malloc(n_steps * sizeof(const int *))             # <<<<<<<<<<<<<<
@@ -6711,7 +7092,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_indptr_ptrs = ((int const **)malloc((__pyx_v_n_steps * (sizeof(int const *)))));
 
-  /* "SIR_diffusion_wrap.pyx":197
+  /* "SIR_diffusion_wrap.pyx":236
  *     # allocate C arrays of pointers
  *     cdef const int   **indptr_ptrs  = <const int **>  malloc(n_steps * sizeof(const int *))
  *     cdef const int   **indices_ptrs = <const int **>  malloc(n_steps * sizeof(const int *))             # <<<<<<<<<<<<<<
@@ -6720,7 +7101,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_indices_ptrs = ((int const **)malloc((__pyx_v_n_steps * (sizeof(int const *)))));
 
-  /* "SIR_diffusion_wrap.pyx":198
+  /* "SIR_diffusion_wrap.pyx":237
  *     cdef const int   **indptr_ptrs  = <const int **>  malloc(n_steps * sizeof(const int *))
  *     cdef const int   **indices_ptrs = <const int **>  malloc(n_steps * sizeof(const int *))
  *     cdef const double**data_ptrs    = <const double**>malloc(n_steps * sizeof(const double *))             # <<<<<<<<<<<<<<
@@ -6729,7 +7110,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_data_ptrs = ((double const **)malloc((__pyx_v_n_steps * (sizeof(double const *)))));
 
-  /* "SIR_diffusion_wrap.pyx":200
+  /* "SIR_diffusion_wrap.pyx":239
  *     cdef const double**data_ptrs    = <const double**>malloc(n_steps * sizeof(const double *))
  * 
  *     if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:             # <<<<<<<<<<<<<<
@@ -6753,7 +7134,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   __pyx_L8_bool_binop_done:;
   if (__pyx_t_2) {
 
-    /* "SIR_diffusion_wrap.pyx":201
+    /* "SIR_diffusion_wrap.pyx":240
  * 
  *     if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:
  *         if indptr_ptrs  != NULL: free(<void*>indptr_ptrs)             # <<<<<<<<<<<<<<
@@ -6765,7 +7146,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_indptr_ptrs));
     }
 
-    /* "SIR_diffusion_wrap.pyx":202
+    /* "SIR_diffusion_wrap.pyx":241
  *     if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:
  *         if indptr_ptrs  != NULL: free(<void*>indptr_ptrs)
  *         if indices_ptrs != NULL: free(<void*>indices_ptrs)             # <<<<<<<<<<<<<<
@@ -6777,7 +7158,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_indices_ptrs));
     }
 
-    /* "SIR_diffusion_wrap.pyx":203
+    /* "SIR_diffusion_wrap.pyx":242
  *         if indptr_ptrs  != NULL: free(<void*>indptr_ptrs)
  *         if indices_ptrs != NULL: free(<void*>indices_ptrs)
  *         if data_ptrs    != NULL: free(<void*>data_ptrs)             # <<<<<<<<<<<<<<
@@ -6789,16 +7170,16 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_data_ptrs));
     }
 
-    /* "SIR_diffusion_wrap.pyx":204
+    /* "SIR_diffusion_wrap.pyx":243
  *         if indices_ptrs != NULL: free(<void*>indices_ptrs)
  *         if data_ptrs    != NULL: free(<void*>data_ptrs)
  *         raise MemoryError()             # <<<<<<<<<<<<<<
  * 
  *     cdef cnp.ndarray arr
 */
-    PyErr_NoMemory(); __PYX_ERR(0, 204, __pyx_L1_error)
+    PyErr_NoMemory(); __PYX_ERR(0, 243, __pyx_L1_error)
 
-    /* "SIR_diffusion_wrap.pyx":200
+    /* "SIR_diffusion_wrap.pyx":239
  *     cdef const double**data_ptrs    = <const double**>malloc(n_steps * sizeof(const double *))
  * 
  *     if indptr_ptrs == NULL or indices_ptrs == NULL or data_ptrs == NULL:             # <<<<<<<<<<<<<<
@@ -6807,7 +7188,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   }
 
-  /* "SIR_diffusion_wrap.pyx":210
+  /* "SIR_diffusion_wrap.pyx":249
  * 
  *     # fill pointer arrays from Python lists
  *     for i in range(n_steps):             # <<<<<<<<<<<<<<
@@ -6819,14 +7200,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "SIR_diffusion_wrap.pyx":211
+    /* "SIR_diffusion_wrap.pyx":250
  *     # fill pointer arrays from Python lists
  *     for i in range(n_steps):
  *         arr = <cnp.ndarray>indptr_list[i]             # <<<<<<<<<<<<<<
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
 */
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_indptr_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_indptr_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_7 = __pyx_t_5;
     __Pyx_INCREF(__pyx_t_7);
@@ -6834,7 +7215,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_arr, ((PyArrayObject *)__pyx_t_7));
     __pyx_t_7 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":212
+    /* "SIR_diffusion_wrap.pyx":251
  *     for i in range(n_steps):
  *         arr = <cnp.ndarray>indptr_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -6844,7 +7225,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __pyx_t_2 = (__pyx_f_5numpy_7ndarray_4ndim_ndim(__pyx_v_arr) != 1);
     if (unlikely(__pyx_t_2)) {
 
-      /* "SIR_diffusion_wrap.pyx":213
+      /* "SIR_diffusion_wrap.pyx":252
  *         arr = <cnp.ndarray>indptr_list[i]
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)             # <<<<<<<<<<<<<<
@@ -6855,7 +7236,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_indices_ptrs));
       free(((void *)__pyx_v_data_ptrs));
 
-      /* "SIR_diffusion_wrap.pyx":214
+      /* "SIR_diffusion_wrap.pyx":253
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each indptr must be 1D array")             # <<<<<<<<<<<<<<
@@ -6871,14 +7252,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
         __pyx_t_7 = __Pyx_PyObject_FastCall(__pyx_t_6, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 214, __pyx_L1_error)
+        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 253, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
       }
       __Pyx_Raise(__pyx_t_7, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __PYX_ERR(0, 214, __pyx_L1_error)
+      __PYX_ERR(0, 253, __pyx_L1_error)
 
-      /* "SIR_diffusion_wrap.pyx":212
+      /* "SIR_diffusion_wrap.pyx":251
  *     for i in range(n_steps):
  *         arr = <cnp.ndarray>indptr_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -6887,7 +7268,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     }
 
-    /* "SIR_diffusion_wrap.pyx":215
+    /* "SIR_diffusion_wrap.pyx":254
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each indptr must be 1D array")
  *         indptr_ptrs[i] = <const int*>arr.data             # <<<<<<<<<<<<<<
@@ -6896,14 +7277,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     (__pyx_v_indptr_ptrs[__pyx_v_i]) = ((int const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_arr));
 
-    /* "SIR_diffusion_wrap.pyx":217
+    /* "SIR_diffusion_wrap.pyx":256
  *         indptr_ptrs[i] = <const int*>arr.data
  * 
  *         arr = <cnp.ndarray>indices_list[i]             # <<<<<<<<<<<<<<
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
 */
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_indices_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 217, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_indices_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 256, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_6 = __pyx_t_7;
     __Pyx_INCREF(__pyx_t_6);
@@ -6911,7 +7292,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __Pyx_DECREF_SET(__pyx_v_arr, ((PyArrayObject *)__pyx_t_6));
     __pyx_t_6 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":218
+    /* "SIR_diffusion_wrap.pyx":257
  * 
  *         arr = <cnp.ndarray>indices_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -6921,7 +7302,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __pyx_t_2 = (__pyx_f_5numpy_7ndarray_4ndim_ndim(__pyx_v_arr) != 1);
     if (unlikely(__pyx_t_2)) {
 
-      /* "SIR_diffusion_wrap.pyx":219
+      /* "SIR_diffusion_wrap.pyx":258
  *         arr = <cnp.ndarray>indices_list[i]
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)             # <<<<<<<<<<<<<<
@@ -6932,7 +7313,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_indices_ptrs));
       free(((void *)__pyx_v_data_ptrs));
 
-      /* "SIR_diffusion_wrap.pyx":220
+      /* "SIR_diffusion_wrap.pyx":259
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each indices must be 1D array")             # <<<<<<<<<<<<<<
@@ -6948,14 +7329,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
         __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 220, __pyx_L1_error)
+        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 259, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
       }
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __PYX_ERR(0, 220, __pyx_L1_error)
+      __PYX_ERR(0, 259, __pyx_L1_error)
 
-      /* "SIR_diffusion_wrap.pyx":218
+      /* "SIR_diffusion_wrap.pyx":257
  * 
  *         arr = <cnp.ndarray>indices_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -6964,7 +7345,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     }
 
-    /* "SIR_diffusion_wrap.pyx":221
+    /* "SIR_diffusion_wrap.pyx":260
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each indices must be 1D array")
  *         indices_ptrs[i] = <const int*>arr.data             # <<<<<<<<<<<<<<
@@ -6973,14 +7354,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     (__pyx_v_indices_ptrs[__pyx_v_i]) = ((int const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_arr));
 
-    /* "SIR_diffusion_wrap.pyx":223
+    /* "SIR_diffusion_wrap.pyx":262
  *         indices_ptrs[i] = <const int*>arr.data
  * 
  *         arr = <cnp.ndarray>data_list[i]             # <<<<<<<<<<<<<<
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
 */
-    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_data_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_data_list, __pyx_v_i, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 262, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_5 = __pyx_t_6;
     __Pyx_INCREF(__pyx_t_5);
@@ -6988,7 +7369,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __Pyx_DECREF_SET(__pyx_v_arr, ((PyArrayObject *)__pyx_t_5));
     __pyx_t_5 = 0;
 
-    /* "SIR_diffusion_wrap.pyx":224
+    /* "SIR_diffusion_wrap.pyx":263
  * 
  *         arr = <cnp.ndarray>data_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -6998,7 +7379,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     __pyx_t_2 = (__pyx_f_5numpy_7ndarray_4ndim_ndim(__pyx_v_arr) != 1);
     if (unlikely(__pyx_t_2)) {
 
-      /* "SIR_diffusion_wrap.pyx":225
+      /* "SIR_diffusion_wrap.pyx":264
  *         arr = <cnp.ndarray>data_list[i]
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)             # <<<<<<<<<<<<<<
@@ -7009,7 +7390,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
       free(((void *)__pyx_v_indices_ptrs));
       free(((void *)__pyx_v_data_ptrs));
 
-      /* "SIR_diffusion_wrap.pyx":226
+      /* "SIR_diffusion_wrap.pyx":265
  *         if arr.ndim != 1:
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each data must be 1D array")             # <<<<<<<<<<<<<<
@@ -7025,14 +7406,14 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
         __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_7, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
         __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 226, __pyx_L1_error)
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 265, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
       }
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __PYX_ERR(0, 226, __pyx_L1_error)
+      __PYX_ERR(0, 265, __pyx_L1_error)
 
-      /* "SIR_diffusion_wrap.pyx":224
+      /* "SIR_diffusion_wrap.pyx":263
  * 
  *         arr = <cnp.ndarray>data_list[i]
  *         if arr.ndim != 1:             # <<<<<<<<<<<<<<
@@ -7041,7 +7422,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
     }
 
-    /* "SIR_diffusion_wrap.pyx":227
+    /* "SIR_diffusion_wrap.pyx":266
  *             free(<void*>indptr_ptrs); free(<void*>indices_ptrs); free(<void*>data_ptrs)
  *             raise ValueError("each data must be 1D array")
  *         data_ptrs[i] = <const double*>arr.data             # <<<<<<<<<<<<<<
@@ -7051,7 +7432,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
     (__pyx_v_data_ptrs[__pyx_v_i]) = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_arr));
   }
 
-  /* "SIR_diffusion_wrap.pyx":229
+  /* "SIR_diffusion_wrap.pyx":268
  *         data_ptrs[i] = <const double*>arr.data
  * 
  *     cdef const double* x0_ptr = <const double*> x0.data             # <<<<<<<<<<<<<<
@@ -7060,7 +7441,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_x0_ptr = ((double const *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_x0));
 
-  /* "SIR_diffusion_wrap.pyx":231
+  /* "SIR_diffusion_wrap.pyx":270
  *     cdef const double* x0_ptr = <const double*> x0.data
  * 
  *     cdef double* out_ptr = euler_solve_graph_csr(             # <<<<<<<<<<<<<<
@@ -7069,7 +7450,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   __pyx_v_out_ptr = euler_solve_graph_csr(__pyx_v_indptr_ptrs, __pyx_v_indices_ptrs, __pyx_v_data_ptrs, __pyx_v_x0_ptr, __pyx_v_n, __pyx_v_n_fields, __pyx_v_dt, __pyx_v_steps, __pyx_v_snapshots, ((rhs_graph_fn)__pyx_f_18SIR_diffusion_wrap__rhs_graph_trampoline), ((void *)(&__pyx_v_ctx)));
 
-  /* "SIR_diffusion_wrap.pyx":240
+  /* "SIR_diffusion_wrap.pyx":279
  *     )
  * 
  *     free(<void*>indptr_ptrs)             # <<<<<<<<<<<<<<
@@ -7078,7 +7459,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   free(((void *)__pyx_v_indptr_ptrs));
 
-  /* "SIR_diffusion_wrap.pyx":241
+  /* "SIR_diffusion_wrap.pyx":280
  * 
  *     free(<void*>indptr_ptrs)
  *     free(<void*>indices_ptrs)             # <<<<<<<<<<<<<<
@@ -7087,7 +7468,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   free(((void *)__pyx_v_indices_ptrs));
 
-  /* "SIR_diffusion_wrap.pyx":242
+  /* "SIR_diffusion_wrap.pyx":281
  *     free(<void*>indptr_ptrs)
  *     free(<void*>indices_ptrs)
  *     free(<void*>data_ptrs)             # <<<<<<<<<<<<<<
@@ -7096,7 +7477,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   free(((void *)__pyx_v_data_ptrs));
 
-  /* "SIR_diffusion_wrap.pyx":244
+  /* "SIR_diffusion_wrap.pyx":283
  *     free(<void*>data_ptrs)
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -7104,31 +7485,31 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
 */
   __pyx_t_7 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_empty); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyLong_FromSize_t(__pyx_v_take); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_11 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyLong_FromSize_t(__pyx_v_n_fields); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
-  __pyx_t_12 = __Pyx_PyLong_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyLong_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
-  __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_GIVEREF(__pyx_t_6);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_6) != (0)) __PYX_ERR(0, 244, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_6) != (0)) __PYX_ERR(0, 283, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_11);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_t_11) != (0)) __PYX_ERR(0, 244, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 1, __pyx_t_11) != (0)) __PYX_ERR(0, 283, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_12);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 2, __pyx_t_12) != (0)) __PYX_ERR(0, 244, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_13, 2, __pyx_t_12) != (0)) __PYX_ERR(0, 283, __pyx_L1_error);
   __pyx_t_6 = 0;
   __pyx_t_11 = 0;
   __pyx_t_12 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
-  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_float64); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   __pyx_t_1 = 1;
@@ -7145,23 +7526,23 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   #endif
   {
     PyObject *__pyx_callargs[2 + ((CYTHON_VECTORCALL) ? 1 : 0)] = {__pyx_t_7, __pyx_t_13};
-    __pyx_t_12 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 244, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_MakeVectorcallBuilderKwds(1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 283, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_11, __pyx_t_12, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 244, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_dtype, __pyx_t_11, __pyx_t_12, __pyx_callargs+2, 0) < (0)) __PYX_ERR(0, 283, __pyx_L1_error)
     __pyx_t_5 = __Pyx_Object_Vectorcall_CallFromBuilder(__pyx_t_10, __pyx_callargs+__pyx_t_1, (2-__pyx_t_1) | (__pyx_t_1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_12);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 244, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 283, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
   }
-  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 244, __pyx_L1_error)
+  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_mstate_global->__pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 283, __pyx_L1_error)
   __pyx_v_out = ((PyArrayObject *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":245
+  /* "SIR_diffusion_wrap.pyx":284
  * 
  *     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)
  *     memcpy(<void*>out.data, <const void*>out_ptr,             # <<<<<<<<<<<<<<
@@ -7170,7 +7551,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   (void)(memcpy(((void *)__pyx_f_5numpy_7ndarray_4data_data(__pyx_v_out)), ((void const *)__pyx_v_out_ptr), (((((size_t)__pyx_v_take) * __pyx_v_n_fields) * __pyx_v_n) * (sizeof(__pyx_t_18SIR_diffusion_wrap_DTYPE_t)))));
 
-  /* "SIR_diffusion_wrap.pyx":247
+  /* "SIR_diffusion_wrap.pyx":286
  *     memcpy(<void*>out.data, <const void*>out_ptr,
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
  *     free_array(out_ptr)             # <<<<<<<<<<<<<<
@@ -7179,7 +7560,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
 */
   free_array(__pyx_v_out_ptr);
 
-  /* "SIR_diffusion_wrap.pyx":248
+  /* "SIR_diffusion_wrap.pyx":287
  *            <size_t>take * n_fields * n * sizeof(DTYPE_t))
  *     free_array(out_ptr)
  *     return out             # <<<<<<<<<<<<<<
@@ -7190,7 +7571,7 @@ static PyObject *__pyx_pf_18SIR_diffusion_wrap_4euler_solve_graph_csr_rd(CYTHON_
   __pyx_r = ((PyObject *)__pyx_v_out);
   goto __pyx_L0;
 
-  /* "SIR_diffusion_wrap.pyx":158
+  /* "SIR_diffusion_wrap.pyx":197
  *     return out
  * 
  * def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,             # <<<<<<<<<<<<<<
@@ -7761,43 +8142,43 @@ __Pyx_RefNannySetupContext("PyInit_SIR_diffusion_wrap", 0);
 */
   __pyx_t_3 = __pyx_f_5numpy_import_array(); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 10, __pyx_L1_error)
 
-  /* "SIR_diffusion_wrap.pyx":106
+  /* "SIR_diffusion_wrap.pyx":107
  * 
  * 
  * def euler_solve_normal_rd(cnp.ndarray x0,             # <<<<<<<<<<<<<<
  *                           double dx, double dy, double dt,
  *                           size_t steps, size_t snapshots,
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_1euler_solve_normal_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_normal_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_1euler_solve_normal_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_normal_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_2, __pyx_mstate_global->__pyx_tuple[0]);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_normal_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 106, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_normal_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":132
- *     return out
+  /* "SIR_diffusion_wrap.pyx":136
+ * # because the C function euler_solve_graph now has the hourly+interp signature.
  * 
- * def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,             # <<<<<<<<<<<<<<
- *                          double dt, size_t steps, size_t snapshots,
- *                          rhs_fn, params=None):
+ * def euler_solve_graph_rd(cnp.ndarray hourly_weights,             # <<<<<<<<<<<<<<
+ *                          cnp.ndarray x0,
+ *                          double t0_hours,
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_3euler_solve_graph_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_3euler_solve_graph_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_2, __pyx_mstate_global->__pyx_tuple[0]);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 132, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 136, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "SIR_diffusion_wrap.pyx":158
+  /* "SIR_diffusion_wrap.pyx":197
  *     return out
  * 
  * def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,             # <<<<<<<<<<<<<<
  *                              cnp.ndarray x0,
  *                              double dt, size_t steps, size_t snapshots,
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_5euler_solve_graph_csr_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_csr_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 158, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_18SIR_diffusion_wrap_5euler_solve_graph_csr_rd, 0, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_csr_rd, NULL, __pyx_mstate_global->__pyx_n_u_SIR_diffusion_wrap, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 197, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_2, __pyx_mstate_global->__pyx_tuple[0]);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_csr_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 158, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_euler_solve_graph_csr_rd, __pyx_t_2) < (0)) __PYX_ERR(0, 197, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "SIR_diffusion_wrap.pyx":1
@@ -7869,9 +8250,8 @@ typedef struct {
 static const char * const __pyx_string_tab_encodings[] = { 0 };
 static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_, sizeof(__pyx_k_), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_ */
+  {__pyx_k_H_ptr, sizeof(__pyx_k_H_ptr), 0, 1, 1}, /* PyObject cname: __pyx_n_u_H_ptr */
   {__pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ImportError */
-  {__pyx_k_L, sizeof(__pyx_k_L), 0, 1, 1}, /* PyObject cname: __pyx_n_u_L */
-  {__pyx_k_L_ptr, sizeof(__pyx_k_L_ptr), 0, 1, 1}, /* PyObject cname: __pyx_n_u_L_ptr */
   {__pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_MemoryError */
   {__pyx_k_Nfld, sizeof(__pyx_k_Nfld), 0, 1, 1}, /* PyObject cname: __pyx_n_u_Nfld */
   {__pyx_k_Note_that_Cython_is_deliberately, sizeof(__pyx_k_Note_that_Cython_is_deliberately), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_Note_that_Cython_is_deliberately */
@@ -7880,6 +8260,7 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ValueError */
   {__pyx_k_add_note, sizeof(__pyx_k_add_note), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_add_note */
   {__pyx_k_arr, sizeof(__pyx_k_arr), 0, 1, 1}, /* PyObject cname: __pyx_n_u_arr */
+  {__pyx_k_ascontiguousarray, sizeof(__pyx_k_ascontiguousarray), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ascontiguousarray */
   {__pyx_k_asyncio_coroutines, sizeof(__pyx_k_asyncio_coroutines), 0, 1, 1}, /* PyObject cname: __pyx_n_u_asyncio_coroutines */
   {__pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 1, 1}, /* PyObject cname: __pyx_n_u_cline_in_traceback */
   {__pyx_k_cols, sizeof(__pyx_k_cols), 0, 1, 1}, /* PyObject cname: __pyx_n_u_cols */
@@ -7899,6 +8280,8 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_euler_solve_normal_rd, sizeof(__pyx_k_euler_solve_normal_rd), 0, 1, 1}, /* PyObject cname: __pyx_n_u_euler_solve_normal_rd */
   {__pyx_k_float64, sizeof(__pyx_k_float64), 0, 1, 1}, /* PyObject cname: __pyx_n_u_float64 */
   {__pyx_k_func, sizeof(__pyx_k_func), 0, 1, 1}, /* PyObject cname: __pyx_n_u_func */
+  {__pyx_k_hourly_weights, sizeof(__pyx_k_hourly_weights), 0, 1, 1}, /* PyObject cname: __pyx_n_u_hourly_weights */
+  {__pyx_k_hourly_weights_must_have_shape_n, sizeof(__pyx_k_hourly_weights_must_have_shape_n), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_hourly_weights_must_have_shape_n */
   {__pyx_k_i, sizeof(__pyx_k_i), 0, 1, 1}, /* PyObject cname: __pyx_n_u_i */
   {__pyx_k_indices_list, sizeof(__pyx_k_indices_list), 0, 1, 1}, /* PyObject cname: __pyx_n_u_indices_list */
   {__pyx_k_indices_ptrs, sizeof(__pyx_k_indices_ptrs), 0, 1, 1}, /* PyObject cname: __pyx_n_u_indices_ptrs */
@@ -7910,8 +8293,11 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_main, sizeof(__pyx_k_main), 0, 1, 1}, /* PyObject cname: __pyx_n_u_main */
   {__pyx_k_module, sizeof(__pyx_k_module), 0, 1, 1}, /* PyObject cname: __pyx_n_u_module */
   {__pyx_k_n, sizeof(__pyx_k_n), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n */
+  {__pyx_k_n2, sizeof(__pyx_k_n2), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n2 */
   {__pyx_k_n_fields, sizeof(__pyx_k_n_fields), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n_fields */
+  {__pyx_k_n_hours, sizeof(__pyx_k_n_hours), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n_hours */
   {__pyx_k_n_steps, sizeof(__pyx_k_n_steps), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n_steps */
+  {__pyx_k_n_x, sizeof(__pyx_k_n_x), 0, 1, 1}, /* PyObject cname: __pyx_n_u_n_x */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
   {__pyx_k_np, sizeof(__pyx_k_np), 0, 1, 1}, /* PyObject cname: __pyx_n_u_np */
   {__pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 1, 1}, /* PyObject cname: __pyx_n_u_numpy */
@@ -7929,10 +8315,13 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_snapshots, sizeof(__pyx_k_snapshots), 0, 1, 1}, /* PyObject cname: __pyx_n_u_snapshots */
   {__pyx_k_spec, sizeof(__pyx_k_spec), 0, 1, 1}, /* PyObject cname: __pyx_n_u_spec */
   {__pyx_k_steps, sizeof(__pyx_k_steps), 0, 1, 1}, /* PyObject cname: __pyx_n_u_steps */
+  {__pyx_k_t0_hours, sizeof(__pyx_k_t0_hours), 0, 1, 1}, /* PyObject cname: __pyx_n_u_t0_hours */
   {__pyx_k_take, sizeof(__pyx_k_take), 0, 1, 1}, /* PyObject cname: __pyx_n_u_take */
   {__pyx_k_test, sizeof(__pyx_k_test), 0, 1, 1}, /* PyObject cname: __pyx_n_u_test */
   {__pyx_k_x0, sizeof(__pyx_k_x0), 0, 1, 1}, /* PyObject cname: __pyx_n_u_x0 */
+  {__pyx_k_x0_must_have_shape_n_fields_n, sizeof(__pyx_k_x0_must_have_shape_n_fields_n), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_x0_must_have_shape_n_fields_n */
   {__pyx_k_x0_ptr, sizeof(__pyx_k_x0_ptr), 0, 1, 1}, /* PyObject cname: __pyx_n_u_x0_ptr */
+  {__pyx_k_x0_second_dimension_must_match_n, sizeof(__pyx_k_x0_second_dimension_must_match_n), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_x0_second_dimension_must_match_n */
   {0, 0, 0, 0, 0}
 };
 /* InitStrings.proto */
@@ -7942,9 +8331,9 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry const *t, PyObject **target, c
 
 static int __Pyx_InitCachedBuiltins(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 189, __pyx_L1_error)
-  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(0, 204, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_range); if (!__pyx_builtin_range) __PYX_ERR(0, 210, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_range); if (!__pyx_builtin_range) __PYX_ERR(0, 249, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 1010, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -7957,14 +8346,14 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "SIR_diffusion_wrap.pyx":106
+  /* "SIR_diffusion_wrap.pyx":107
  * 
  * 
  * def euler_solve_normal_rd(cnp.ndarray x0,             # <<<<<<<<<<<<<<
  *                           double dx, double dy, double dt,
  *                           size_t steps, size_t snapshots,
 */
-  __pyx_mstate_global->__pyx_tuple[0] = PyTuple_Pack(1, Py_None); if (unlikely(!__pyx_mstate_global->__pyx_tuple[0])) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_mstate_global->__pyx_tuple[0] = PyTuple_Pack(1, Py_None); if (unlikely(!__pyx_mstate_global->__pyx_tuple[0])) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_RefNannyFinishContext();
@@ -8010,17 +8399,17 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   PyObject* tuple_dedup_map = PyDict_New();
   if (unlikely(!tuple_dedup_map)) return -1;
   {
-    const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 17, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 106, 204};
+    const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 17, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 107, 204};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x0, __pyx_mstate->__pyx_n_u_dx, __pyx_mstate->__pyx_n_u_dy, __pyx_mstate->__pyx_n_u_dt, __pyx_mstate->__pyx_n_u_steps, __pyx_mstate->__pyx_n_u_snapshots, __pyx_mstate->__pyx_n_u_rhs_fn, __pyx_mstate->__pyx_n_u_params, __pyx_mstate->__pyx_n_u_n_fields, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_take, __pyx_mstate->__pyx_n_u_Nfld, __pyx_mstate->__pyx_n_u_ctx, __pyx_mstate->__pyx_n_u_x0_ptr, __pyx_mstate->__pyx_n_u_out_ptr, __pyx_mstate->__pyx_n_u_out};
     __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_SIR_diffusion_wrap_pyx, __pyx_mstate->__pyx_n_u_euler_solve_normal_rd, __pyx_k_82V1A_82V1A_82V1A_4q_z_WA_0_Qhf, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 15, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 132, 185};
-    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_L, __pyx_mstate->__pyx_n_u_x0, __pyx_mstate->__pyx_n_u_dt, __pyx_mstate->__pyx_n_u_steps, __pyx_mstate->__pyx_n_u_snapshots, __pyx_mstate->__pyx_n_u_rhs_fn, __pyx_mstate->__pyx_n_u_params, __pyx_mstate->__pyx_n_u_n_fields, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_take, __pyx_mstate->__pyx_n_u_ctx, __pyx_mstate->__pyx_n_u_L_ptr, __pyx_mstate->__pyx_n_u_x0_ptr, __pyx_mstate->__pyx_n_u_out_ptr, __pyx_mstate->__pyx_n_u_out};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_SIR_diffusion_wrap_pyx, __pyx_mstate->__pyx_n_u_euler_solve_graph_rd, __pyx_k_81F_1_81F_1_z_WA_0_0_AWA_0_1_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 19, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 136, 377};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_hourly_weights, __pyx_mstate->__pyx_n_u_x0, __pyx_mstate->__pyx_n_u_t0_hours, __pyx_mstate->__pyx_n_u_dt, __pyx_mstate->__pyx_n_u_steps, __pyx_mstate->__pyx_n_u_snapshots, __pyx_mstate->__pyx_n_u_rhs_fn, __pyx_mstate->__pyx_n_u_params, __pyx_mstate->__pyx_n_u_n_hours, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_n2, __pyx_mstate->__pyx_n_u_n_fields, __pyx_mstate->__pyx_n_u_n_x, __pyx_mstate->__pyx_n_u_take, __pyx_mstate->__pyx_n_u_ctx, __pyx_mstate->__pyx_n_u_H_ptr, __pyx_mstate->__pyx_n_u_x0_ptr, __pyx_mstate->__pyx_n_u_out_ptr, __pyx_mstate->__pyx_n_u_out};
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_SIR_diffusion_wrap_pyx, __pyx_mstate->__pyx_n_u_euler_solve_graph_rd, __pyx_k_WCr_Q_fBa_r_2Q_R_fBa_V3a_j_r_s, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 22, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 158, 628};
+    const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 22, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 197, 628};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_indptr_list, __pyx_mstate->__pyx_n_u_indices_list, __pyx_mstate->__pyx_n_u_data_list, __pyx_mstate->__pyx_n_u_x0, __pyx_mstate->__pyx_n_u_dt, __pyx_mstate->__pyx_n_u_steps, __pyx_mstate->__pyx_n_u_snapshots, __pyx_mstate->__pyx_n_u_rhs_fn, __pyx_mstate->__pyx_n_u_params, __pyx_mstate->__pyx_n_u_n_fields, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_take, __pyx_mstate->__pyx_n_u_ctx, __pyx_mstate->__pyx_n_u_n_steps, __pyx_mstate->__pyx_n_u_indptr_ptrs, __pyx_mstate->__pyx_n_u_indices_ptrs, __pyx_mstate->__pyx_n_u_data_ptrs, __pyx_mstate->__pyx_n_u_arr, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_x0_ptr, __pyx_mstate->__pyx_n_u_out_ptr, __pyx_mstate->__pyx_n_u_out};
     __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_SIR_diffusion_wrap_pyx, __pyx_mstate->__pyx_n_u_euler_solve_graph_csr_rd, __pyx_k_82V1A_82V1A_z_WA_c_s_HCs_c_j_vR, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }

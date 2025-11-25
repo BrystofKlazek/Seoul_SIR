@@ -23,9 +23,14 @@ cdef extern from "SIR_diffusion.h":
                                size_t steps, size_t snapshots,
                                rhs_grid_fn rhs, void* userdata)
 
-    double* euler_solve_graph(const double *L, const double *x0,
+    # NEW: this is your renamed hourly+interp solver
+    double* euler_solve_graph(const double *hourly_weights,
+                              const double *x0,
                               size_t vec_size, size_t n_fields,
-                              double dt, size_t steps, size_t snapshots,
+                              size_t n_hours,
+                              double t0_hours,
+                              double dt,
+                              size_t steps, size_t snapshots,
                               rhs_graph_fn rhs, void* userdata)
 
     double* euler_solve_graph_csr(const int **indptr_arr,
@@ -37,10 +42,6 @@ cdef extern from "SIR_diffusion.h":
                                   rhs_graph_fn rhs, void* userdata)
 
     void free_array(double* p)
-
-cdef struct PyRHSContext:
-    void* fn_obj
-    void* params_obj
 
 cdef struct PyRHSContext:
     void* fn_obj
@@ -129,25 +130,63 @@ def euler_solve_normal_rd(cnp.ndarray x0,
     free_array(out_ptr)
     return out
 
-def euler_solve_graph_rd(cnp.ndarray L, cnp.ndarray x0,
+# NOTE: old euler_solve_graph_rd with a static L matrix is removed,
+# because the C function euler_solve_graph now has the hourly+interp signature.
+
+def euler_solve_graph_rd(cnp.ndarray hourly_weights,
+                         cnp.ndarray x0,
+                         double t0_hours,
                          double dt, size_t steps, size_t snapshots,
                          rhs_fn, params=None):
-    cdef size_t n_fields = <size_t>L.shape[0]
-    cdef size_t n        = <size_t>L.shape[1]
+    """
+    hourly_weights: shape (n_hours, n, n), float64
+    x0           : shape (n_fields, n), float64
+    t0_hours     : starting time in hours (can be fractional)
+    dt           : time step in hours
+    """
+    # ensure dtypes / contiguity
+    if hourly_weights.dtype != np.float64:
+        hourly_weights = np.ascontiguousarray(hourly_weights, dtype=np.float64)
+    if x0.dtype != np.float64:
+        x0 = np.ascontiguousarray(x0, dtype=np.float64)
+
+    if hourly_weights.ndim != 3:
+        raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+    if x0.ndim != 2:
+        raise ValueError("x0 must have shape (n_fields, n)")
+
+    cdef size_t n_hours  = <size_t>hourly_weights.shape[0]
+    cdef size_t n        = <size_t>hourly_weights.shape[1]
+    cdef size_t n2       = <size_t>hourly_weights.shape[2]
+    if n != n2:
+        raise ValueError("hourly_weights must have shape (n_hours, n, n)")
+
+    cdef size_t n_fields = <size_t>x0.shape[0]
+    cdef size_t n_x      = <size_t>x0.shape[1]
+    if n_x != n:
+        raise ValueError("x0 second dimension must match n (graph size)")
+
     cdef size_t take     = snapshots if snapshots <= steps else steps
 
     cdef PyRHSContext ctx
     ctx.fn_obj = <void*>rhs_fn
     ctx.params_obj = <void*>params
 
-    cdef const double* L_ptr  = <const double*> L.data
-    cdef const double* x0_ptr = <const double*> x0.data
+    cdef const double* H_ptr  = <const double*>hourly_weights.data
+    cdef const double* x0_ptr = <const double*>x0.data
 
-    cdef double* out_ptr = euler_solve_graph(L_ptr, x0_ptr,
-                                             n, n_fields,
-                                             dt, steps, snapshots,
-                                             <rhs_graph_fn>_rhs_graph_trampoline,
-                                             <void*>&ctx)
+    cdef double* out_ptr = euler_solve_graph(
+        H_ptr,
+        x0_ptr,
+        n, n_fields,
+        n_hours,
+        t0_hours,
+        dt,
+        steps,
+        snapshots,
+        <rhs_graph_fn>_rhs_graph_trampoline,
+        <void*>&ctx
+    )
 
     cdef cnp.ndarray out = np.empty((take, n_fields, n), dtype=np.float64)
     memcpy(<void*>out.data, <const void*>out_ptr,
@@ -188,7 +227,7 @@ def euler_solve_graph_csr_rd(indptr_list, indices_list, data_list,
     if len(indices_list) != n_steps or len(data_list) != n_steps:
         raise ValueError("indptr_list, indices_list, data_list must have same length")
 
-    # we must not ask the C solver for more steps than we have matrices for
+    # do not ask C for more steps than we have matrices
     if steps > <size_t>n_steps:
         steps = <size_t>n_steps
 
