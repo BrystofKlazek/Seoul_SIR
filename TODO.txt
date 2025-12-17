@@ -1,2 +1,4 @@
-Výpočetní test na Seoul Graphu - střed a kraj
-J data - projít jak fungují, promyslet repreznetaci a jak udělat tok
+GRAF v uzlu (toky populace) - hodí se
+
+Sepsat veškeré nové info - difuze na grafech  + detaily impl -> koncem příštího týdne
+Pak bude pokec s Korejci - online pokec Prosinec

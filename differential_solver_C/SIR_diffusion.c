@@ -103,29 +103,33 @@ static void build_laplacian_at_time(
     double *L,
     const double *hourly_weights,
     double t_hours,
-    size_t vec_size,
+    size_t n,
     size_t n_fields,
     size_t n_hours
 ) {
-	for (size_t f = 0; f < n_fields; ++f) {
-    		for (size_t i = 0; i < vec_size; ++i) {
-        		double deg = 0.0;
-        		double self_w = 0.0;
+    memset(L, 0, sizeof(double) * n_fields * n * n);
 
-        		for (size_t j = 0; j < vec_size; ++j) {
-            			double w = interp_hourly_weight(hourly_weights, t_hours,
-                                            i, j, vec_size, n_hours);
-            			if (i == j) {
-                			self_w = w;
-            			} else {
-                			L[idx3D(f, i, j, vec_size, vec_size)] = -w;
-            			}
-            			deg += w;
-        		}
+    for (size_t f = 0; f < n_fields; ++f) {
+        for (size_t i = 0; i < n; ++i) {
 
-        		L[idx3D(f, i, i, vec_size, vec_size)] = deg - self_w;
-    		}
-	}
+            // Diagonal: outgoing degree of i  (sum over k: w_{i->k})
+            double outdeg = 0.0;
+            for (size_t k = 0; k < n; ++k) {
+                if (k == i) continue;
+                outdeg += interp_hourly_weight(hourly_weights, t_hours,
+                                               i, k, n, n_hours);
+            }
+            L[idx3D(f, i, i, n, n)] = outdeg;
+
+            // Off-diagonals: - w_{j->i} placed in row i, col j
+            for (size_t j = 0; j < n; ++j) {
+                if (j == i) continue;
+                double w_in = interp_hourly_weight(hourly_weights, t_hours,
+                                                   j, i, n, n_hours);
+                L[idx3D(f, i, j, n, n)] = -w_in;
+            }
+        }
+    }
 }
 
 /*---------------------------RHS PREDECLARATION---------------------------*/

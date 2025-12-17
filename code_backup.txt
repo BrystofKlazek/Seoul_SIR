@@ -1,0 +1,16 @@
+    def _update_legend_for_frame(self, frame):
+        if (
+            self.edge_weight_fn is None
+            or self.selected_node is None
+            or self._legend is None
+            or not self._legend_texts
+        ):
+            return
+
+        u = self.selected_node
+        for v, text in zip(self._legend_neighs, self._legend_texts):
+            w_out = self.edge_weight_fn(frame, u, v)
+            w_in  = self.edge_weight_fn(frame, v, u)
+            text.set_text(f"{self.code[v]}: in {w_in:.3g}, out {w_out:.3g}")
+
+

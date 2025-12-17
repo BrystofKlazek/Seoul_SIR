@@ -12,7 +12,7 @@ import maptograph as mtg
 import numpy as np
 import nametocode as ntc
 import networkx as nx
-import matrix_builders as mb
+from matplotlib.lines import Line2D
 
 # add C solver
 this_dir = Path(__file__).resolve().parent
@@ -20,19 +20,29 @@ sys.path.append(str(this_dir.parent / "differential_solver_C"))
 
 import SIR_diffusion_wrap as sir  
 
-NORM = 5000000
-TIME_STEP = 0.25
-NUM_DAYS = 31    
-NUM_SNAPSHOTS = 150    
+NORM = 9600000*5
+TIME_STEP = 0.025
+NUM_DAYS = 40    
+NUM_SNAPSHOTS = 300    
 BETA, GAMMA = 0.03, 0.01
-SEED_IDX = 11020
+SEED_IDX = 11050
 
 def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
-    #The raw json is in the structure of
-    #weights_by_hour_raw[hour_str][u_str][v_str] = weight
-    #I turn that to 
-    #hourly[(u, v)] = np.array with each hour, already divided by norm
-    hourly = {} 
+    """
+    weights_by_hour_raw: dict[hour_str][u_str][v_str] -> weight
+
+    Returns:
+        hourly[(u, v)] = np.array of length n_hours
+        where n_hours = max(hour index) + 1
+    """
+    # Determine how many distinct hour slots we have (24 or 168, etc.)
+    if not weights_by_hour_raw:
+        return {}
+
+    hour_indices = [int(h_str) for h_str in weights_by_hour_raw.keys()]
+    n_hours = max(hour_indices) + 1   # 24 for 0..23, 168 for 0..167, ...
+
+    hourly: dict[tuple[int, int], np.ndarray] = {}
 
     for h_str, by_u in weights_by_hour_raw.items():
         h = int(h_str)
@@ -41,26 +51,46 @@ def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
             for v_str, w in neighs.items():
                 v = int(v_str)
                 key = (u, v)
+
                 arr = hourly.get(key)
                 if arr is None:
-                    arr = np.zeros(24, dtype=np.float64)
+                    arr = np.zeros(n_hours, dtype=np.float64)
                     hourly[key] = arr
-                arr[h] = float(w) / norm
+
+                # accumulate (in case there are multiple entries for same hour)
+                arr[h] += float(w) / norm
 
     return hourly
 
 
+
 def make_edge_weight_fn(hourly_weights, dt_snapshot):
-    # Here I build a small helper function to be returned- 
-    #edge_weight_fn(time, u, v)  -> weight from u to v at that frame,
-    #built using the precomputed 24-hour arrays.
-    # I prebuild these functions for speed.
+    """
+    Build edge_weight_fn(frame, u, v) using precomputed hourly arrays.
+
+    Period = length of the per-edge array:
+      - 24  => daily cycle
+      - 168 => weekly (hour-of-week) cycle
+      - etc.
+    """
+    if not hourly_weights:
+        # Degenerate case: no edges
+        def edge_weight_fn(_, __, ___):
+            return 0.0
+        return edge_weight_fn
+
+    # Infer the period from any one array
+    sample_key = next(iter(hourly_weights))
+    period_hours = len(hourly_weights[sample_key])
 
     def edge_weight_fn(frame, u, v):
+        # t is in "hours" if dt_snapshot is in hours.
         t = frame * dt_snapshot
-        h = t % 24.0
+
+        # Wrap into [0, period_hours)
+        h = t % float(period_hours)
         h0 = int(h)
-        h1 = (h0 + 1) % 24
+        h1 = (h0 + 1) % period_hours
         frac = h - h0
 
         arr = hourly_weights.get((int(u), int(v)))
@@ -72,8 +102,6 @@ def make_edge_weight_fn(hourly_weights, dt_snapshot):
         return (1.0 - frac) * w0 + frac * w1
 
     return edge_weight_fn
-
-
 def sir_rhs(state, out, beta=0.4, gamma=0.1):
     S, I, R = state[0], state[1], state[2]
     dS, dI, dR = out[0], out[1], out[2]
@@ -83,7 +111,7 @@ def sir_rhs(state, out, beta=0.4, gamma=0.1):
     dR[...] = gamma * I
 
 
-def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=24):
+def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=168):
     #Here, I construct an 24 dim array of n by n (n is size of graph)
     # arrays to pass into C, where it is weights between nodes by hour.
     node_index_attr = nx.get_node_attributes(G, "index")
@@ -104,6 +132,108 @@ def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=24):
 
     return hourly_arr, nodes, node_to_idx
 
+
+def plot_seed_weights(hourly_weights, seed_code, output_path="seed_weights.png"):
+    if not hourly_weights:
+        print("No hourly_weights, nothing to plot.")
+        return
+
+    any_arr = next(iter(hourly_weights.values()))
+    n_hours = len(any_arr)
+    t = np.arange(n_hours, dtype=float)
+
+    outgoing = {}
+    incoming = {}
+    for (u, v), arr in hourly_weights.items():
+        arr = np.asarray(arr, dtype=float)
+        if u == seed_code and v != seed_code:
+            outgoing[v] = arr
+        if v == seed_code and u != seed_code:
+            incoming[u] = arr
+
+    if not outgoing and not incoming:
+        print(f"No flows involving seed node {seed_code}, nothing to plot.")
+        return
+
+    TOP_K = 30
+
+    all_labels = sorted(set(outgoing.keys()) | set(incoming.keys()))
+    label_scores = {}
+    for lab in all_labels:
+        max_out = outgoing.get(lab, np.array([0.0])).max()
+        max_in  = incoming.get(lab, np.array([0.0])).max()
+        label_scores[lab] = max(max_out, max_in)
+
+    labels_sorted = sorted(all_labels, key=lambda x: label_scores[x], reverse=True)
+    shown_labels = labels_sorted[:TOP_K]
+
+    color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    label_color = {
+        lab: color_cycle[i % len(color_cycle)]
+        for i, lab in enumerate(shown_labels)
+    }
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+    ax_out, ax_in = axes
+
+    for lab in shown_labels:
+        if lab in outgoing:
+            ax_out.plot(
+                t,
+                outgoing[lab],
+                color=label_color[lab],
+                linewidth=1,
+            )
+    ax_out.set_title(f"Outgoing weights from {seed_code}")
+    ax_out.set_ylabel("weight")
+
+    for lab in shown_labels:
+        if lab in incoming:
+            ax_in.plot(
+                t,
+                incoming[lab],
+                color=label_color[lab],
+                linewidth=1,
+            )
+    ax_in.set_title(f"Incoming weights into {seed_code}")
+    ax_in.set_ylabel("weight")
+
+    if n_hours % 24 == 0:
+        days = n_hours // 24
+        xticks = np.arange(0, n_hours + 1, 24)
+        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        labels = [day_names[d % 7] for d in range(days + 1)]
+        ax_in.set_xticks(xticks)
+        ax_in.set_xticklabels(labels)
+        ax_in.set_xlabel("hour of week (day at 0:00)")
+    else:
+        ax_in.set_xlabel("hour index")
+
+    legend_handles = [
+        Line2D(
+            [0],
+            [0],
+            color=label_color[lab],
+            lw=1,
+            label=str(lab),
+        )
+        for lab in shown_labels
+    ]
+
+    fig.legend(
+        handles=legend_handles,
+        labels=[str(lab) for lab in shown_labels],
+        loc="center right",
+        borderaxespad=0.0,
+        frameon=False,
+        fontsize=10,
+    )
+
+    fig.tight_layout()
+    fig.subplots_adjust(right=0.90)  
+    fig.savefig(output_path, dpi=200)
+    plt.close(fig)
+    print(f"Saved seed weight plot to {output_path}")
 
 def main():
     # time step etc
@@ -159,9 +289,8 @@ def main():
     # and for the animation. 
     G = mtg.maptograph(seoul_map, mode="from_file", pairs=edge_weights0)
 
-    # ---- NEW: build dense hourly tensor for C solver ----
     hourly_tensor, nodes_order, node_to_idx = build_hourly_tensor_for_C(
-        hourly_weights, G, n_hours=24
+        hourly_weights, G, n_hours=168
     )
 
     n = len(nodes_order)
@@ -175,7 +304,7 @@ def main():
     seed_code = SEED_IDX
     seed_idx = node_to_idx[seed_code]
 
-    I0[seed_idx] = 0.1
+    I0[seed_idx] = 0.01
     S0[seed_idx] -= I0[seed_idx]
 
     x0_graph = np.stack([S0, I0, R0], axis=0)
@@ -186,7 +315,7 @@ def main():
     out_graph = sir.euler_solve_graph_rd(
         hourly_tensor,
         x0_graph,
-        0.0,          # t0_hours, I start at time 0
+        0.0,         
         dt,
         steps,
         snapshots,
@@ -205,6 +334,15 @@ def main():
     values_ts = out_graph
     var_names = ["S", "I", "R"]
 
+
+    global_max_weight = 0.0
+    for arr in hourly_weights.values():
+        if arr is None or len(arr) == 0:
+            continue
+        local_max = float(np.max(arr))
+        if local_max > global_max_weight:
+            global_max_weight = local_max
+
     # time spacing between snapshots (0 to total_time) for the animation
     T = values_ts.shape[0]
     total_time = dt * steps
@@ -213,7 +351,9 @@ def main():
     # function for time-dependent edge weights - passed to animation
     edge_weight_fn = make_edge_weight_fn(hourly_weights, dt_snapshot)
 
-    seoul = mtg.graphDisplay(G, seoul_map)
+    plot_seed_weights(hourly_weights, SEED_IDX, "seed_weights.png")
+
+    seoul = mtg.graphDisplay(G, seoul_map, max_flow=global_max_weight)
     seoul.interactive_graph()
 
     seoul.start_animation(

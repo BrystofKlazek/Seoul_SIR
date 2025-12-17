@@ -22,8 +22,9 @@ import numpy as np
 #Funciton turning GEOPANDAS map with labels into a graph and turning the label names
 #into a code
 def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
-               name_dict = ntc.code_dict()): 
+               weight_fn = None, name_dict = ntc.code_dict()): 
     
+    map = map.copy()
     #GRID to snap to (so detect edges works)
     GRID = 0.2   
     map["geometry"] = map.geometry.buffer(0).apply(
@@ -62,14 +63,21 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
                 L = float(inter.length)
                 if L >= MIN_BORDER:
                     j_code = name_dict.lookup(row_j[label])
-                    pair_ij = (i_code, j_code)
-                    pair_ji = (j_code, i_code)
-                    G.add_edge(i_code, j_code, weight=pairs[pair_ij])
-                    G.add_edge(j_code, i_code, weight=pairs[pair_ji])
+                    if weight_fn is not None:
+                        w_ij = weight_fn(i_code, j_code)
+                        w_ji = weight_fn(j_code, i_code)
+                    elif pairs is not None:
+                        w_ij = pairs.get((i_code, j_code))
+                        w_ji = pairs.get((j_code, i_code))
+                    else:
+                        w_ij = 1.0
+                        w_ji = 1.0
+                    G.add_edge(i_code, j_code, weight=w_ij)
+                    G.add_edge(j_code, i_code, weight=w_ji)
    
    #The same logic like the graph from neighbours but without 
    #needing to check intersections
-    if mode=="all":
+    elif mode=="all":
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
             G.add_node(i_code, name=row_i[label], pos=(row_i["x"], row_i["y"]),
@@ -78,12 +86,17 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
                 if j <= i:
                     continue
                 j_code = name_dict.lookup(row_j[label])
-                pair_ij = (i_code, j_code)
-                pair_ji = (j_code, i_code)
-                G.add_edge(i_code, j_code, weight=pairs[pair_ij])
-                G.add_edge(j_code, i_code, weight=pairs[pair_ji])
+                if weight_fn is not None:
+                    w_ij = weight_fn(i_code, j_code)
+                    w_ji = weight_fn(j_code, i_code)
+                elif pairs is not None:
+                    w_ij = pairs.get((i_code, j_code))
+                    w_ji = pairs.get((j_code, i_code))
+                else:
+                    w_ij = 1.0
+                    w_ji = 1.0
 
-    if mode=="from_file":
+    elif mode=="from_file":
         # nodes: same as neighbours mode, but simpler
         for i, row_i in map.iterrows():
             i_code = name_dict.lookup(row_i[label])
@@ -101,6 +114,9 @@ def maptograph(map, MIN_BORDER = 25, label="SIG_KOR_NM", pairs={}, mode="all",
                 # only add if both endpoints exist in the map
                 if u in G and v in G:
                     G.add_edge(u, v, weight=w)
+    else:
+        raise ValueError(f"Unknown mode {mode!r}")
+
     return G
 
 
@@ -124,7 +140,7 @@ def intercept_check(x_coord, y_coord, polygons):
 
 #I SHOULD WRITE COMMENTS FOR THIS - TODO
 class graphDisplay:
-    def __init__(self, graph, gdt=None, map_name_col="SIG_KOR_NM",
+    def __init__(self, graph, gdt=None, max_flow=None, map_name_col="SIG_KOR_NM",
                  gif_name=None):
         self.map = gdt
         self.graph = graph
@@ -137,8 +153,15 @@ class graphDisplay:
         self.node_dict = dict(zip(list(self.node_idxs), list(self.code)))
         self.map_name_col = map_name_col
 
-        self.in_norm = mcolors.Normalize(vmin=None, vmax=None, clip=True)
-        self.out_norm = mcolors.Normalize(vmin=None, vmax=None, clip=True)
+        self.weight_norm = mcolors.Normalize(vmin=0.0, vmax=1.0, clip=True)
+        self.weight_cmap = cm.get_cmap("plasma")
+
+        self.max_flow = None
+        if max_flow is None or max_flow <= 0.0:
+            self.max_flow = 1.0
+        else:
+            self.max_flow = max_flow
+
         self.save_name = gif_name
 
         self._blit_enabled = False
@@ -167,6 +190,20 @@ class graphDisplay:
         self._anim = None
 
         self.edge_weight_fn = None
+
+        self.ax_flow = self.fig.add_axes([0.75, 0.1, 0.16, 0.8])
+        self.ax_flow.axis("off")
+        self._flow_text_code = []
+        self._flow_text_in = []
+        self._flow_text_out = []
+
+        # Colormaps for in/out magnitudes
+        self.in_weight_norm = mcolors.Normalize(vmin=0.0, vmax=self.max_flow, clip=True)
+        self.out_weight_norm = mcolors.Normalize(vmin=0.0, vmax=self.max_flow, clip=True)
+        self.in_weight_cmap = cm.get_cmap("viridis")
+        self.out_weight_cmap = cm.get_cmap("viridis")
+
+
 
     def _blit_draw(self):
         if not self._blit_enabled:
@@ -203,78 +240,86 @@ class graphDisplay:
             self._label_cache[key] = lb
         return lb
 
-    def _expand_norm(self, norm: mcolors.Normalize, w: float):
-        if norm.vmin is None or norm.vmax is None:
-            norm.vmin = w
-            norm.vmax = w + 1e-12
-        else:
-            changed = False
-            if w < norm.vmin:
-                norm.vmin = w
-                changed = True
-            if w > norm.vmax:
-                norm.vmax = w
-                changed = True
-            if changed and norm.vmax == norm.vmin:
-                norm.vmax = norm.vmin + 1e-12
+    def _format_flow_label(self, v, w_in, w_out):
+        code_str = f"{self.code[v]}"
+        return f"{code_str}   ← {w_in:8.3g}   → {w_out:8.3g}"
 
-    # SELECTION + LEGEND (called on mouse click, NOT every frame)
+    # SELECTION + FLOW PANEL (called on mouse click, NOT every frame)
     def _update_selection(self, node):
         # move the red selection ring
         self._sel_marker.center = self.graph.nodes[node]["pos"]
 
-        # collect in/out weights to all neighbours (using current graph attrs)
+        # collect in/out weights to all neighbours
         edges = []
         for nb in self.graph.neighbors(node):
             w_out = self.graph.get_edge_data(node, nb)["weight"]
             w_in  = self.graph.get_edge_data(nb, node)["weight"]
             edges.append((node, nb, w_in, w_out))
 
-        #Sort neighbours by total flow (largest first)
-        # THIS IS COMPLETLY OPTIONAL SORTING, BUT MAKES IT A BIT EASIER
-        # TO ORIENT
+        # sort neighbours by total flow (largest first)
         edges.sort(key=lambda e: e[2] + e[3], reverse=True)
 
-        # remember neighbour order for the dynamic updates later
-        # (The legend displays neighbours and the weight values)
+        # neighbours in the order we'll display them
         self._legend_neighs = [v for (_, v, _, _) in edges]
 
-        # build handles + initial labels
-        handles = []
-        labels = []
-        for u, v, w_in, w_out in edges:
-            ln = self._draw_or_get_line(u, v, True)  # dummy handle
-            label = f"{self.code[v]}: in {w_in:.3g}, out {w_out:.3g}"
-            handles.append(ln)
-            labels.append(label)
+        # clear flow panel
+        self.ax_flow.cla()
+        self.ax_flow.axis("off")
+        self._flow_text_code = []
+        self._flow_text_in = []
+        self._flow_text_out = []
 
-        if self._legend is not None:
-            self._legend.remove()
+        if not edges:
+            self.selected_node = node
+            self.fig.canvas.draw_idle()
+            return
 
-        self._legend = self.ax.legend(
-            handles,
-            labels,
-            loc="upper left",
-            bbox_to_anchor=(1.02, 1.0),
-            borderaxespad=0.0,
-            frameon=False,
-            fontsize=7,   
-        )
+        # layout in Axes coordinates
+        MAX_NEIGH = 25
+        n_show = min(len(edges), MAX_NEIGH)
+        dy = 1.0 / (n_show + 1)
 
-        # store text objects so we can update them fast later
-        # (IN THE TIME EVOLUTION, WE JUST CHANGE THE TEXT AND DONT
-        # REDRAW THE WHOLE LEGEND ITSELF)
-        self._legend_texts = self._legend.get_texts()
+        for row, (u, v, w_in, w_out) in enumerate(edges[:n_show]):
+            y = 1.0 - (row + 1) * dy
+
+            # code 
+            txt_code = self.ax_flow.text(
+                0.0, y, f"{self.code[v]}",
+                transform=self.ax_flow.transAxes,
+                ha="left", va="center",
+                fontsize = 7
+            )
+
+            # in 
+            col_in = self.in_weight_cmap(self.in_weight_norm(w_in))
+            txt_in = self.ax_flow.text(
+                0.25, y, f"in {w_in:.3g}",
+                transform=self.ax_flow.transAxes,
+                ha="left", va="center",
+                color=col_in,
+                fontsize = 7
+            )
+
+            # out (red scale)
+            col_out = self.out_weight_cmap(self.out_weight_norm(w_out))
+            txt_out = self.ax_flow.text(
+                0.75, y, f"out {w_out:.3g}",
+                transform=self.ax_flow.transAxes,
+                ha="left", va="center",
+                color=col_out,
+                fontsize = 7
+            )
+
+            self._flow_text_code.append(txt_code)
+            self._flow_text_in.append(txt_in)
+            self._flow_text_out.append(txt_out)
+
+        self.ax_flow.set_title(f"Flows from {self.code[node]}", fontsize=8, loc="left")
 
         self.selected_node = node
-
-        # update the SIR time–series window shown only when node changes
         if self.values_ts is not None and self.ax_ts is not None:
             self._update_timeseries_lines()
 
-        self.fig.canvas.draw_idle()
-
-    # CLICK HANDLER
     def _on_click_graph(self, event):
         if event.inaxes is not self.ax or event.xdata is None or event.ydata is None:
             return
@@ -335,9 +380,10 @@ class graphDisplay:
 
         T, K, N = vals.shape
 
-        var_names = [f"var{k}" for k in range(K)]
+        if var_names is None:
+            var_names = [f"var{k}" for k in range(K)]
 
-        self.values_ts = vals
+        self.values_ts = vals       
         self.var_names = list(var_names)
 
         if dt_snapshot is None or dt_snapshot <= 0:
@@ -397,22 +443,45 @@ class graphDisplay:
         self.ax_ts.autoscale_view()
         self.ts_fig.canvas.draw_idle()
 
-    # LEGEND UPDATE PER FRAME (uses edge_weight_fn that was built in main)
+    # FLOW PANEL UPDATE PER FRAME (uses edge_weight_fn)
     def _update_legend_for_frame(self, frame):
         if (
             self.edge_weight_fn is None
             or self.selected_node is None
-            or self._legend is None
-            or not self._legend_texts
+            or not self._legend_neighs
+            or not self._flow_text_in
         ):
             return
 
         u = self.selected_node
-        for v, text in zip(self._legend_neighs, self._legend_texts):
+
+        # recompute flows for all neighbours in current frame
+        w_in_list = []
+        w_out_list = []
+        for v in self._legend_neighs:
             w_out = self.edge_weight_fn(frame, u, v)
             w_in  = self.edge_weight_fn(frame, v, u)
-            text.set_text(f"{self.code[v]}: in {w_in:.3g}, out {w_out:.3g}")
+            w_in_list.append(w_in)
+            w_out_list.append(w_out)
 
+        if not w_in_list:
+            return
+
+        for i, v in enumerate(self._legend_neighs[:len(self._flow_text_in)]):
+            w_in  = w_in_list[i]
+            w_out = w_out_list[i]
+
+            # update text
+            self._flow_text_in[i].set_text(f"in {w_in:.3g}")
+            self._flow_text_out[i].set_text(f"out {w_out:.3g}")
+
+            # update colors separately
+            self._flow_text_in[i].set_color(
+                self.in_weight_cmap(self.in_weight_norm(w_in))
+            )
+            self._flow_text_out[i].set_color(
+                self.out_weight_cmap(self.out_weight_norm(w_out))
+            )
     # ANIMATION
     def start_animation(self, var_names, values_ts, dt_snapshot, var=0,
                         interval=60, cmap_name="plasma", fps=10,
