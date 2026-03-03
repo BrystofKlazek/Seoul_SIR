@@ -13,18 +13,13 @@ import numpy as np
 import nametocode as ntc
 import networkx as nx
 from matplotlib.lines import Line2D
-
-# add C solver
-this_dir = Path(__file__).resolve().parent
-sys.path.append(str(this_dir.parent / "differential_solver_C"))
-
 import SIR_diffusion_wrap as sir  
 
 NORM = 9600000*5
 TIME_STEP = 0.025
 NUM_DAYS = 40    
 NUM_SNAPSHOTS = 300    
-BETA, GAMMA = 0.03, 0.01
+BETA, DELTA, GAMMA = 0.08, 0.02, 0.01
 SEED_IDX = 11050
 
 def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
@@ -69,8 +64,8 @@ def make_edge_weight_fn(hourly_weights, dt_snapshot):
     Build edge_weight_fn(frame, u, v) using precomputed hourly arrays.
 
     Period = length of the per-edge array:
-      - 24  => daily cycle
-      - 168 => weekly (hour-of-week) cycle
+      - 24  -> daily cycle
+      - 168 -> weekly (hour-of-week) cycle
       - etc.
     """
     if not hourly_weights:
@@ -84,7 +79,6 @@ def make_edge_weight_fn(hourly_weights, dt_snapshot):
     period_hours = len(hourly_weights[sample_key])
 
     def edge_weight_fn(frame, u, v):
-        # t is in "hours" if dt_snapshot is in hours.
         t = frame * dt_snapshot
 
         # Wrap into [0, period_hours)
@@ -102,7 +96,17 @@ def make_edge_weight_fn(hourly_weights, dt_snapshot):
         return (1.0 - frac) * w0 + frac * w1
 
     return edge_weight_fn
-def sir_rhs(state, out, beta=0.4, gamma=0.1):
+
+def seir_rhs(state, out, beta=BETA, gamma=GAMMA, delta=DELTA):
+    S, E, I, R = state[0], state[1], state[2], state[3]
+    dS, dE, dI, dR = out[0], out[1], out[2], out[3]
+    inf = beta * S * I
+    dS[...] = -inf
+    dE[...] = inf - delta * E
+    dI[...] = delta * E - gamma * I
+    dR[...] = gamma * I
+
+def sir_rhs(state, out, beta=BETA, gamma=GAMMA):
     S, I, R = state[0], state[1], state[2]
     dS, dI, dR = out[0], out[1], out[2]
     inf = beta * S * I
@@ -240,7 +244,7 @@ def main():
     dt = TIME_STEP
     steps = int(24*NUM_DAYS/dt)
     snapshots = NUM_SNAPSHOTS
-    beta, gamma = BETA, GAMMA
+    beta, gamma, delta = BETA, GAMMA, DELTA
 
     GRID = 0.2
 
@@ -295,8 +299,9 @@ def main():
 
     n = len(nodes_order)
 
-    # initial S, I, R in the SAME node ordering as hourly_tensor
+    # initial S, E, I, R in the same node ordering as hourly_tensor
     S0 = np.ones(n, np.float64)
+    E0 = np.zeros(n, np.float64)
     I0 = np.zeros(n, np.float64)
     R0 = np.zeros(n, np.float64)
 
@@ -307,10 +312,10 @@ def main():
     I0[seed_idx] = 0.01
     S0[seed_idx] -= I0[seed_idx]
 
-    x0_graph = np.stack([S0, I0, R0], axis=0)
+    x0_graph = np.stack([S0, E0, I0, R0], axis=0)
 
     # run Euler on the graph with hourly dense Laplacian + interpolation
-    print("Solving SIR on Seoul graph (dense hourly, Euler, reaction-diffusion SIR)...")
+    print("Solving equation on Seoul graph...")
     t0 = time.time()
     out_graph = sir.euler_solve_graph_rd(
         hourly_tensor,
@@ -319,8 +324,8 @@ def main():
         dt,
         steps,
         snapshots,
-        rhs_fn=sir_rhs,
-        params={"beta": beta, "gamma": gamma}
+        rhs_fn=seir_rhs,
+        params={"beta": beta, "gamma": gamma, "delta": delta}
     )
     print(f"Graph solve done in {time.time() - t0:.2f}s, "
           f"snaps = {out_graph.shape[0]}")
@@ -332,7 +337,7 @@ def main():
     print("I min/max over all:", out[:, 1, :].min(), out[:, 1, :].max())
 
     values_ts = out_graph
-    var_names = ["S", "I", "R"]
+    var_names = ["S", "E", "I", "R"]
 
 
     global_max_weight = 0.0
