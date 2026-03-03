@@ -1,38 +1,30 @@
+import sys
+from pathlib import Path
+
 import json
 import time
-
-import geopandas as gpd
-import networkx as nx
-import numpy as np
 import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
 from shapely import set_precision
-
-import maptograph_pltly as mtg
+import maptograph_modified as mtg
+import numpy as np
 import nametocode as ntc
+import networkx as nx
+from matplotlib.lines import Line2D
 import SIR_diffusion_wrap as sir
 
-# Plotly
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-
-NORM = 9600000 * 5
+NORM = 9600000*5
 TIME_STEP = 0.025
 NUM_DAYS = 40
-NUM_SNAPSHOTS = 300
+NUM_SNAPSHOTS = 400
 BETA, DELTA, GAMMA = 0.08, 0.02, 0.01
 SEED_IDX = 11050
+DISPLAY_MODE = "slider"   # "animation" or "slider"
 
 
 def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
-    """Compress nested JSON weights into per-edge hourly arrays.
-
-    weights_by_hour_raw: dict[hour_str][u_str][v_str] -> weight
-
-    Returns:
-        hourly[(u, v)] = np.array of length n_hours
-        where n_hours = max(hour index) + 1
-    """
     if not weights_by_hour_raw:
         return {}
 
@@ -60,7 +52,6 @@ def build_hourly_weight_table(weights_by_hour_raw, norm=NORM):
 
 
 def make_edge_weight_fn(hourly_weights, dt_snapshot):
-    """Build edge_weight_fn(frame, u, v) using precomputed hourly arrays."""
     if not hourly_weights:
         def edge_weight_fn(_, __, ___):
             return 0.0
@@ -124,13 +115,7 @@ def build_hourly_tensor_for_C(hourly_weights_dict, G, n_hours=168):
     return hourly_arr, nodes, node_to_idx
 
 
-def plot_seed_weights(hourly_weights, seed_code, output_path="seed_weights.html", top_k=30):
-    """Plot incoming/outgoing hourly weights for a seed node using Plotly.
-
-    Writes interactive HTML by default. If you request a PNG/PDF/etc, you'll need
-    kaleido installed; otherwise we fall back to HTML.
-    """
-
+def plot_seed_weights(hourly_weights, seed_code, output_path="seed_weights.png"):
     if not hourly_weights:
         print("No hourly_weights, nothing to plot.")
         return
@@ -152,6 +137,8 @@ def plot_seed_weights(hourly_weights, seed_code, output_path="seed_weights.html"
         print(f"No flows involving seed node {seed_code}, nothing to plot.")
         return
 
+    TOP_K = 30
+
     all_labels = sorted(set(outgoing.keys()) | set(incoming.keys()))
     label_scores = {}
     for lab in all_labels:
@@ -160,67 +147,59 @@ def plot_seed_weights(hourly_weights, seed_code, output_path="seed_weights.html"
         label_scores[lab] = max(max_out, max_in)
 
     labels_sorted = sorted(all_labels, key=lambda x: label_scores[x], reverse=True)
-    shown_labels = labels_sorted[: int(top_k)]
+    shown_labels = labels_sorted[:TOP_K]
 
-    fig = make_subplots(
-        rows=2,
-        cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.08,
-        subplot_titles=(f"Outgoing weights from {seed_code}", f"Incoming weights into {seed_code}"),
-    )
+    color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    label_color = {
+        lab: color_cycle[i % len(color_cycle)]
+        for i, lab in enumerate(shown_labels)
+    }
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+    ax_out, ax_in = axes
 
     for lab in shown_labels:
         if lab in outgoing:
-            fig.add_trace(go.Scatter(x=t, y=outgoing[lab], mode="lines", name=str(lab)), row=1, col=1)
+            ax_out.plot(t, outgoing[lab], color=label_color[lab], linewidth=1)
+    ax_out.set_title(f"Outgoing weights from {seed_code}")
+    ax_out.set_ylabel("weight")
 
     for lab in shown_labels:
         if lab in incoming:
-            fig.add_trace(
-                go.Scatter(x=t, y=incoming[lab], mode="lines", name=str(lab), showlegend=False),
-                row=2,
-                col=1,
-            )
+            ax_in.plot(t, incoming[lab], color=label_color[lab], linewidth=1)
+    ax_in.set_title(f"Incoming weights into {seed_code}")
+    ax_in.set_ylabel("weight")
 
-    # nicer x ticks when we have whole days
     if n_hours % 24 == 0:
         days = n_hours // 24
         xticks = np.arange(0, n_hours + 1, 24)
         day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         labels = [day_names[d % 7] for d in range(days + 1)]
-        fig.update_xaxes(tickmode="array", tickvals=xticks, ticktext=labels, row=2, col=1)
-        fig.update_xaxes(title_text="hour of week (day at 0:00)", row=2, col=1)
+        ax_in.set_xticks(xticks)
+        ax_in.set_xticklabels(labels)
+        ax_in.set_xlabel("hour of week (day at 0:00)")
     else:
-        fig.update_xaxes(title_text="hour index", row=2, col=1)
+        ax_in.set_xlabel("hour index")
 
-    fig.update_yaxes(title_text="weight", row=1, col=1)
-    fig.update_yaxes(title_text="weight", row=2, col=1)
+    legend_handles = [
+        Line2D([0], [0], color=label_color[lab], lw=1, label=str(lab))
+        for lab in shown_labels
+    ]
 
-    fig.update_layout(
-        height=700,
-        width=1050,
-        margin=dict(l=10, r=10, t=60, b=10),
-        hovermode="x unified",
-        legend_title_text="Neighbour code",
+    fig.legend(
+        handles=legend_handles,
+        labels=[str(lab) for lab in shown_labels],
+        loc="center right",
+        borderaxespad=0.0,
+        frameon=False,
+        fontsize=10,
     )
 
-    out_lower = output_path.lower()
-    if out_lower.endswith(".html"):
-        fig.write_html(output_path, include_plotlyjs="cdn")
-        print(f"Saved seed weight plot to {output_path}")
-        return
-
-    try:
-        fig.write_image(output_path)
-        print(f"Saved seed weight plot to {output_path}")
-    except Exception as e:
-        html_fallback = output_path + ".html"
-        fig.write_html(html_fallback, include_plotlyjs="cdn")
-        print(
-            f"Could not write image {output_path!r} (likely missing kaleido).\n"
-            f"Wrote interactive HTML instead: {html_fallback}\n"
-            f"Error: {e}"
-        )
+    fig.tight_layout()
+    fig.subplots_adjust(right=0.90)
+    fig.savefig(output_path, dpi=200)
+    plt.close(fig)
+    print(f"Saved seed weight plot to {output_path}")
 
 
 def main():
@@ -229,18 +208,24 @@ def main():
     snapshots = NUM_SNAPSHOTS
     beta, gamma, delta = BETA, GAMMA, DELTA
 
-    GRID = 0.2
+    plt.rcParams["font.family"] = "NanumGothic"
+    plt.rcParams["axes.unicode_minus"] = False
+    for name in ["Noto Sans CJK KR", "Noto Sans KR", "NanumGothic",
+                 "Malgun Gothic", "Apple SD Gothic Neo"]:
+        if any(ft.name == name for ft in fm.fontManager.ttflist):
+            plt.rcParams["font.family"] = name
+            break
 
-    # map + centroids
     shapefile_path = "./shp/202101/SEOUL_SIG.shp"
     seoul_map = gpd.read_file(shapefile_path).to_crs(5179)
 
     anchors = seoul_map.representative_point()
     seoul_map["x"], seoul_map["y"] = anchors.x, anchors.y
 
-    seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(lambda geom: set_precision(geom, GRID))
+    seoul_map["geometry"] = seoul_map.geometry.buffer(0).apply(
+        lambda geom: set_precision(geom, 0.2)
+    )
 
-    # code table and OD data
     name_code_df = pd.read_csv("code_lookup.csv")
     name_dict = ntc.code_dict(code_df=name_code_df)
 
@@ -249,21 +234,19 @@ def main():
 
     hourly_weights = build_hourly_weight_table(weights_by_hour_raw, norm=NORM)
 
-    # for the graph itself just use hour 0
     edge_weights0 = {}
     for (u, v), arr in hourly_weights.items():
         w0 = arr[0]
         if w0 > 0.0:
             edge_weights0[(u, v)] = w0
 
-    # build graph with static weights = hour 0
-    G = mtg.maptograph(seoul_map, mode="from_file", pairs=edge_weights0, name_dict=name_dict)
+    G = mtg.maptograph(seoul_map, mode="from_file", pairs=edge_weights0)
 
-    hourly_tensor, nodes_order, node_to_idx = build_hourly_tensor_for_C(hourly_weights, G, n_hours=168)
+    hourly_tensor, nodes_order, node_to_idx = build_hourly_tensor_for_C(
+        hourly_weights, G, n_hours=168
+    )
 
     n = len(nodes_order)
-
-    # initial S, E, I, R
     S0 = np.ones(n, np.float64)
     E0 = np.zeros(n, np.float64)
     I0 = np.zeros(n, np.float64)
@@ -287,7 +270,7 @@ def main():
         steps,
         snapshots,
         rhs_fn=seir_rhs,
-        params={"beta": beta, "gamma": gamma, "delta": delta},
+        params={"beta": beta, "gamma": gamma, "delta": delta}
     )
     print(f"Graph solve done in {time.time() - t0:.2f}s, snaps = {out_graph.shape[0]}")
 
@@ -295,36 +278,48 @@ def main():
     var_names = ["S", "E", "I", "R"]
 
     global_max_weight = 0.0
-    for arr in hourly_weights.values():
+    for (u, v), arr in hourly_weights.items():
+        if u == v:
+            continue
         if arr is None or len(arr) == 0:
             continue
-        global_max_weight = max(global_max_weight, float(np.max(arr)))
 
-    # time spacing between snapshots
+        local_max = float(np.max(arr))
+        if local_max > global_max_weight:
+            global_max_weight = local_max    
+
     T = values_ts.shape[0]
     total_time = dt * steps
     dt_snapshot = total_time / max(T - 1, 1)
 
-    # function for time-dependent edge weights (kept for compatibility)
     edge_weight_fn = make_edge_weight_fn(hourly_weights, dt_snapshot)
 
-    # Plot seed weights (HTML by default)
-    plot_seed_weights(hourly_weights, SEED_IDX, "seed_weights.html")
+    plot_seed_weights(hourly_weights, SEED_IDX, "seed_weights.png")
 
-    # Plotly animation (interactive HTML)
     seoul = mtg.graphDisplay(G, seoul_map, max_flow=global_max_weight)
-    seoul.start_animation(
-        values_ts=values_ts,
-        dt_snapshot=dt_snapshot,
-        var_names=var_names,
-        var="I",
-        edge_weight_fn=edge_weight_fn,
-        hourly_weights=hourly_weights,
-        edge_pairs=list(hourly_weights.keys()),
-        output_html="seoul_animation.html",
-        selected_node=SEED_IDX,
-        auto_show=True,
-    )
+    seoul.interactive_graph()
+
+    if DISPLAY_MODE == "animation":
+        seoul.start_animation(
+            values_ts=values_ts,
+            dt_snapshot=dt_snapshot,
+            var_names=var_names,
+            var="I",
+            edge_weight_fn=edge_weight_fn,
+        )
+    elif DISPLAY_MODE == "slider":
+        seoul.show_frame_slider(
+            values_ts=values_ts,
+            dt_snapshot=dt_snapshot,
+            var_names=var_names,
+            var="I",
+            edge_weight_fn=edge_weight_fn,
+            slider_label="frame",
+        )
+    else:
+        raise ValueError(f"Unknown DISPLAY_MODE {DISPLAY_MODE!r}")
+
+    plt.show()
 
 
 if __name__ == "__main__":

@@ -321,6 +321,9 @@ def main():
         edge_weight_fn=edge_weight_fn,
         hourly_weights=hourly_weights,
         edge_pairs=list(hourly_weights.keys()),
+        # For Seoul districts the node count is small; using a larger top-k
+        # makes it easier to inspect specific edges like 11010 → 11020.
+        flow_top_k = 30,
         output_html="seoul_animation.html",
         selected_node=SEED_IDX,
         auto_show=True,

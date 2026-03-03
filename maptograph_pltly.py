@@ -109,6 +109,8 @@ def intercept_check(x_coord, y_coord, polygons: gpd.GeoDataFrame):
 
 
 class graphDisplay:
+
+
     def __init__(
         self,
         graph: nx.DiGraph,
@@ -159,10 +161,6 @@ class graphDisplay:
 
         self.fig: Optional[go.Figure] = None
 
-    def interactive_graph(self):
-        # retained for backwards compatibility
-        return
-
     def start_animation(
         self,
         var_names: Sequence[str],
@@ -171,12 +169,34 @@ class graphDisplay:
         var: Union[int, str] = 0,
         interval: int = 60,
         cmap_name: str = "Plasma",
-        fps: int = 10,
+        fps: int = 20,
         edge_weight_fn=None,
+        hourly_weights: Optional[Dict[Tuple[Any, Any], np.ndarray]] = None,
+        edge_pairs: Optional[Sequence[Tuple[Any, Any]]] = None,
         output_html: Optional[str] = None,
-        selected_node: Optional[Any] = None,
+        selected_u: Optional[Any] = None,
+        selected_v: Optional[Any] = None,
+        flow_top_k: Optional[int] = None,
         auto_show: bool = True,
+        **_ignored_kwargs: Any,
     ) -> go.Figure:
+        """
+        Plotly animation:
+
+        Left: animated choropleth (chosen `var`).
+        Right-top: state S/E/I/R at selected source node (u).
+        Right-bottom: selected directed edge flow:
+            - outflow u -> v
+            - inflow v -> u
+
+        Selections:
+          - source node u and target node v are controlled by HTML <select> elements
+            when output_html is provided (static HTML with a small JS callback).
+          - If output_html is None, the figure still renders, but u/v selection
+            stays at the initial values.
+        """
+        max_var = float(values_ts[:, :, 2].max())
+
         vals = np.asarray(values_ts)
         if vals.ndim == 2:
             vals = vals[:, np.newaxis, :]
@@ -203,47 +223,68 @@ class graphDisplay:
             t_label = "time"
 
         if self._gdf_plot is None or self._geojson is None or not self._codes_present:
-            raise ValueError(
-                "graphDisplay requires a GeoDataFrame map (gdt) so it can build a choropleth."
-            )
+            raise ValueError("graphDisplay requires a GeoDataFrame map (gdt) so it can build a choropleth.")
 
         field_ts = vals[:, k, :]  # (T, N)
 
-        # Default selected node for time series
-        if selected_node is None:
-            selected_node = self._codes_present[0]
-        if selected_node not in self._node_to_idx:
-            raise ValueError(f"selected_node {selected_node!r} not in graph")
+        # Defaults for u, v
+        if selected_u is None:
+            selected_u = self._codes_present[0]
+        if selected_u not in self._node_to_idx:
+            raise ValueError(f"selected_u {selected_u!r} not in graph")
 
-        sel_idx = self._node_to_idx[selected_node]
+        if selected_v is None:
+            # Prefer a neighbour if possible, else fall back to itself
+            outs = list(self.graph.successors(selected_u)) if selected_u in self.graph else []
+            selected_v = outs[0] if outs else selected_u
+        if selected_v not in self._node_to_idx:
+            raise ValueError(f"selected_v {selected_v!r} not in graph")
+
+        u_idx = self._node_to_idx[selected_u]
 
         # Choropleth values must be ordered the same as `locations`
         z0 = field_ts[0, self._codes_to_idx]
 
-        # Build time series for selected node
-        y_series = [vals[:, kk, sel_idx] for kk in range(K)]
+        # State time series for selected_u
+        y_state = [vals[:, kk, u_idx] for kk in range(K)]
 
-        # Global min/max for the vertical time marker
-        y_min = float(np.min(vals))
-        y_max = float(np.max(vals))
-        if y_max <= y_min:
-            y_max = y_min + 1e-12
+        # Flow series helper
+        def _flow_series(u: Any, v: Any) -> np.ndarray:
+            if edge_weight_fn is None:
+                return np.zeros(T, dtype=float)
+            return np.array([float(edge_weight_fn(f, u, v)) for f in range(T)], dtype=float)
+
+        y_out = _flow_series(selected_u, selected_v)
+        y_in = _flow_series(selected_v, selected_u)
+
+        # y-limits
+        y_state_min, y_state_max = -0.02, 1.02
+        y_flow_max = float(self.max_flow) if self.max_flow is not None else float(max(np.max(y_out), np.max(y_in), 1e-12))
+        y_flow_min, y_flow_max = 0.0, max(y_flow_max, 1e-12)
 
         # Map centroids (for hover) in the same order as codes_present
         gdf_idxed = self._gdf_plot.set_index("code")
         cent_lon = [float(gdf_idxed.loc[c, "lon"]) for c in self._codes_present]
         cent_lat = [float(gdf_idxed.loc[c, "lat"]) for c in self._codes_present]
 
+        # ---- Layout: map (left, 2 rows) + state (top-right) + out/in (bottom-right split) ----
         fig = make_subplots(
-            rows=1,
-            cols=2,
-            specs=[[{"type": "geo"}, {"type": "xy"}]],
-            column_widths=[0.62, 0.38],
+            rows=2,
+            cols=3,
+            specs=[
+                [{"type": "geo", "rowspan": 2}, {"type": "xy", "colspan": 2}, None],
+                [None, {"type": "xy"}, {"type": "xy"}],
+            ],
+            column_widths=[0.52, 0.24, 0.24],
+            row_heights=[0.58, 0.42],
             subplot_titles=(
                 f"{var_names[k]} over districts",
-                f"Time series (selected: {selected_node})",
+                f"State at source node u = {selected_u}",
+                "Selected outflow (u → v)",
+                "Selected inflow (v → u)",
             ),
-            horizontal_spacing=0.03,
+            horizontal_spacing=0.05,
+            vertical_spacing=0.12,
         )
 
         # Choropleth on the left
@@ -255,7 +296,17 @@ class graphDisplay:
                 z=z0,
                 colorscale=cmap_name,
                 marker_line_width=0.3,
-                colorbar=dict(title=str(var_names[k])),
+                colorbar=dict(
+                    title=str(var_names[k]),
+                    # Keep the colorbar strictly within the left column.
+                    x=1.15,
+                    y=0.53,
+                    zmax=float(max_var)
+                    len=0.88,
+                    thickness=14,
+                    xanchor="right",
+                    yanchor="middle",
+                ),
                 hovertemplate="code=%{location}<br>value=%{z:.4g}<extra></extra>",
             ),
             row=1,
@@ -277,19 +328,19 @@ class graphDisplay:
             col=1,
         )
 
-        # Time series on the right
+        # State time series
         for kk, nm in enumerate(var_names):
             fig.add_trace(
-                go.Scatter(x=t_vec, y=y_series[kk], mode="lines", name=str(nm)),
+                go.Scatter(x=t_vec, y=y_state[kk], mode="lines", name=str(nm)),
                 row=1,
                 col=2,
             )
 
-        # Vertical time marker (updated via frames)
+        # Vertical time marker for state
         fig.add_trace(
             go.Scatter(
                 x=[t_vec[0], t_vec[0]],
-                y=[y_min, y_max],
+                y=[y_state_min, y_state_max],
                 mode="lines",
                 line=dict(dash="dash"),
                 showlegend=False,
@@ -299,7 +350,51 @@ class graphDisplay:
             col=2,
         )
 
-        # Frames: update choropleth z + vertical marker x
+        # Outflow trace + vertical marker
+        fig.add_trace(
+            go.Scatter(x=t_vec, y=y_out, mode="lines", name=f"{selected_u} → {selected_v}", showlegend=False),
+            row=2,
+            col=2,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=[t_vec[0], t_vec[0]],
+                y=[y_flow_min, y_flow_max],
+                mode="lines",
+                line=dict(dash="dash"),
+                showlegend=False,
+                hoverinfo="skip",
+            ),
+            row=2,
+            col=2,
+        )
+
+        # Inflow trace + vertical marker
+        fig.add_trace(
+            go.Scatter(x=t_vec, y=y_in, mode="lines", name=f"{selected_v} → {selected_u}", showlegend=False),
+            row=2,
+            col=3,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=[t_vec[0], t_vec[0]],
+                y=[y_flow_min, y_flow_max],
+                mode="lines",
+                line=dict(dash="dash"),
+                showlegend=False,
+                hoverinfo="skip",
+            ),
+            row=2,
+            col=3,
+        )
+
+        # Trace indices for frame updates
+        choropleth_idx = 0
+        state_marker_idx = 2 + K
+        out_marker_idx = 4 + K
+        in_marker_idx = 6 + K
+
+        # Frames: update choropleth z + vertical markers x (state/out/in)
         frames = []
         for f in range(T):
             frames.append(
@@ -308,8 +403,10 @@ class graphDisplay:
                     data=[
                         go.Choropleth(z=field_ts[f, self._codes_to_idx], locations=self._codes_present),
                         go.Scatter(x=[t_vec[f], t_vec[f]]),
+                        go.Scatter(x=[t_vec[f], t_vec[f]]),
+                        go.Scatter(x=[t_vec[f], t_vec[f]]),
                     ],
-                    traces=[0, 6],
+                    traces=[choropleth_idx, state_marker_idx, out_marker_idx, in_marker_idx],
                 )
             )
         fig.frames = frames
@@ -317,23 +414,41 @@ class graphDisplay:
         slider_steps = [
             dict(
                 method="animate",
-                args=[[str(f)], {"mode": "immediate", "frame": {"duration": interval, "redraw": True}, "transition": {"duration": 0}}],
+                args=[
+                    [str(f)],
+                    {"mode": "immediate", "frame": {"duration": interval, "redraw": True}, "transition": {"duration": 0}},
+                ],
                 label=str(f),
             )
             for f in range(T)
         ]
 
+        # Make axes readable and non-overlapping
+        fig.update_xaxes(title_text=t_label, row=1, col=2)
+        fig.update_xaxes(title_text=t_label, row=2, col=2)
+        fig.update_xaxes(title_text=t_label, row=2, col=3)
+
+        fig.update_yaxes(title_text="fraction", range=[y_state_min, y_state_max], row=1, col=2)
+        fig.update_yaxes(title_text="weight", range=[y_flow_min, y_flow_max], row=2, col=2)
+        fig.update_yaxes(title_text="weight", range=[y_flow_min, y_flow_max], row=2, col=3)
+
+        fig.update_geos(fitbounds="locations", visible=False)
+
+        # Put animation controls below the plots (no overlap)
         fig.update_layout(
-            height=650,
-            width=1100,
-            margin=dict(l=10, r=10, t=60, b=10),
-            hovermode="closest",
+            height=720,
+            width=1280,
+            margin=dict(l=10, r=240, t=70, b=120),
+            hovermode="x unified",
+            legend=dict(x=1.02, y=1.0, xanchor="left", yanchor="top"),
             updatemenus=[
                 dict(
                     type="buttons",
                     direction="left",
-                    x=0.12,
-                    y=1.08,
+                    x=0.05,
+                    y=-0.14,
+                    xanchor="left",
+                    yanchor="top",
                     buttons=[
                         dict(
                             label="Play",
@@ -351,59 +466,30 @@ class graphDisplay:
             sliders=[
                 dict(
                     active=0,
-                    x=0.10,
-                    y=1.02,
-                    len=0.46,
-                    pad=dict(t=10, b=10),
+                    x=0.05,
+                    y=-0.07,
+                    len=0.65,
+                    pad=dict(t=0, b=0),
                     currentvalue=dict(prefix=f"{t_label}: "),
                     steps=slider_steps,
                 )
             ],
         )
 
-        fig.update_geos(fitbounds="locations", visible=False)
-        fig.update_xaxes(title_text=t_label, row=1, col=2)
-        fig.update_yaxes(title_text="value", row=1, col=2)
-
-        # Dropdown to change selected node time series (traces 2..5)
-        node_buttons = []
-        for node in self._codes_present:
-            idx = self._node_to_idx[node]
-            y_new = [vals[:, kk, idx] for kk in range(K)]
-            node_buttons.append(
-                dict(
-                    label=str(node),
-                    method="restyle",
-                    args=[{"y": y_new}, [2, 3, 4, 5]],
-                )
-            )
-
-        if node_buttons:
-            fig.update_layout(
-                updatemenus=list(fig.layout.updatemenus)
-                + [
-                    dict(
-                        type="dropdown",
-                        x=0.70,
-                        y=1.08,
-                        showactive=True,
-                        buttons=node_buttons,
-                    )
-                ]
-            )
-
         self.fig = fig
 
+        # Optional HTML output: plain Plotly figure (no custom HTML/JS injected)
         if output_html is None and self.save_name is not None:
             output_html = self.save_name
 
         if output_html is not None:
             if not output_html.lower().endswith(".html"):
                 output_html = output_html + ".html"
-            fig.write_html(output_html, include_plotlyjs="cdn")
+
+            fig.write_html(output_html, auto_open=auto_show, include_plotlyjs="cdn")
             print(f"Saved Plotly animation to {output_html}")
 
-        if auto_show:
+        if auto_show and output_html is None:
             fig.show()
 
         return fig
