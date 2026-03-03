@@ -109,11 +109,14 @@ class graphDisplay:
         self.ax_flow.axis("off")
        
         self._title_text = self.ax.text(
-            0.5, 1.01, "",
+            0.33, 0.985, "",
             transform=self.ax.transAxes,
-            ha="center", va="bottom",
+            ha="center", va="top",
             fontsize=10,
-            animated=True
+            animated=True,
+            clip_on=True,
+            zorder=200,
+            bbox=dict(facecolor="white", edgecolor="none", alpha=0.9, pad=2.0),
         )
 
         self.fig.subplots_adjust(left=0.02, right=0.98, top=0.95, bottom=0.08, wspace=0.02)
@@ -169,23 +172,42 @@ class graphDisplay:
         self.out_weight_cmap = cm.get_cmap("viridis")
 
         self.flow_update_enabled = False   # OFF by default (faster)
+        self._set_flow_animated(False)   
         self._current_frame = 0
 
         self.fig.canvas.draw_idle()
+    
+    def _set_flow_animated(self, flag: bool):
+        for t in (self._flow_text_code + self._flow_text_in + self._flow_text_out):
+            t.set_animated(flag)
+
 
     def _on_key(self, event):
         if event.key == "a":
             self.flow_update_enabled = not self.flow_update_enabled
             state = "ON" if self.flow_update_enabled else "OFF"
-            if self.selected_node is not None:
-                self.ax_flow.set_title(f"Flows: {self.selected_node}  (dynamic {state})",
-                                   fontsize=9, loc="left", pad=6)
-            self.fig.canvas.draw_idle()
 
+            # when dynamic ON:flow texts are animated and will be redrawn by blit
+            self._set_flow_animated(self.flow_update_enabled)
+
+            if self.selected_node is not None:
+                self.ax_flow.set_title(
+                    f"Flows: {self.selected_node}  (dynamic {state})",
+                    fontsize=9, loc="left", pad=6
+                )
+
+            # reset blit background after changing animated/static artists
+            if self._anim is not None and getattr(self._anim, "_blit_cache", None) is not None:
+                self._anim._blit_cache.clear()
+            self.fig.canvas.draw()
         if event.key == "u":
             if self.selected_node is not None and self.edge_weight_fn is not None:
                 self._update_legend_for_frame(self._current_frame)
-                self.fig.canvas.draw_idle()
+
+                # one full draw to show the updated static flow panel
+                if self._anim is not None and getattr(self._anim, "_blit_cache", None) is not None:
+                    self._anim._blit_cache.clear()
+                self.fig.canvas.draw()
 
     def _init_flow_panel(self):
         self.ax_flow.axis("off")
@@ -582,10 +604,10 @@ class graphDisplay:
                 self._title_text.set_text(f"{self.var_names[k]}(t = {t:.3f}), frame {frame}")            
             else:
                 self._title_text.set_text(f"{self.var_names[k]}, frame {frame}")
-
+            
             artists = list(self.node_patches.values()) + [self._sel_marker, self._title_text]
             if self.flow_update_enabled:
-                artists += self._flow_artists()
+                artists += (self._flow_text_code + self._flow_text_in + self._flow_text_out)
             return artists
 
         self._anim = FuncAnimation(self.fig, update,
