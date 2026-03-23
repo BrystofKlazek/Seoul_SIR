@@ -16,7 +16,6 @@ import numpy as np
 
 FLOW_TOP_K = 12
 
-
 # Graph construction from a map file/data frame
 def graph_construction(gdf=None, df=None, MIN_BORDER=25, label="SIG_KOR_NM",
                pairs=None, mode="all", weight_fn=None, name_dict=None):
@@ -156,37 +155,38 @@ class graphDisplay:
                       alpha=0.9, pad=2.0),
         )
 
-        # ---- map polygon collection (filled in by draw_graph) ---------
+        # map polygon collection (filled in by draw_graph) - usually used from the GPD
         self._map_collection       = None
-        self._poly_index_for_node  = {}
         self._prev_selected_idx    = None
         self._edge_colors          = None
         self._edge_widths          = None
 
-        # ---- colorbar / field display ---------------------------------
+        # colorbar storage
         self.cbar             = None
-        self._field_ts        = None   # (T, N) array for the displayed var
+        self._field_ts        = None   # (T, N) array for the displayed var - T is snapshots in time and N is number of nodes
         self._field_var_name  = None
         self._field_norm      = None
         self._field_cmap      = None
 
-        # ---- simulation data ------------------------------------------
-        self.values_ts  = None   # full (T, K, N) array
+        # Values from simulation to display
+        self.values_ts  = None   # (T, K, N) array,  so all values, K is number of calculated vals. _field_ts selects from this
         self.var_names  = None
         self.dt_snapshot = None
         self.t_vec      = None
 
-        # ---- timeseries figure (per-node variables) -------------------
+        # variable timeseries figure vars (per-node variables display window)
         self.ts_fig      = None
         self.ax_ts       = None
         self.lines_vars  = []
         self.time_marker = None
 
-        # ---- flow timeseries figure -----------------------------------
+        # flow Timeseries figure vars (display of weights from the dataset in time)
         self.flow_ts_fig          = None
         self.ax_flow_ts           = None
+        #Radio button windows - small individual axes 
         self.ax_flow_radio_neigh  = None
         self.ax_flow_radio_dir    = None
+        # The buttons themselves
         self.radio_flow_neigh     = None
         self.radio_flow_dir       = None
         self.flow_time_marker     = None
@@ -195,62 +195,54 @@ class graphDisplay:
         self._selected_flow_dir   = "both"
         self._flow_ts_top_k       = FLOW_TOP_K
 
-        # ---- interaction state ----------------------------------------
+        # interaction state saved       
         self.selected_node   = None
         self.edge_weight_fn  = None
         self._current_frame  = 0
+        #These are here so they do not get garpage collected
         self._anim           = None
         self._slider         = None
         self._slider_ax      = None
 
-        self.fig.canvas.draw_idle()
-
-    # Map drawing
+    # Map drawing method. Renders the map into self.ax. A GeoDataFrame map is needed.
     def draw_graph(self):
-        """Render the base map into self.ax. A GeoDataFrame map is required."""
         if self.map is None:
-            raise ValueError("graphDisplay requires a GeoDataFrame map.")
+            raise ValueError("graphDisplay requires a GDF map.")
 
         self.ax.clear()
         self.map = self.map.copy()
 
+        #Previously I did not build the code column in main and did it here, so I leave it here 
+        # incase I wanted to move back to the previous style
         if "code" not in self.map.columns:
             nd = ntc.code_dict()
             self.map["code"] = self.map[self.map_name_col].map(nd.lookup)
 
-        self.map["_graph_code"] = [
-            row["code"] if row["code"] in self.graph else None
-            for _, row in self.map.iterrows()
-        ]
-        self._poly_index_for_node = {
-            node: i
-            for i, node in enumerate(self.map["_graph_code"])
-            if node is not None
-        }
-
+        # Plotting of the base map 
         self.map.plot(ax=self.ax, color="white",
                       edgecolor="black", linewidth=0.8, zorder=10)
         self.ax.set_aspect("equal")
 
-        if self.ax.collections:
-            self._map_collection = self.ax.collections[-1]
-            n = len(self.map)
-            self._edge_colors = np.tile([[0., 0., 0., 1.]], (n, 1))
-            self._edge_widths = np.full(n, 0.8)
-            self._map_collection.set_edgecolor(self._edge_colors)
-            self._map_collection.set_linewidth(self._edge_widths)
+        # Gets the last object added to the axis
+        self._map_collection = self.ax.collections[-1]
+        n = len(self.map)
+        #Set all polygon faces white and edges black
+        self._edge_colors = np.tile([[0., 0., 0., 1.]], (n, 1))
+        self._edge_widths = np.full(n, 0.8)
+        self._map_collection.set_edgecolor(self._edge_colors)
+        self._map_collection.set_linewidth(self._edge_widths)
 
+        # Setting of code text at representative points
         for _, row in self.map.iterrows():
-            if row["_graph_code"] is None:
-                continue
             x = row["x"] if "x" in row.index else row.geometry.representative_point().x
             y = row["y"] if "y" in row.index else row.geometry.representative_point().y
             self.ax.text(
-                x, y, f"{int(row['_graph_code'])}",
+                x, y, f"{int(row['code'])}",
                 path_effects=[pe.withStroke(linewidth=2, foreground="white")],
                 ha="center", va="center", zorder=40, fontsize=6,
             )
 
+        # Setting of display artributes
         self.ax.autoscale_view()
         self.ax.set_aspect("equal")
         self.ax.set_autoscale_on(False)
@@ -259,46 +251,48 @@ class graphDisplay:
         for sp in self.ax.spines.values():
             sp.set_visible(False)
 
+    #Drawing of graph with handling of mouse-clicking, draws the under graphs and calls the event handler
     def interactive_graph(self):
-        """Draw the graph and connect the mouse-click handler."""
         self.draw_graph()
         self.fig.canvas.mpl_connect("button_press_event", self._on_click_graph)
 
-    # ------------------------------------------------------------------
-    # Click handling / selection
-    # ------------------------------------------------------------------
-
+    # Click event handler
     def _on_click_graph(self, event):
+        #Checking if click is in correct location
         if event.inaxes is not self.ax or event.xdata is None:
             return
+
+        #Finding clicked polygon 
         poly_idx = intercept_check(event.xdata, event.ydata,
                                    self.map[["geometry"]])
         if poly_idx is None:
             return
-        try:
-            node = int(self.map.iloc[poly_idx]["code"])
-        except Exception:
-            return
+        
+        node = int(self.map.iloc[poly_idx]["code"])
         self._update_selection(node)
 
+    #Highlit selected node and refresh panels dependent on it
     def _update_selection(self, node):
-        """Highlight *node* and refresh all dependent panels."""
+        # if there was any previous selection, turn it back to black and white 
         if self._prev_selected_idx is not None:
             self._edge_colors[self._prev_selected_idx] = [0., 0., 0., 1.]
             self._edge_widths[self._prev_selected_idx] = 0.8
 
-        idx = self._poly_index_for_node.get(node)
+        #Change color of current selected node 
+        idx = self.node_idxs.get(node) 
         if idx is not None:
             self._edge_colors[idx] = [1., 0., 0., 1.]
             self._edge_widths[idx] = 2.4
 
+        #Now update all needed variables
         self._prev_selected_idx = idx
         self._map_collection.set_edgecolor(self._edge_colors)
         self._map_collection.set_linewidth(self._edge_widths)
 
         self.selected_node = node
 
-        if self.values_ts is not None and self.ax_ts is not None:
+        # Updating of timeseries, vars and flow
+        if self.values_ts is not None and self.ts_fig is not None:
             self._update_timeseries_lines()
 
         if self.flow_ts_fig is not None:
@@ -306,28 +300,25 @@ class graphDisplay:
             self._build_flow_controls()
             self._draw_selected_flow_timeseries()
 
+        # If animation is happening, throw away cashed data so all works, else redraw
         if self._anim is not None:
-            try:
-                self._anim._init_draw()
-            except Exception:
-                pass
+            self._anim._init_draw()
+        else:
+            self.fig.canvas.draw_idle()
 
-        self.fig.canvas.draw_idle()
-
-    # ------------------------------------------------------------------
-    # Simulation data — timeseries window
-    # ------------------------------------------------------------------
-
+    # Simulation data showing a timeseries window, stores (T, K, N) simulation output and opens the timeseries window
     def attach_timeseries(self, values_ts, dt_snapshot, var_names=None):
-        """Store (T, K, N) simulation output and open the timeseries window."""
-        vals = np.asarray(values_ts)
+        vals = np.asarray(values_ts) #If not already np array 
         T, K, N = vals.shape
 
+        # Storage of values 
         self.values_ts = vals
         self.var_names = var_names if var_names is not None \
             else [f"var{k}" for k in range(K)]
+        #Turn into list, ensures valid data
         self.var_names = list(self.var_names)
 
+        #If valid timestep was supplied, builds axis using this timestep, else just numbers it
         if dt_snapshot and dt_snapshot > 0:
             self.dt_snapshot = float(dt_snapshot)
             self.t_vec = np.arange(T, dtype=float) * self.dt_snapshot
@@ -335,25 +326,34 @@ class graphDisplay:
             self.dt_snapshot = None
             self.t_vec = np.arange(T, dtype=float)
 
-        if self.ax_ts is None:
+       #If timeseries of vars nonexistant, create it 
+        if self.ts_fig is None:
             self.ts_fig, self.ax_ts = plt.subplots()
 
+        # Set of default node 
         if self.selected_node is None:
-            self.selected_node = list(self.graph.nodes())[0]
+            self.selected_node = next(iter(self.node_idxs))
 
-        idx       = self.node_idxs[self.selected_node]
+        # Index of selected node for further working
+        idx = self.node_idxs[self.selected_node]
         node_vals = vals[:, :, idx]   # (T, K)
 
+        #If I add an option to rerun later, I add clearing
         self.ax_ts.clear()
+
+        #Initialization of the window and adding of values
         self.lines_vars = []
         for k in range(K):
             line, = self.ax_ts.plot(self.t_vec, node_vals[:, k],
                                     label=self.var_names[k])
             self.lines_vars.append(line)
 
+        #Current time marker
         self.time_marker = self.ax_ts.axvline(
             self.t_vec[0], color="k", linestyle="--", linewidth=1
         )
+
+        #Labels of the window
         self.ax_ts.set_xlabel("time")
         self.ax_ts.set_ylabel("value")
         self.ax_ts.set_title(f"values at node {self.selected_node}")
@@ -363,13 +363,11 @@ class graphDisplay:
         self.ts_fig.subplots_adjust(right=0.78)
         self.ts_fig.canvas.draw_idle()
 
+    #Redraw timeseries for the currently selected node via updating artists.
+    # the time marker is moveed by the _render_frame()
     def _update_timeseries_lines(self):
-        """Redraw timeseries for the currently selected node (no full replot)."""
-        if self.values_ts is None or not self.lines_vars:
-            return
-        if self.selected_node not in self.node_idxs:
-            return
 
+        #Update of timeseries for the selected node
         idx  = self.node_idxs[self.selected_node]
         vals = self.values_ts[:, :, idx]
         for k, line in enumerate(self.lines_vars):
@@ -380,14 +378,11 @@ class graphDisplay:
         self.ax_ts.autoscale_view()
         self.ts_fig.canvas.draw_idle()
 
-    # ------------------------------------------------------------------
-    # Field rendering (shared by animation and slider)
-    # ------------------------------------------------------------------
-
+    # Field rendering shared by animation and slider - call attach_timeseries, set up colormap/colorbar.
     def _prepare_field_view(self, var_names, values_ts, dt_snapshot,
                             var=0, cmap_name="plasma", edge_weight_fn=None):
-        """Validate data, call attach_timeseries, set up colormap/colorbar."""
         vals = np.asarray(values_ts)
+        #Expands (T, N) to (T, K, N) with K = 1
         if vals.ndim == 2:
             vals = vals[:, np.newaxis, :]
         if vals.ndim != 3:
@@ -397,7 +392,7 @@ class graphDisplay:
         self.attach_timeseries(vals, dt_snapshot, var_names)
         self.edge_weight_fn = edge_weight_fn
 
-        # resolve variable index
+        # resolve variable index - turn name into index or ensure number as index
         if isinstance(var, str):
             if var not in self.var_names:
                 raise ValueError(f"Unknown variable {var!r}")
@@ -407,17 +402,16 @@ class graphDisplay:
             if not 0 <= k < K:
                 raise ValueError(f"var index {k} out of range [0, {K})")
 
+        #Values for display in the main map - so the selected variable
         field_ts = vals[:, k, :]
         vmin, vmax = float(field_ts.min()), float(field_ts.max())
-        if vmax <= vmin:
-            vmax = vmin + 1e-12
-
         norm = mcolors.Normalize(vmin=vmin, vmax=vmax, clip=True)
         cmap = cm.get_cmap(cmap_name)
 
-        # rebuild colorbar
+        # rebuild colorbar, if this somehow gets called second time sometimes later
         if self.cbar is not None:
             self.cbar.remove()
+        # Individual colorbar, because there is no object that the colormap would be called at
         sm = cm.ScalarMappable(norm=norm, cmap=cmap)
         sm.set_array([])
         self.cbar = self.fig.colorbar(sm, ax=self.ax,
@@ -429,17 +423,15 @@ class graphDisplay:
         self._field_var_name = self.var_names[k]
         self._field_norm     = norm
         self._field_cmap     = cmap
-
-        return T
-
+        
+    #Update map colors and time markers for given frame from animation or slider 
     def _render_frame(self, frame, redraw_ts=False):
-        """Update map colors and time markers for *frame*."""
         frame      = int(frame)
         vals_frame = self._field_ts[frame]
 
         facecolors = []
         for _, row in self.map.iterrows():
-            node = row.get("_graph_code")
+            node = row.get("code")
             if node is None or node not in self.node_idxs:
                 facecolors.append((1., 1., 1., 1.))
             else:
@@ -466,16 +458,14 @@ class graphDisplay:
             f"{self._field_var_name}  t = {t:.3f} h  (frame {frame})"
         )
 
-    # ------------------------------------------------------------------
-    # Animation
-    # ------------------------------------------------------------------
-
+    # Logic of animation
     def start_animation(self, var_names, values_ts, dt_snapshot, var=0,
                         interval=60, cmap_name="plasma", fps=10,
                         edge_weight_fn=None):
-        T = self._prepare_field_view(var_names, values_ts, dt_snapshot,
+        self._prepare_field_view(var_names, values_ts, dt_snapshot,
                                      var, cmap_name, edge_weight_fn)
         self._render_frame(0)
+        T = values_ts.shape[0]
 
         def update(frame):
             self._render_frame(frame, redraw_ts=True)
@@ -489,15 +479,14 @@ class graphDisplay:
 
         return self._anim
 
-    # ------------------------------------------------------------------
-    # Slider
-    # ------------------------------------------------------------------
-
+    # Logic of slider
     def show_frame_slider(self, var_names, values_ts, dt_snapshot, var=0,
                           cmap_name="plasma", edge_weight_fn=None,
                           slider_label="frame"):
-        T = self._prepare_field_view(var_names, values_ts, dt_snapshot,
+        self._prepare_field_view(var_names, values_ts, dt_snapshot,
                                      var, cmap_name, edge_weight_fn)
+
+        T = values_ts.shape[0]
 
         if self._slider_ax is None:
             self.fig.subplots_adjust(bottom=0.14)
@@ -518,12 +507,8 @@ class graphDisplay:
         self.fig.canvas.draw_idle()
         return self._slider
 
-    # ------------------------------------------------------------------
-    # Flow timeseries window
-    # ------------------------------------------------------------------
-
+    # Flow timeseries window attachment - Open (or if needed refresh) the flow timeseries figure.
     def attach_flow_timeseries(self, top_k=FLOW_TOP_K):
-        """Open (or refresh) the flow timeseries figure."""
         self._flow_ts_top_k = top_k
 
         if self.flow_ts_fig is None:
@@ -542,10 +527,13 @@ class graphDisplay:
         self._build_flow_controls()
         self._draw_selected_flow_timeseries()
 
+
+
+    # Precompute hourly in/out flow series for top-K neighbours of selected node
     def _rebuild_flow_series_cache(self):
-        """Compute hourly in/out series for every neighbour of selected_node."""
         self._flow_series_cache = {}
 
+        # Nothing to compute if prerequisites are missing
         if (self.selected_node is None
                 or self.edge_weight_fn is None
                 or self.t_vec is None):
@@ -553,40 +541,41 @@ class graphDisplay:
 
         u = self.selected_node
 
-        # build a dense hourly time axis up to the end of the simulation
-        total_time  = float(self.t_vec[-1])
-        flow_t      = np.arange(max(1, int(np.ceil(total_time)) + 1),
-                                dtype=float)
-        frame_coords = (flow_t / self.dt_snapshot
-                        if self.dt_snapshot and self.dt_snapshot > 0
-                        else flow_t.copy())
-
+        # Dense hourly time axis, can be finer than simulation snapshots for accurate curves
+        # Currently it works at the resolution of hours, because finer does not currently make sense
+        # with the weights linearly interpolated between hours
+        total_time = float(self.t_vec[-1])
+        flow_t     = np.arange(max(1, int(np.ceil(total_time)) + 1), dtype=float)
         neighs = []
         for v in self.graph.nodes():
             if v == u:
                 continue
+            # Only consider nodes that have any edge with u
             if not (self.graph.has_edge(u, v) or self.graph.has_edge(v, u)):
                 continue
 
-            out_s = np.array([self.edge_weight_fn(f, u, v) for f in frame_coords], dtype=float)
-            in_s  = np.array([self.edge_weight_fn(f, v, u) for f in frame_coords], dtype=float)
+            out_s = np.array([self.edge_weight_fn(t, u, v) for t in flow_t], dtype=float)
+            in_s  = np.array([self.edge_weight_fn(t, v, u) for t in flow_t], dtype=float)
+            # Score by peak flow. This is used to select top-K
             score = max(float(out_s.max()), float(in_s.max()))
             if score > 0:
                 neighs.append((score, v, flow_t, in_s, out_s))
 
+        # Keep only top-K neighbours by peak flow for the flow window
         neighs.sort(key=lambda x: x[0], reverse=True)
         for _, v, ft, in_s, out_s in neighs[:self._flow_ts_top_k]:
             self._flow_series_cache[v] = {"t": ft, "in": in_s, "out": out_s}
 
+        # If previously selected neighbour is no longer in top-K reset to first in the list
         if self._flow_series_cache:
             if self._selected_flow_neighbor not in self._flow_series_cache:
-                self._selected_flow_neighbor = next(
-                    iter(self._flow_series_cache))
+                self._selected_flow_neighbor = next(iter(self._flow_series_cache))
+        
         else:
             self._selected_flow_neighbor = None
 
+    #Build (or rebuild) the radio buttons for the flow window
     def _build_flow_controls(self):
-        """Rebuild the neighbour and direction radio buttons."""
         if self.ax_flow_radio_neigh is None:
             return
 
@@ -628,8 +617,8 @@ class graphDisplay:
         self.radio_flow_neigh.on_clicked(on_neigh)
         self.radio_flow_dir.on_clicked(on_dir)
 
+    #Plot in/out series for the currently selected neighbour.
     def _draw_selected_flow_timeseries(self):
-        """Plot in/out series for the currently selected neighbour."""
         if self.ax_flow_ts is None:
             return
 
