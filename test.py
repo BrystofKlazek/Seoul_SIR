@@ -92,12 +92,18 @@ def main():
     print("Building CSR Laplacian…")
     indptr, indices, data = grid_laplacian_csr(nx, ny, diagonals=False, mirror=True)
 
+    # The CSR solver expects a list of arrays per time step (time-varying graph).
+    # For a static graph, repeat the same arrays for every step.
+    indptr_list  = [indptr]  * steps
+    indices_list = [indices] * steps
+    data_list    = [data]    * steps
+
     x0_graph = np.stack([S0.ravel(), I0.ravel(), R0.ravel()], axis=0)
 
     print("Solving on graph (CSR, Euler, reaction-diffusion SIR)…")
     t0 = time.time()
     out_graph = sir.euler_solve_graph_csr_rd(
-        indptr, indices, data, x0_graph,
+        indptr_list, indices_list, data_list, x0_graph,
         dt, steps, snapshots,
         rhs_fn=sir_rhs, params={"beta": beta, "gamma": gamma}
     )
@@ -139,19 +145,19 @@ def main():
     for i in range(3):
         for j in range(3):
             axes[i,j].set_xlabel("j")
-        axes[i,0].set_ylabel("i")
+        axes[i,0].set_ylabel("i", rotation=0, labelpad=10)
 
-    fig.colorbar(im_Sg, ax=axes[0,0], fraction=0.046, pad=0.04).set_label("S")
-    fig.colorbar(im_Sx, ax=axes[0,1], fraction=0.046, pad=0.04).set_label("S")
-    fig.colorbar(im_Sd, ax=axes[0,2], fraction=0.046, pad=0.04).set_label("ΔS")
+    fig.colorbar(im_Sg, ax=axes[0,0], fraction=0.046, pad=0.04).ax.set_title("S")
+    fig.colorbar(im_Sx, ax=axes[0,1], fraction=0.046, pad=0.04).ax.set_title("S")
+    fig.colorbar(im_Sd, ax=axes[0,2], fraction=0.046, pad=0.04).ax.set_title("ΔS")
 
-    fig.colorbar(im_Ig, ax=axes[1,0], fraction=0.046, pad=0.04).set_label("I")
-    fig.colorbar(im_Ix, ax=axes[1,1], fraction=0.046, pad=0.04).set_label("I")
-    fig.colorbar(im_Id, ax=axes[1,2], fraction=0.046, pad=0.04).set_label("ΔI")
+    fig.colorbar(im_Ig, ax=axes[1,0], fraction=0.046, pad=0.04).ax.set_title("I")
+    fig.colorbar(im_Ix, ax=axes[1,1], fraction=0.046, pad=0.04).ax.set_title("I")
+    fig.colorbar(im_Id, ax=axes[1,2], fraction=0.046, pad=0.04).ax.set_title("ΔI")
 
-    fig.colorbar(im_Rg, ax=axes[2,0], fraction=0.046, pad=0.04).set_label("R")
-    fig.colorbar(im_Rx, ax=axes[2,1], fraction=0.046, pad=0.04).set_label("R")
-    fig.colorbar(im_Rd, ax=axes[2,2], fraction=0.046, pad=0.04).set_label("ΔR")
+    fig.colorbar(im_Rg, ax=axes[2,0], fraction=0.046, pad=0.04).ax.set_title("R")
+    fig.colorbar(im_Rx, ax=axes[2,1], fraction=0.046, pad=0.04).ax.set_title("R")
+    fig.colorbar(im_Rd, ax=axes[2,2], fraction=0.046, pad=0.04).ax.set_title("ΔR")
 
     def update(frame):
         im_Sg.set_data(Sg[frame]); im_Sx.set_data(Sx[frame]); im_Sd.set_data(Sx[frame]-Sg[frame])
